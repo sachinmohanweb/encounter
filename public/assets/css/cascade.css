@@ -1,0 +1,156 @@
+.table-one table{
+	min-width: 1900px !important;
+}
+.table-one table td{
+	border: 1px solid #eee !important;
+}
+.customizer-links{
+	display: none !important;
+}
+.got-question-answer .form-select{
+	font-size: 14px !important;
+}
+.verse .form-group{
+	margin: 10px !important;
+}
+.notification-sec .form-group{
+	margin: 10px !important;
+}
+.course-bible{
+	background: transparent !important;
+}
+.course-bible h2{
+	font-size: 25px !important;
+	color: #333;
+}
+.course-bible .card-body{
+	background: #fff;
+}
+.course-bible .card-body .days img{
+	max-width:15px;
+	margin-right: 7px;
+}
+.course-bible .card-body .days h3{
+	margin-bottom: 0;
+	font-size: 19px;
+}
+.course-bible .card-body .days h3 span{
+	font-size: 14px;
+	color: #555;
+	vertical-align: middle;
+	margin-right: 5px;
+}
+.course-bible .card-body .course-creator h5{
+	font-size: 15px;
+}
+.course-bible .card-body .course-creator  p{
+	font-size: 12px;
+}
+.course-bible .toggle i{
+	font-size: 21px !important;
+}
+.bible-batches .nav-link{
+	padding: 12px 50px !important;
+	background: cornsilk;
+	color: #333;
+	font-size: 17px;
+}
+.bible-batches .nav-link.active{
+	background: orange;
+
+}
+.course-content{
+ padding: 25px;
+}
+.course-content .nav-link{
+	padding: 15px 75px !important;
+	border-bottom: 1px solid orange;
+	background: cornsilk;
+	color: #333;
+	font-size: 17px;
+}
+.course-content .nav-link.active{
+	background: orange;
+
+}
+.course-content .nav{
+	height: 485px;
+	overflow-y: scroll;
+}
+.course-content .nav::-webkit-scrollbar {
+  width: 5px;
+  height: 8px;
+  background-color: #f2f2f2; /* or add it to the track */
+}
+
+/* Add a thumb */
+.course-content .nav::-webkit-scrollbar-thumb {
+  background: #b99c68;
+}
+
+.course-content table{
+	background: #fafafa;
+	padding: 50px;
+}
+.course-content table td{
+	border: 1px solid #ccc;
+	padding: 15px;
+}
+.course-content .action{
+	position: absolute;
+	right:-50px;
+	top:0;
+	display: block;
+}
+.course-content .action li{
+	margin: 0 0 15px 0;
+	padding: 0;
+    text-align: left;
+    background: cornsilk;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.course-content .action .edit i{
+	font-size: 25px;
+	margin-right: 0 !important;
+}
+.course-content .action i{
+	font-size: 30px;
+}
+.course-content .tab-content{
+	position: relative;
+	margin-right: 50px;
+}
+.add-link i{
+	font-size: 25px !important;
+}
+.add-link input{
+	margin-right: 25px !important;
+} 
+.table-one td a{
+	color: #2b2c43 !important;
+}
+.course-action .edit a i{
+	font-size: 30px !important;
+}
+.book-from{
+	position: relative;
+	margin-right: 75px;
+}
+.book-from .action{
+	position: absolute;
+	right: -70px;
+	top:50px;
+}
+.book-from .action i{
+	font-size: 25px;
+}
+.book-from .form-group{
+	margin: 10px;
+}
+.g-table tr td{
+	max-width: 175px !important;
+}
