@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Session;
 
+ Route::view('/', 'pradeep.first')->name('test');
  Route::view('index', 'pradeep.first')->name('test');
  Route::view('login-bible', 'pradeep.loginBible')->name('login-bible');
  Route::view('userprofile', 'pradeep.userProfile')->name('userprofile');
@@ -29,11 +30,6 @@ use Illuminate\Support\Facades\Session;
  Route::view('addgereralreference', 'pradeep.AddGeneralReference')->name('addgereralreference');
  Route::view('editgereralreference', 'pradeep.EditGeneralReference')->name('editgereralreference');
   Route::view('batchdetail', 'pradeep.BatchDetail')->name('batchdetail');
-
-
-
-
-
 
 
 Route::get('/', function () {
