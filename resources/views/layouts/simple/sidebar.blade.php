@@ -39,7 +39,7 @@
                             </svg><span class="">Pages</span></a>
                         <ul class="sidebar-submenu">
                             <li><a href="{{ route('login-bible') }}">login-bible</a></li>
-                            <li><a href="{{ route('userprofile') }}">User Profile</a></li>
+                            <li><a href="{{ route('user-profile') }}">User Profile</a></li>
                             <li><a href="{{ route('gotquestion') }}">Got Question</a></li>
                             <li><a href="{{ route('dailybibleverse') }}">Daily Bible Verse</a></li>
                              <li><a href="{{ route('courselist') }}">Courses</a></li>

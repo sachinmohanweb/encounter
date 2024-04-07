@@ -4,32 +4,79 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Session;
 
- Route::view('/', 'pradeep.first')->name('test');
- Route::view('index', 'pradeep.first')->name('test');
- Route::view('login-bible', 'pradeep.loginBible')->name('login-bible');
- Route::view('userprofile', 'pradeep.userProfile')->name('userprofile');
- Route::view('gotquestion', 'pradeep.gotQuestion')->name('gotquestion');
- Route::view('gotquestionanswer', 'pradeep.gotQuestionAnswer')->name('gotquestionanswer');
- Route::view('dailybibleverse', 'pradeep.DailyBibleVerse')->name('dailybibleverse');
- Route::view('adddailybibleverse', 'pradeep.AddDailyBibleVerse')->name('adddailybibleverse');
- Route::view('editdailybibleverse', 'pradeep.EditDailyBibleVerse')->name('editdailybibleverse');
- Route::view('notification', 'pradeep.Notification')->name('notification');
- Route::view('addnotification', 'pradeep.AddNotification')->name('addnotification');
- Route::view('editnotification', 'pradeep.EditNotification')->name('editnotification');
- Route::view('courselist', 'pradeep.Courselist')->name('courselist');
- Route::view('addcourse', 'pradeep.AddCourse')->name('addcourse');
- Route::view('editcourse', 'pradeep.EditCourse')->name('editcourse');
- Route::view('coursedetail', 'pradeep.CourseDetail')->name('coursedetail');
- Route::view('newbatch', 'pradeep.NewBatch')->name('newbatch');
- Route::view('editbatch', 'pradeep.EditNewBatch')->name('editbatch');
- Route::view('coursecontent', 'pradeep.CourseContent')->name('coursecontent');
- Route::view('addcoursecontent', 'pradeep.AddCourseContent')->name('addcoursecontent');
- Route::view('editcoursecontent', 'pradeep.EditCourseContent')->name('editcoursecontent');
- Route::view('userlms', 'pradeep.UserLms')->name('userlms');
- Route::view('gereralreference', 'pradeep.GeneralReference')->name('gereralreference');
- Route::view('addgereralreference', 'pradeep.AddGeneralReference')->name('addgereralreference');
- Route::view('editgereralreference', 'pradeep.EditGeneralReference')->name('editgereralreference');
-  Route::view('batchdetail', 'pradeep.BatchDetail')->name('batchdetail');
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\UserController;
+
+Route::get('admin', [HomeController::class, 'admin_index'])->name('index');
+Route::post('/login', [UserController::class, 'admin_login'])->name('admin.login');
+
+Route::middleware('auth:admin')->group(function(){
+
+    Route::get('/logout', [UserController::class, 'admin_logout'])->name('admin.logout');
+    Route::get('/dashboard', [HomeController::class, 'admin_dashboard'])->name('admin.dashboard');
+
+    Route::view('login-bible', 'pradeep.loginBible')->name('login-bible');
+    Route::view('userprofile', 'pradeep.userProfile')->name('user-profile');
+    Route::view('gotquestion', 'pradeep.gotQuestion')->name('gotquestion');
+    Route::view('gotquestionanswer', 'pradeep.gotQuestionAnswer')->name('gotquestionanswer');
+    Route::view('dailybibleverse', 'pradeep.DailyBibleVerse')->name('dailybibleverse');
+    Route::view('adddailybibleverse', 'pradeep.AddDailyBibleVerse')->name('adddailybibleverse');
+    Route::view('editdailybibleverse', 'pradeep.EditDailyBibleVerse')->name('editdailybibleverse');
+    Route::view('notification', 'pradeep.Notification')->name('notification');
+    Route::view('addnotification', 'pradeep.AddNotification')->name('addnotification');
+    Route::view('editnotification', 'pradeep.EditNotification')->name('editnotification');
+    Route::view('courselist', 'pradeep.Courselist')->name('courselist');
+    Route::view('addcourse', 'pradeep.AddCourse')->name('addcourse');
+    Route::view('editcourse', 'pradeep.EditCourse')->name('editcourse');
+    Route::view('coursedetail', 'pradeep.CourseDetail')->name('coursedetail');
+    Route::view('newbatch', 'pradeep.NewBatch')->name('newbatch');
+    Route::view('editbatch', 'pradeep.EditNewBatch')->name('editbatch');
+    Route::view('coursecontent', 'pradeep.CourseContent')->name('coursecontent');
+    Route::view('addcoursecontent', 'pradeep.AddCourseContent')->name('addcoursecontent');
+    Route::view('editcoursecontent', 'pradeep.EditCourseContent')->name('editcoursecontent');
+    Route::view('userlms', 'pradeep.UserLms')->name('userlms');
+    Route::view('gereralreference', 'pradeep.GeneralReference')->name('gereralreference');
+    Route::view('addgereralreference', 'pradeep.AddGeneralReference')->name('addgereralreference');
+    Route::view('editgereralreference', 'pradeep.EditGeneralReference')->name('editgereralreference');
+    Route::view('batchdetail', 'pradeep.BatchDetail')->name('batchdetail');
+
+});
+
+Route::get('/clear-cache', function () {
+    Artisan::call('config:cache');
+    Artisan::call('cache:clear');
+    Artisan::call('config:clear');
+    Artisan::call('view:clear');
+    Artisan::call('route:clear');
+    return "Cache is cleared";
+})->name('clear.cache');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 Route::get('/', function () {
@@ -45,15 +92,6 @@ Route::get('lang/{locale}', function ($locale) {
     Session::get('locale');
     return redirect()->back();
 })->name('lang');
-
-Route::prefix('dashboard')->group(function () {
-    Route::view('index', 'dashboard.index')->name('index');
-    
-    Route::view('dashboard-02', 'dashboard.dashboard-02')->name('dashboard-02');
-    Route::view('dashboard-03', 'dashboard.dashboard-03')->name('dashboard-03');
-    Route::view('dashboard-04', 'dashboard.dashboard-04')->name('dashboard-04');
-    Route::view('dashboard-05', 'dashboard.dashboard-05')->name('dashboard-05');
-});
 
 Route::prefix('widgets')->group(function () {
     Route::view('general-widget', 'widgets.general-widget')->name('general-widget');
@@ -379,11 +417,4 @@ Route::get('layout-{light}', function ($light) {
     return redirect()->route('index');
     return 1;
 });
-Route::get('/clear-cache', function () {
-    Artisan::call('config:cache');
-    Artisan::call('cache:clear');
-    Artisan::call('config:clear');
-    Artisan::call('view:clear');
-    Artisan::call('route:clear');
-    return "Cache is cleared";
-})->name('clear.cache');
+
