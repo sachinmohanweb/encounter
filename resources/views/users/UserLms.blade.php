@@ -8,48 +8,54 @@
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/cascade.css') }}">
 @endsection
 @section('breadcrumb-title')
-<h3>Notification</h3>
+<h3>User LMS</h3>
 @endsection
-
+@section('breadcrumb-items')
+<li class="breadcrumb-item">Dashboard</li>
+<li class="breadcrumb-item active">Daily Bible Verse</li>
+@endsection
 @section('content')
 <div class="container-fluid">
    <div class="row widget-grid">
       <div class="col-sm-12">
-         <div class="new-question d-flex justify-content-end mb-4">
-            <a href="{{ route('addnotification') }}"><button class="btn btn-pill btn-info-gradien pt-2 pb-2" type="button" data-bs-original-title="" title="">Add Notifications</button>
-            </a>
-         </div>
          <div class="card">
             <div class="card-body">
                <div class="table-responsive">
                   <table class="display" id="data-source-1" style="width:100%">
                      <thead>
                         <tr>
-                           <th>Title</th>
-                           <th>Content</th>
-                           <th>Redirection</th>
-                           <th>Thumbnail/image</th>
+                           <th>Course Id</th>
+                           <th>Batch Id</th>
+                           <th>Completed Status</th>
+                           <th>Start Date</th>
+                           <th>Progress</th>
                            <th>Action</th>
+                           <!-- <th>Status</th> -->
                         </tr>
                      </thead>
                      <tbody>
                         <tr>
-                           <td>collection of religious</td>
-                           <td>The Bible is a collection of religious</td>
-                           <td>The Bible is a collection of religious texts?</td>
-                           <td>
-                              <img class="img-fluid for-light"
-                    src="{{ asset('assets/images/logo.png') }}" alt="" style="max-width: 115px;">
-                           </td>
+                           <td>52</td>
+                           <td>12</td>
+                           <td>Ongoing</td>
+                           <td>21-02-2024</td>
+                           <td>Progress Status</td>
                            <td>
                               <ul class="action">
-                                 <li class="edit"> <a href="editnotification"><i class="icon-pencil-alt"></i></a>
+                                 <li class="edit"> <a href="editdailybibleverse"><i class="icon-pencil-alt"></i></a>
                                  </li>
                                  <li class="delete"><a href="#"><i class="icon-trash"></i></a></li>
                               </ul>
                            </td>
+                           <!--  <td>
+                              <div class="media-body text-end icon-state">
+                                 <label class="switch">
+                                 <input type="checkbox" checked=""><span class="switch-state"></span>
+                                 </label>
+                              </div>
+                           </td> -->
                         </tr>
-                        
+                       
                      </tbody>
                   </table>
                </div>

@@ -373,35 +373,35 @@
 				  <tbody>
 					<tr>
 					  <td><img class="img-fluid img-40 rounded-circle" src="{{ asset('assets/images/dashboard/user/1.jpg') }}" alt="user"></td>
-					  <td class="img-content-box"><a class="d-block f-w-500" href="{{ route('user-profile')}}">Jane Cooper</a><span class="f-light">10 minutes ago</span></td>
+					  <td class="img-content-box"><a class="d-block f-w-500" href="">Jane Cooper</a><span class="f-light">10 minutes ago</span></td>
 					  <td class="text-end">
 						<p class="m-0 font-success">$200.00</p>
 					  </td>
 					</tr>
 					<tr>
 					  <td><img class="img-fluid img-40 rounded-circle" src="{{ asset('assets/images/dashboard/user/2.jpg') }}" alt="user"></td>
-					  <td class="img-content-box"><a class="d-block f-w-500" href="{{ route('user-profile')}}">Brooklyn Simmons</a><span class="f-light">19 minutes ago</span></td>
+					  <td class="img-content-box"><a class="d-block f-w-500" href="">Brooklyn Simmons</a><span class="f-light">19 minutes ago</span></td>
 					  <td class="text-end">
 						<p class="m-0 font-success">$970.00</p>
 					  </td>
 					</tr>
 					<tr>
 					  <td><img class="img-fluid img-40 rounded-circle" src="{{ asset('assets/images/dashboard/user/3.jpg') }}" alt="user"></td>
-					  <td class="img-content-box"><a class="d-block f-w-500" href="{{ route('user-profile')}}">Leslie Alexander</a><span class="f-light">2 hours ago</span></td>
+					  <td class="img-content-box"><a class="d-block f-w-500" href="">Leslie Alexander</a><span class="f-light">2 hours ago</span></td>
 					  <td class="text-end">
 						<p class="m-0 font-success">$300.00</p>
 					  </td>
 					</tr>
 					<tr>
 					  <td><img class="img-fluid img-40 rounded-circle" src="{{ asset('assets/images/dashboard/user/4.jpg') }}" alt="user"></td>
-					  <td class="img-content-box"><a class="d-block f-w-500" href="{{ route('user-profile')}}">Travis Wright</a><span class="f-light">8 hours ago</span></td>
+					  <td class="img-content-box"><a class="d-block f-w-500" href="">Travis Wright</a><span class="f-light">8 hours ago</span></td>
 					  <td class="text-end">
 						<p class="m-0 font-success">$450.00</p>
 					  </td>
 					</tr>
 					<tr>
 					  <td><img class="img-fluid img-40 rounded-circle" src="{{ asset('assets/images/dashboard/user/5.jpg') }}" alt="user"></td>
-					  <td class="img-content-box"><a class="d-block f-w-500" href="{{ route('user-profile')}}">Mark Green</a><span class="f-light">1 day ago</span></td>
+					  <td class="img-content-box"><a class="d-block f-w-500" href="">Mark Green</a><span class="f-light">1 day ago</span></td>
 					  <td class="text-end">
 						<p class="m-0 font-success">$768.00</p>
 					  </td>

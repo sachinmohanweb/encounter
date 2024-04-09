@@ -38,7 +38,7 @@
                      <tbody>
                         <tr>
                            <td>1</td>
-                           <td><a  href="{{ route('userlms') }}">Tiger Nixon</a></td>
+                           <td><a  href="{{ route('admin.user.lms') }}">Tiger Nixon</a></td>
                            <td>a.satou@datatables.net</td>
                            <td>Male</td>
                            <td>45</td>

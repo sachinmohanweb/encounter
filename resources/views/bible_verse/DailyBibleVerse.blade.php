@@ -16,7 +16,7 @@
    <div class="row widget-grid">
       <div class="col-sm-12">
          <div class="new-question d-flex justify-content-end mb-4">
-            <a href="{{ route('adddailybibleverse') }}"><button class="btn btn-pill btn-info-gradien pt-2 pb-2" type="button" data-bs-original-title="" title="">Add Daily Bible Verse</button>
+            <a href="{{ route('admin.add.daily.bible.verse') }}"><button class="btn btn-pill btn-info-gradien pt-2 pb-2" type="button" data-bs-original-title="" title="">Add Daily Bible Verse</button>
             </a>
          </div>
          <div class="card">
@@ -47,7 +47,8 @@
                            <td>Lorem ipsum dolor sit amet</td>
                            <td>
                               <ul class="action">
-                                 <li class="edit"> <a href="editdailybibleverse"><i class="icon-pencil-alt"></i></a>
+                                 <li class="edit"> <a href="{{route('admin.edit.daily.bible.verse')}}">
+                                    <i class="icon-pencil-alt"></i></a>
                                  </li>
                                  <li class="delete"><a href="#"><i class="icon-trash"></i></a></li>
                               </ul>

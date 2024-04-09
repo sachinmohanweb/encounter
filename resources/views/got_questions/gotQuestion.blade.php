@@ -16,7 +16,7 @@
    <div class="row widget-grid">
       <div class="col-sm-12">
          <div class="new-question d-flex justify-content-end mb-4">
-            <a href="{{ route('gotquestionanswer') }}"><button class="btn btn-pill btn-info-gradien pt-2 pb-2" type="button" data-bs-original-title="" title="">New Question</button>
+            <a href="{{ route('admin.gotquestionanswer') }}"><button class="btn btn-pill btn-info-gradien pt-2 pb-2" type="button" data-bs-original-title="" title="">New Question</button>
             </a>
          </div>
          <div class="card">

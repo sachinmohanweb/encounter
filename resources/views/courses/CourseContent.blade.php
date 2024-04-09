@@ -32,7 +32,7 @@
             <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">
                <ul class="action">
                               
-                                 <li class="edit"> <a href="{{ route('editcoursecontent') }}"><i class="icon-pencil-alt"></i></a>
+                                 <li class="edit"> <a href="{{ route('admin.edit.course.content') }}"><i class="icon-pencil-alt"></i></a>
                                  </li>
                                 
                               </ul>

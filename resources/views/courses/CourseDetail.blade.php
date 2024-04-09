@@ -33,7 +33,7 @@
                      <p>Fr Daniel Poovannathil</p>
                   </div>
                   <div class="course-action d-flex flex-wrap align-items-center">
-                  <a href="{{ route('coursecontent') }}"><button class="btn btn-pill btn-info-gradien pt-2 pb-2" type="button" data-bs-original-title="" title="">Course Content ></button>
+                  <a href="{{ route('admin.course.content') }}"><button class="btn btn-pill btn-info-gradien pt-2 pb-2" type="button" data-bs-original-title="" title="">Course Content ></button>
                   </a>
                    <ul class="action ms-5">
                      <li class="edit"> <a href="editcourse"><i class="icon-pencil-alt"></i></a>
@@ -58,7 +58,7 @@
          <div class="tab-content" id="myTabContent">
             <div class="tab-pane fade show active" id="Batches" role="tabpanel" aria-labelledby="home-tab">
                <div class="new-question d-flex justify-content-end mb-4">
-            <a href="{{ route('newbatch') }}"><button class="btn btn-pill btn-info-gradien pt-2 pb-2" type="button" data-bs-original-title="" title="">New Batch</button>
+            <a href="{{ route('admin.new.batch') }}"><button class="btn btn-pill btn-info-gradien pt-2 pb-2" type="button" data-bs-original-title="" title="">New Batch</button>
             </a>
          </div>
                <div class="card">
@@ -85,7 +85,7 @@
                                  <td>3-2-2024</td>
                                  <td>
                                     <ul class="action">
-                                       <li class="edit"> <a href="editbatch"><i class="icon-pencil-alt"></i></a>
+                                       <li class="edit"> <a href="{{route('admin.edit.batch')}}"><i class="icon-pencil-alt"></i></a>
                                        </li>
                                        <li class="delete"><a href="#"><i class="icon-trash"></i></a></li>
                                     </ul>

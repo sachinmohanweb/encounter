@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 
@@ -43,7 +44,17 @@ class UserController extends Controller
      
         $request->session()->regenerateToken();
      
-        return redirect('/')->with('success', 'You have been successfully logged out.');
+        return redirect()->route('admin.dashboard')->with('success', 'You have been successfully logged out.');
+    }
+
+    public function UsersList() : View
+    {
+        return view('users.userProfile',[]);
+    } 
+
+    public function UserLms() : View
+    {
+        return view('users.UserLms',[]);
     }
     
 }

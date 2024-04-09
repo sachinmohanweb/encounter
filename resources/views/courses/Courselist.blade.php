@@ -12,7 +12,7 @@
 <div class="container-fluid">
    <div class="row">
       <div class="new-question d-flex justify-content-end mb-4">
-         <a href="{{ route('addcourse') }}"><button class="btn btn-pill btn-info-gradien pt-2 pb-2" type="button" data-bs-original-title="" title="">Add Course</button>
+         <a href="{{ route('admin.add.course') }}"><button class="btn btn-pill btn-info-gradien pt-2 pb-2" type="button" data-bs-original-title="" title="">Add Course</button>
          </a>
       </div>
       <div class="col-sm-12 col-lg-4">
@@ -38,7 +38,7 @@
                   </div>
                </div>
                <div class="view-course d-flex align-items-center justify-content-between mt-3">
-                  <a href="{{ route('coursedetail') }}"><button class="btn btn-pill btn-info-gradien pt-2 pb-2" type="button" data-bs-original-title="" title="">View Course ></button>
+                  <a href="{{ route('admin.course.details') }}"><button class="btn btn-pill btn-info-gradien pt-2 pb-2" type="button" data-bs-original-title="" title="">View Course ></button>
                   </a>
                   <div class="media-body text-end icon-state mt-3">
                   <label class="switch">
@@ -72,7 +72,7 @@
                   </div>
                </div>
                <div class="view-course d-flex align-items-center justify-content-between mt-3">
-                  <a href="{{ route('coursedetail') }}"><button class="btn btn-pill btn-info-gradien pt-2 pb-2" type="button" data-bs-original-title="" title="">View Course ></button>
+                  <a href="{{ route('admin.course.details') }}"><button class="btn btn-pill btn-info-gradien pt-2 pb-2" type="button" data-bs-original-title="" title="">View Course ></button>
                   </a>
                   <div class="media-body text-end icon-state mt-3">
                   <label class="switch">
@@ -106,7 +106,7 @@
                   </div>
                </div>
                <div class="view-course d-flex align-items-center justify-content-between mt-3">
-                  <a href="{{ route('coursedetail') }}"><button class="btn btn-pill btn-info-gradien pt-2 pb-2" type="button" data-bs-original-title="" title="">View Course ></button>
+                  <a href="{{ route('admin.course.details') }}"><button class="btn btn-pill btn-info-gradien pt-2 pb-2" type="button" data-bs-original-title="" title="">View Course ></button>
                   </a>
                   <div class="media-body text-end icon-state mt-3">
                   <label class="switch">
