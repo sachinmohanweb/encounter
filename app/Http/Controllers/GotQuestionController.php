@@ -10,12 +10,12 @@ class GotQuestionController extends Controller
     
     public function GotQuestion() : View
     {
-        return view('got_questions.GotQuestion',[]);
+        return view('got_questions.gotQuestion',[]);
     }
 
     public function GotQuestionAnswer() : View
     {
-        return view('got_questions.GotQuestionAnswer',[]);
+        return view('got_questions.gotQuestionAnswer',[]);
     }
  
 }

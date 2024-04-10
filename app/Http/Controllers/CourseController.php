@@ -10,7 +10,7 @@ class CourseController extends Controller
     
     public function CourseList() : View
     {
-        return view('courses.CourseList',[]);
+        return view('courses.Courselist',[]);
     }
 
     public function AddCourse() : View
