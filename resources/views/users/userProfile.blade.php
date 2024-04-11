@@ -18,7 +18,7 @@
          <div class="card">
             <div class="card-body">
                <div class="table-responsive table-one">
-                  <table class="display" id="data-source-1" style="width:100%">
+                  <table class="display" id="users_data" style="width:100%">
                      <thead>
                         <tr>
                            <th>User ID</th>
@@ -35,117 +35,7 @@
                            <th>Status</th>
                         </tr>
                      </thead>
-                     <tbody>
-                        <tr>
-                           <td>1</td>
-                           <td><a  href="{{ route('admin.user.lms') }}">Tiger Nixon</a></td>
-                           <td>a.satou@datatables.net</td>
-                           <td>Male</td>
-                           <td>45</td>
-                           <td>Ettumanoor</td>
-                           <td>Macbook Os 2233</td>
-                           <td>192.254.21.23</td>
-                           <td>Angelica Ramos</td>
-                           <td>Safari</td>
-                           <td>12-25-2022/22:00PM</td>
-                          
-                           <td>
-                              <div class="media-body text-end icon-state">
-                                 <label class="switch">
-                                 <input type="checkbox" checked=""><span class="switch-state"></span>
-                                 </label>
-                              </div>
-                           </td>
-                        </tr>
-                        <tr>
-                           <td>2</td>
-                           <td>Tiger</td>
-                           <td>Nixon</td>
-                           <td>a.satou@datatables.net</td>
-                           <td>Male</td>
-                           <td>45</td>
-                           <td>Ettumanoor</td>
-                           <td>Macbook Os 2233</td>
-                           <td>192.254.21.23</td>
-                           <td>Angelica Ramos</td>
-                           <td>Safari</td>
-                           <td>12-25-2022/22:00PM</td>
-                          
-                           <td>
-                              <div class="media-body text-end icon-state">
-                                 <label class="switch">
-                                 <input type="checkbox" checked=""><span class="switch-state"></span>
-                                 </label>
-                              </div>
-                           </td>
-                        </tr>
-                        <tr>
-                           <td>3</td>
-                           <td>Tiger</td>
-                           <td>Nixon</td>
-                           <td>a.satou@datatables.net</td>
-                           <td>Male</td>
-                           <td>45</td>
-                           <td>Ettumanoor</td>
-                           <td>Macbook Os 2233</td>
-                           <td>192.254.21.23</td>
-                           <td>Angelica Ramos</td>
-                           <td>Safari</td>
-                           <td>12-25-2022/22:00PM</td>
-                          
-                           <td>
-                              <div class="media-body text-end icon-state">
-                                 <label class="switch">
-                                 <input type="checkbox"><span class="switch-state"></span>
-                                 </label>
-                              </div>
-                           </td>
-                        </tr>
-                        <tr>
-                           <td>4</td>
-                           <td>Tiger</td>
-                           <td>Nixon</td>
-                           <td>a.satou@datatables.net</td>
-                           <td>Male</td>
-                           <td>45</td>
-                           <td>Ettumanoor</td>
-                           <td>Macbook Os 2233</td>
-                           <td>192.254.21.23</td>
-                           <td>Angelica Ramos</td>
-                           <td>Safari</td>
-                           <td>12-25-2022/22:00PM</td>
-                          
-                           <th>
-                              <div class="media-body text-end icon-state">
-                                 <label class="switch">
-                                 <input type="checkbox" checked=""><span class="switch-state"></span>
-                                 </label>
-                              </div>
-                           </th>
-                        </tr>
-                        <tr>
-                           <td>5</td>
-                           <td>Tiger</td>
-                           <td>Nixon</td>
-                           <td>a.satou@datatables.net</td>
-                           <td>Male</td>
-                           <td>45</td>
-                           <td>Ettumanoor</td>
-                           <td>Macbook Os 2233</td>
-                           <td>192.254.21.23</td>
-                           <td>Angelica Ramos</td>
-                           <td>Safari</td>
-                           <td>12-25-2022/22:00PM</td>
-                          
-                           <td>
-                              <div class="media-body text-end icon-state">
-                                 <label class="switch">
-                                 <input type="checkbox"><span class="switch-state"></span>
-                                 </label>
-                              </div>
-                           </td>
-                        </tr>
-                     </tbody>
+             
                   </table>
                </div>
             </div>
@@ -168,5 +58,108 @@
 <script src="{{ asset('assets/js/typeahead-search/typeahead-custom.js') }}"></script>
 <script src="{{ asset('assets/js/height-equal.js') }}"></script>
 <script src="{{ asset('assets/js/animation/wow/wow.min.js') }}"></script>
-<script src="{{ asset('assets/js/datatable/datatables/jquery.dataTables.min.js') }}"></script>   <script src="{{ asset('assets/js/datatable/datatables/datatable.custom.js') }}"></script>
+<script src="{{ asset('assets/js/datatable/datatables/jquery.dataTables.min.js') }}"></script>
+<script src="{{ asset('assets/js/datatable/datatables/datatable.custom.js') }}"></script>
+
+<script>
+   $(document).ready( function () {
+   
+      $('#users_data').DataTable({
+         processing: true,
+         serverSide: true,
+         ajax: {
+            url: "{{ route('admin.users.datatable') }}",
+            type: 'POST',
+            headers: {
+                  'X-CSRF-TOKEN': "{{ csrf_token() }}"
+            } 
+         },
+          columns: [
+              { data: 'id', name: 'id'},     
+              { data: 'user_full_name', name: 'user_full_name' , orderable: true},
+              { data: 'email', name: 'email' },
+              { data: 'gender', name: 'gender' },
+              { data: 'age', name: 'age' },
+              { data: 'location', name: 'location' },
+              { data: 'device_type', name: 'device_type' },
+              { data: 'ip', name: 'ip' },
+              { data: 'app_usage', name: 'app_usage' },
+              { data: 'browser', name: 'browser' },
+              { data: 'last_accessed', name: 'last_accessed' },
+              { data: 'action', name: 'action', orderable: false},
+          ],
+      });
+   });
+         
+   function suspend(id,status){
+
+      if(status==1){
+         msg = 'Are you sure? Suspend this user?';
+      }else{
+         msg = 'Are you sure? Activate this user?';
+      }
+      if (confirm(msg) == true) {
+          var id = id;
+          $.ajax({
+              type:"POST",
+              url: "{{ route('admin.user.status.change') }}",
+              data: { _token : "<?= csrf_token() ?>",
+                      id     : id
+              },
+              dataType: 'json',
+              success: function(res){
+                  var oTable = $('#users_data').dataTable();
+                  if (res.success== true){
+                     if(res.status==1){
+                        $.notify({
+                           title:'User',
+                           message:'User Account Successfully Activated'
+                           },
+                           {
+                              type:'primary',
+                              offset:{
+                                x:35,
+                                y:170
+                              },
+                              animate:{
+                                enter:'animated fadeIn',
+                                exit:'animated fadeOut'
+                            }
+                        
+                        });
+                     }else{
+                        $.notify({
+                           title:'User',
+                           message:'User Account Successfully Suspended'
+                           },
+                           {
+                              type:'primary',
+                              offset:{
+                                x:35,
+                                y:170
+                              },
+                              animate:{
+                                enter:'animated fadeIn',
+                                exit:'animated fadeOut'
+                            }
+                        
+                        });
+                     }
+
+                  }else{
+                     toastr.error(res.msg)
+                  }
+              },
+              error: function(xhr, status, error) {
+                  console.error('AJAX request failed:', status, error);
+                  alert('Failed to delete family. Please try again later.');
+              }
+          });
+      }else{
+         table = $('#users_data').DataTable();
+         table.ajax.reload(null, false);
+      }
+   }
+ 
+</script>
 @endsection

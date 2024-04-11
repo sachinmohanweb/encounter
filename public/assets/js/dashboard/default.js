@@ -208,11 +208,11 @@ var options2 = {
       ]
 };
 
-var chart2 = new ApexCharts(document.querySelector("#orderchart"),
-  options2
-);
+// var chart2 = new ApexCharts(document.querySelector("#orderchart"),
+//   options2
+// );
 
-chart2.render();
+// chart2.render();
 
 // profit chart
 var options3 = {
@@ -374,8 +374,8 @@ var options3 = {
         ]
 };
 
-    var chart3 = new ApexCharts(document.querySelector("#profitchart"), options3);
-        chart3.render();
+    // var chart3 = new ApexCharts(document.querySelector("#profitchart"), options3);
+    //     chart3.render();
 
 // currently sale
 var options = {
@@ -527,8 +527,8 @@ var options = {
       ]    
   };
 
-var chart = new ApexCharts(document.querySelector("#chart-currently"), options);
-chart.render();
+// var chart = new ApexCharts(document.querySelector("#chart-currently"), options);
+// chart.render();
 
 // recent chart
 var recentoptions = {
@@ -706,8 +706,8 @@ var recentoptions = {
       ]  
   };
 
-  var recentchart = new ApexCharts(document.querySelector("#recentchart"), recentoptions);
-  recentchart.render();
+  // var recentchart = new ApexCharts(document.querySelector("#recentchart"), recentoptions);
+  // recentchart.render();
 
 
   // schedule chart
@@ -826,8 +826,8 @@ var recentoptions = {
   ] 
   };
 
-  var schedulechart = new ApexCharts(document.querySelector("#schedulechart"), scheduleoptions);
-  schedulechart.render();
+  // var schedulechart = new ApexCharts(document.querySelector("#schedulechart"), scheduleoptions);
+  // schedulechart.render();
 
  // growth chart
  var growthoptions = {
@@ -915,5 +915,5 @@ var recentoptions = {
   }
   };
 
-var growthchart = new ApexCharts(document.querySelector("#growthchart"), growthoptions);
-growthchart.render();
+// var growthchart = new ApexCharts(document.querySelector("#growthchart"), growthoptions);
+// growthchart.render();

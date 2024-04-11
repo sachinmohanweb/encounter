@@ -1,0 +1,20 @@
+
+/*-----------10/04/2024--------*/
+
+CREATE TABLE `users` (
+	`id` INT NOT NULL AUTO_INCREMENT , 
+	`first_name` VARCHAR(256) NOT NULL , 
+	`last_name` VARCHAR(256) NOT NULL , 
+	`gender` VARCHAR(100) NOT NULL , 
+	`age` INT NOT NULL , 
+	`location` VARCHAR(256) NULL DEFAULT 'location' , 
+	`device_type` VARCHAR(256) NULL DEFAULT 'mac' , 
+	`ip` VARCHAR(256) NULL DEFAULT '192.254.21.23' , 
+	`app_usage` VARCHAR(256) NOT NULL DEFAULT 'usage' , 
+	`browser` VARCHAR(256) NOT NULL DEFAULT 'safari' , 
+	`last_accessed` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , 
+	`email` VARCHAR(256) NOT NULL , `password` VARCHAR(512) NOT NULL , 
+	`status` INT NOT NULL DEFAULT '1' , 
+	`created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , 
+	`updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , 
+	`deleted_at` TIMESTAMP NULL DEFAULT NULL , PRIMARY KEY (`id`));

@@ -21,6 +21,9 @@ Route::middleware('auth:admin')->group(function(){
     Route::get('dashboard', [HomeController::class, 'admin_dashboard'])->name('admin.dashboard');
 
     Route::get('userprofile', [UserController::class, 'UsersList'])->name('admin.user-profile');
+    Route::post('usersDatatable', [UserController::class, 'admin_users_Datatable'])
+            ->name('admin.users.datatable');
+    Route::post('activatesuspenduser', [UserController::class, 'admin_user_status_change'])->name('admin.user.status.change');
 
     Route::get('gotquestion', [GotQuestionController::class, 'GotQuestion'])->name('admin.got-question');
     Route::get('gotquestionanswer', [GotQuestionController::class, 'GotQuestionAnswer'])
