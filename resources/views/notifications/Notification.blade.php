@@ -21,8 +21,25 @@
          </div>
          <div class="card">
             <div class="card-body">
+               @if(Session::has('success'))
+                  <div class="alert alert-success" style="width: 500px;">
+                     <ul>
+                        <li>{!! Session::get('success') !!}</li>
+                     </ul>
+                  </div>
+                @endif
+                @if (Session::has('error'))
+                  <div class="alert alert-danger" style="width: 500px;">
+                     <ul>
+                        <li>{!! Session::get('error') !!}</li>
+                     </ul>
+                  </div>
+               @endif
+               @if($errors->any())
+                  <h6 style="color:red;padding: 20px 0px 0px 30px;style=width: 500px;">{{$errors->first()}}</h6>
+               @endif
                <div class="table-responsive">
-                  <table class="display" id="data-source-1" style="width:100%">
+                  <table class="display" id="notifications_data" style="width:100%">
                      <thead>
                         <tr>
                            <th>Title</th>
@@ -32,25 +49,7 @@
                            <th>Action</th>
                         </tr>
                      </thead>
-                     <tbody>
-                        <tr>
-                           <td>collection of religious</td>
-                           <td>The Bible is a collection of religious</td>
-                           <td>The Bible is a collection of religious texts?</td>
-                           <td>
-                              <img class="img-fluid for-light"
-                    src="{{ asset('assets/images/logo.png') }}" alt="" style="max-width: 115px;">
-                           </td>
-                           <td>
-                              <ul class="action">
-                                 <li class="edit"> <a href="{{route('admin.edit.notification')}}"><i class="icon-pencil-alt"></i></a>
-                                 </li>
-                                 <li class="delete"><a href="#"><i class="icon-trash"></i></a></li>
-                              </ul>
-                           </td>
-                        </tr>
-                        
-                     </tbody>
+                     
                   </table>
                </div>
             </div>
@@ -61,7 +60,6 @@
 
 @endsection
 @section('script')
-<script src="{{ asset('assets/js/clock.js') }}"></script>
 <script src="{{ asset('assets/js/chart/apex-chart/moment.min.js') }}"></script>
 <script src="{{ asset('assets/js/notify/bootstrap-notify.min.js') }}"></script>
 <script src="{{ asset('assets/js/dashboard/default.js') }}"></script>
@@ -73,5 +71,94 @@
 <script src="{{ asset('assets/js/typeahead-search/typeahead-custom.js') }}"></script>
 <script src="{{ asset('assets/js/height-equal.js') }}"></script>
 <script src="{{ asset('assets/js/animation/wow/wow.min.js') }}"></script>
-<script src="{{ asset('assets/js/datatable/datatables/jquery.dataTables.min.js') }}"></script>   <script src="{{ asset('assets/js/datatable/datatables/datatable.custom.js') }}"></script>
+<script src="{{ asset('assets/js/datatable/datatables/jquery.dataTables.min.js') }}"></script>
+<script src="{{ asset('assets/js/datatable/datatables/datatable.custom.js') }}"></script>
+<script>
+   $(document).ready( function () {
+   
+      $('#notifications_data').DataTable({
+         processing: true,
+         serverSide: true,
+         ajax: {
+            url: "{{ route('admin.notification.datatable') }}",
+            type: 'POST',
+            headers: {
+                  'X-CSRF-TOKEN': "{{ csrf_token() }}"
+            } 
+         },
+          columns: [
+              { data: 'title', name: 'title'},     
+              { data: 'content', name: 'content' , orderable: true},
+              { data: 'redirection', name: 'redirection' },
+              { data: 'image', name: 'image' },
+              { data: 'action', name: 'action', orderable: false},
+          ],
+      });
+   });
+         
+   function remove(id){
+
+      msg = 'Are you sure? Delete this user?';
+
+      if (confirm(msg) == true) {
+          var id = id;
+          $.ajax({
+              type:"POST",
+              url: "{{ route('admin.delete.notification') }}",
+              data: { _token : "<?= csrf_token() ?>",
+                  id     : id
+              },
+              dataType: 'json',
+              success: function(res){
+                  var oTable = $('#notifications_data').dataTable();
+                  if (res.status=='success'){
+                        $.notify({
+                           title:'Notification',
+                           message:'Notification Successfully deleted'
+                           },
+                           {
+                              type:'primary',
+                              offset:{
+                                x:35,
+                                y:230
+                              },
+                              animate:{
+                                enter:'animated fadeIn',
+                                exit:'animated fadeOut'
+                            }
+                        });
+                     table = $('#notifications_data').DataTable();
+                     table.ajax.reload(null, false);
+                  }else{
+                        $.notify({
+                           title:'Notification',
+                           message:'Notification Not deleted'
+                           },
+                           {
+                              type:'danger',
+                              offset:{
+                                x:35,
+                                y:230
+                              },
+                              animate:{
+                                enter:'animated fadeIn',
+                                exit:'animated fadeOut'
+                            }
+                        
+                        });
+                  }
+              },
+              error: function(xhr, status, error) {
+                  console.error('AJAX request failed:', status, error);
+                  alert('Failed to delete notification. Please try again later.');
+              }
+          });
+      }else{
+         table = $('#notifications_data').DataTable();
+         table.ajax.reload(null, false);
+      }
+   }
+ 
+</script>
+
 @endsection

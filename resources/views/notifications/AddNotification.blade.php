@@ -17,40 +17,41 @@
       <div class="card-body">
          <div class="row">
             <div class="col-md-12">
-               <form action="">
+               <form action="{{route('admin.store.notification')}}" method="Post" 
+                  enctype="multipart/form-data">
+                  @csrf
                   <div class="notification-sec d-flex flex-wrap">
                      <div class="col-lg-6">
                          <div class="form-group">
                             <label for="">Title</label>
-                            <input type="text" class="form-control">
+                            <input type="text" class="form-control" name="title" required>
                          </div>
                      </div>
                      <div class="col-lg-6">
                          <div class="form-group">
                             <label for="">Content</label>
-                           <textarea name="" id="" class="form-control" rows="2"></textarea>
+                           <textarea  class="form-control" rows="2" name="content"></textarea>
                          </div>
                      </div>
                      <div class="col-lg-6">
                          <div class="form-group">
                             <label for="">Redirection</label>
-                            <input type="text" class="form-control">
+                            <input type="text" class="form-control" name="redirection">
                          </div>
                      </div>
                      <div class="col-lg-6">
                          <div class="form-group">
                             <label for="">Thumbnail/image</label>
                             <label for="formFile" class="form-label">Default file input example</label>
-                           <input class="form-control" type="file" id="formFile">
+                           <input class="form-control" type="file" id="formFile" name="image">
                          </div>
                      </div>
                      <div class="col-12">
                             <div class="encounter-btn d-flex justify-content-center mt-4">
-                                <button class="btn btn-pill btn-danger btn-lg" type="button" data-bs-original-title="" title="">Cancel</button>
-                                <button class="btn btn-pill btn-success btn-lg ms-3" type="button" data-bs-original-title="" title="">Submit</button>
+                                 <a class="btn btn-pill btn-danger btn-lg" onclick="window.location='{{ route('admin.notification.list') }}'">Cancel</a>
+                                <button class="btn btn-pill btn-success btn-lg ms-3" type="submit" data-bs-original-title="" title="">Submit</button>
                             </div>
                         </div>
-                     
                   </div>
                </form>
             </div>

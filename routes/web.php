@@ -53,10 +53,19 @@ Route::middleware('auth:admin')->group(function(){
 
     Route::get('notifications', [NotificationController::class, 'Notifications'])
             ->name('admin.notification.list');
-    Route::get('notification', [NotificationController::class, 'AddNotification'])
+    Route::post('notificationsDatatable',[NotificationController::class,'NotificationsDatatable'])
+            ->name('admin.notification.datatable');
+    Route::get('createnotification', [NotificationController::class, 'AddNotification'])
             ->name('admin.add.notification');
-    Route::get('editnotification', [NotificationController::class, 'EditNotification'])
+    Route::post('storenotification', [NotificationController::class, 'StoreNotification'])
+            ->name('admin.store.notification');
+    Route::get('editnotification/{id}', [NotificationController::class, 'EditNotification'])
             ->name('admin.edit.notification');
+    Route::post('updatenotification', [NotificationController::class, 'UpdateNotification'])
+            ->name('admin.update.notification');
+    Route::post('deletenotification', [NotificationController::class, 'DeleteNotification'])
+            ->name('admin.delete.notification');
+
 
     Route::get('gereralreference', [GenReferenceController::class, 'GereralReference'])
             ->name('admin.gereralreference');

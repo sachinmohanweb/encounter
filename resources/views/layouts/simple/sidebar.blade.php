@@ -42,10 +42,10 @@
                         <a class="sidebar-link sidebar-title"
                             href="#">
                             <svg class="stroke-icon">
-                                <use href="{{ asset('assets/svg/icon-sprite.svg#stroke-home') }}"></use>
+                                <use href="{{ asset('assets/svg/icon-sprite.svg#stroke-user') }}"></use>
                             </svg>
                             <svg class="fill-icon">
-                                <use href="{{ asset('assets/svg/icon-sprite.svg#fill-home') }}"></use>
+                                <use href="{{ asset('assets/svg/icon-sprite.svg#fill-user') }}"></use>
                             </svg><span class="">Users</span></a>
                         <ul class="sidebar-submenu">
                             <li><a href="{{ route('admin.user-profile') }}">User Profile</a></li>
@@ -54,21 +54,10 @@
                     </li>
                 
                     <li class="sidebar-list">
-                        <a class="sidebar-link sidebar-title link-nav" href="{{route('admin.got-question')}}">
-                            <svg class="stroke-icon">
-                                <use href="{{ asset('assets/svg/icon-sprite.svg#stroke-home') }}"></use>
-                            </svg>
-                            <svg class="fill-icon">
-                                <use href="{{ asset('assets/svg/icon-sprite.svg#fill-home') }}"></use>
-                            </svg>
-                            <span>Got Question</span>
-                        </a>
-                    </li>
-                    <li class="sidebar-list">
                         <a class="sidebar-link sidebar-title link-nav" 
                         href="{{route('admin.daily.bible.verse')}}">
                             <svg class="stroke-icon">
-                                <use href="{{ asset('assets/svg/icon-sprite.svg#stroke-home') }}"></use>
+                                <use href="{{ asset('assets/svg/icon-sprite.svg#stroke-knowledgebase') }}"></use>
                             </svg>
                             <svg class="fill-icon">
                                 <use href="{{ asset('assets/svg/icon-sprite.svg#fill-home') }}"></use>
@@ -76,10 +65,35 @@
                             <span>Daily Bible Verse</span>
                         </a>
                     </li>
+
+                    <li class="sidebar-list">
+                        <a class="sidebar-link sidebar-title link-nav" href="{{route('admin.gereralreference')}}">
+                            <svg class="stroke-icon">
+                                <use href="{{ asset('assets/svg/icon-sprite.svg#stroke-table') }}"></use>
+                            </svg>
+                            <svg class="fill-icon">
+                                <use href="{{ asset('assets/svg/icon-sprite.svg#fill-home') }}"></use>
+                            </svg>
+                            <span>Reference/Commentary</span>
+                        </a>
+                    </li>
+
+                    <li class="sidebar-list">
+                        <a class="sidebar-link sidebar-title link-nav" href="{{route('admin.got-question')}}">
+                            <svg class="stroke-icon">
+                                <use href="{{ asset('assets/svg/icon-sprite.svg#stroke-faq') }}"></use>
+                            </svg>
+                            <svg class="fill-icon">
+                                <use href="{{ asset('assets/svg/icon-sprite.svg#fill-home') }}"></use>
+                            </svg>
+                            <span>Got Question</span>
+                        </a>
+                    </li>
+
                     <li class="sidebar-list">
                         <a class="sidebar-link sidebar-title link-nav" href="{{route('admin.course.list')}}">
                             <svg class="stroke-icon">
-                                <use href="{{ asset('assets/svg/icon-sprite.svg#stroke-home') }}"></use>
+                                <use href="{{ asset('assets/svg/icon-sprite.svg#stroke-learning') }}"></use>
                             </svg>
                             <svg class="fill-icon">
                                 <use href="{{ asset('assets/svg/icon-sprite.svg#fill-home') }}"></use>
@@ -91,23 +105,12 @@
                         <a class="sidebar-link sidebar-title link-nav" 
                         href="{{route('admin.notification.list')}}">
                             <svg class="stroke-icon">
-                                <use href="{{ asset('assets/svg/icon-sprite.svg#stroke-home') }}"></use>
+                                <use href="{{ asset('assets/svg/icon-sprite.svg#notification') }}"></use>
                             </svg>
                             <svg class="fill-icon">
                                 <use href="{{ asset('assets/svg/icon-sprite.svg#fill-home') }}"></use>
                             </svg>
                             <span>Notification</span>
-                        </a>
-                    </li>
-                    <li class="sidebar-list">
-                        <a class="sidebar-link sidebar-title link-nav" href="{{route('admin.gereralreference')}}">
-                            <svg class="stroke-icon">
-                                <use href="{{ asset('assets/svg/icon-sprite.svg#stroke-home') }}"></use>
-                            </svg>
-                            <svg class="fill-icon">
-                                <use href="{{ asset('assets/svg/icon-sprite.svg#fill-home') }}"></use>
-                            </svg>
-                            <span>General Reference</span>
                         </a>
                     </li>
                      <li class="sidebar-list">
