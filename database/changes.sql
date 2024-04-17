@@ -30,3 +30,16 @@ CREATE TABLE `notifications` (
 	`status` INT NOT NULL DEFAULT '1' , 
 	`created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , 
 	`updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`id`));
+
+/*-----------16/04/2024--------*/
+
+CREATE TABLE `courses` (
+	`id` INT NOT NULL AUTO_INCREMENT , 
+	`course_name` VARCHAR(256) NOT NULL , 
+	`course_creator` VARCHAR(256) NOT NULL , 
+	`no_of_days` INT NOT NULL , 
+	`description` TEXT NULL DEFAULT NULL , 
+	`thumbnail` VARCHAR(256) NULL DEFAULT NULL , 
+	`status` INT NOT NULL , 
+	`created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , 
+	`updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`id`));

@@ -38,8 +38,12 @@ Route::middleware('auth:admin')->group(function(){
 
     Route::get('courselist', [CourseController::class, 'CourseList'])->name('admin.course.list');
     Route::get('addcourse', [CourseController::class, 'AddCourse'])->name('admin.add.course');
-    Route::get('editcourse', [CourseController::class, 'EditCourse'])->name('admin.edit.course');
-    Route::get('coursedetails', [CourseController::class, 'CourseDetails'])->name('admin.course.details');
+    Route::post('savecourse', [CourseController::class, 'SaveCourse'])->name('admin.save.course');
+    Route::post('coursestatus', [CourseController::class, 'CourseStatusChange'])
+                ->name('admin.course.status.change');
+    Route::get('coursedetails/{id}', [CourseController::class,'CourseDetails'])->name('admin.course.details');
+    Route::get('editcourse/{id}', [CourseController::class, 'EditCourse'])->name('admin.edit.course');
+    Route::post('updatecourse', [CourseController::class, 'UpdateCourse'])->name('admin.update.course');
     
     Route::get('coursecontent', [CourseController::class, 'CourseContent'])->name('admin.course.content');
     Route::get('addcoursecontent', [CourseController::class, 'AddCourseContent'])

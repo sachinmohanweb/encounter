@@ -371,11 +371,19 @@ $("#flip-back").click(function(){
     $(".flip-card-inner").removeClass("flipped")
 })
 
+$('#ImageFile').change(function () {
+    const file = this.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            $('#OldImage').hide();
+            alert(e.target.result)
+            $('#ImagePreview').attr('src', e.target.result);
+        }
+        reader.readAsDataURL(file);
+    } else {
+        $('#ImagePreview').attr('src', '');
+    }
+});
 
-
-
-
-
-
-// pradeep
 

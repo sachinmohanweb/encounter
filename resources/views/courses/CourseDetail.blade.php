@@ -12,31 +12,52 @@
 <div class="container-fluid">
    <div class="row">
       <div class="col-12">
+         @if (Session::has('success'))
+           <div class="alert alert-success">
+              <ul>
+                 <li>{!! Session::get('success') !!}</li>
+              </ul>
+           </div>
+         @endif
+         @if (Session::has('error'))
+           <div class="alert alert-danger">
+              <ul>
+                 <li>{!! Session::get('error') !!}</li>
+              </ul>
+           </div>
+         @endif
+         @if($errors->any())
+            <h6 style="color:red;padding: 20px 0px 0px 30px;">{{$errors->first()}}</h6>
+         @endif
          <div class="card course-bible">
             <div class="image d-flex justify-content-center">
-               <img class="img-fluid for-light"
-                  src="{{ asset('assets/images/course1.jpg') }}" alt="" style="width:100%;">
+                  @if($course->thumbnail && file_exists(public_path($course->thumbnail)))
+                         <img class="img-fluid for-light" src="{{ asset($course->thumbnail) }}" alt="" 
+                         style="width:1200px; height: 370px;">
+                  @else
+                        <img class="img-fluid for-light" src="{{ asset('assets/images/course1.jpg') }}" alt="" style="width:100%;">
+                  @endif
             </div>
             <div class="card-body">
-               <h4>Course Title Goes here</h4>
-               <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the.</p>
+               <h4>{{$course->course_name}}</h4>
+               <p>{{$course->description}}</p>
                <div class="info d-flex justify-content-between flex-wrap">
                   <div class="days d-flex align-items-center">
                      <div class="image">
                         <img class="img-fluid for-light"
                            src="{{ asset('assets/images/calendar.png') }}" alt="">
                      </div>
-                     <h3><span>No of Days</span>8</h3>
+                     <h3><span>No of Days</span>{{$course->no_of_days}}</h3>
                   </div>
                   <div class="course-creator text-right">
                      <h5>Course Creator</h5>
-                     <p>Fr Daniel Poovannathil</p>
+                     <p>{{$course->course_creator}}</p>
                   </div>
                   <div class="course-action d-flex flex-wrap align-items-center">
                   <a href="{{ route('admin.course.content') }}"><button class="btn btn-pill btn-info-gradien pt-2 pb-2" type="button" data-bs-original-title="" title="">Course Content ></button>
                   </a>
                    <ul class="action ms-5">
-                     <li class="edit"> <a href="editcourse"><i class="icon-pencil-alt"></i></a>
+                     <li class="edit"> <a href="{{ route('admin.edit.course',[$course->id]) }}"><i class="fas fa-pencil-alt"></i></a>
                      </li>
                      <!-- <li class="delete"><a href="#"><i class="icon-trash"></i></a></li> -->
                   </ul>
