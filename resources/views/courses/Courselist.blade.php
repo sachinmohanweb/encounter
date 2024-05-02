@@ -43,7 +43,7 @@
                      </div>
                   </div>
                   <div class="view-course d-flex align-items-center justify-content-between mt-3">
-                     <a href="{{ route('admin.course.details',[$value->id]) }}"><button class="btn btn-pill btn-info-gradien pt-2 pb-2" type="button" data-bs-original-title="" title="">View Course ></button>
+                     <a href="{{ route('admin.course.details',[$value->id]) }}"><button class="btn btn-pill btn-info-gradien pt-2 pb-2" type="button" data-bs-original-title="" title="">View Course </button>
                      </a>
                      <div class="media-body text-end mt-3">
                      <label class="switch">

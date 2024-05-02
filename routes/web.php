@@ -57,8 +57,12 @@ Route::middleware('auth:admin')->group(function(){
             ->name('admin.update.course.content');
 
     Route::get('batchdetail', [CourseController::class, 'BatchDetail'])->name('admin.batch.detail');
-    Route::get('newbatch', [CourseController::class, 'NewBatch'])->name('admin.new.batch');
-    Route::get('editbatch', [CourseController::class, 'EditBatch'])->name('admin.edit.batch');
+    Route::get('newbatch/{id}', [CourseController::class, 'NewBatch'])->name('admin.new.batch');
+    Route::post('savebatch', [CourseController::class, 'SaveBatch'])->name('admin.save.batch');
+    Route::get('editbatch/{id}', [CourseController::class, 'EditBatch'])->name('admin.edit.batch');
+    Route::post('updatebatch', [CourseController::class, 'UpdateBatch'])->name('admin.update.batch');
+    Route::post('batchstatus', [CourseController::class, 'BatchStatusChange'])
+                ->name('admin.batch.status.change');
 
     Route::get('notifications', [NotificationController::class, 'Notifications'])
             ->name('admin.notification.list');

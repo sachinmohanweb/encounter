@@ -54,7 +54,7 @@
                      <p>{{$course->course_creator}}</p>
                   </div>
                   <div class="course-action d-flex flex-wrap align-items-center">
-                  <a href="{{ route('admin.course.content',[$course->id]) }}"><button class="btn btn-pill btn-info-gradien pt-2 pb-2" type="button" data-bs-original-title="" title="">Course Content ></button>
+                  <a href="{{ route('admin.course.content',[$course->id]) }}"><button class="btn btn-pill btn-info-gradien pt-2 pb-2" type="button" data-bs-original-title="" title="">Course Content </button>
                   </a>
                    <ul class="action ms-5">
                      <li class="edit"> <a href="{{ route('admin.edit.course',[$course->id]) }}"><i class="fas fa-pencil-alt"></i></a>
@@ -79,7 +79,7 @@
          <div class="tab-content" id="myTabContent">
             <div class="tab-pane fade show active" id="Batches" role="tabpanel" aria-labelledby="home-tab">
                <div class="new-question d-flex justify-content-end mb-4">
-            <a href="{{ route('admin.new.batch') }}"><button class="btn btn-pill btn-info-gradien pt-2 pb-2" type="button" data-bs-original-title="" title="">New Batch</button>
+            <a href="{{ route('admin.new.batch',[$course->id]) }}"><button class="btn btn-pill btn-info-gradien pt-2 pb-2" type="button" data-bs-original-title="" title="">New Batch</button>
             </a>
          </div>
                <div class="card">
@@ -98,90 +98,34 @@
                               </tr>
                            </thead>
                            <tbody>
+                              @foreach($batches as $key=>$value)
                               <tr>
-                                 <td>1</td>
-                                 <td><a href="{{ asset('batchdetail') }}">Batch Name</a></td>
-                                 <td>2-2-2024</td>
-                                 <td>4-5-2024</td>
-                                 <td>3-2-2024</td>
+                                 <td>{{$value->course_id}}</td>
+                                 <td><a href="{{ asset('batchdetail') }}">{{$value->batch_name}}</a></td>
+                                 <td>{{$value->start_date}}</td>
+                                 <td>{{$value->end_date}}</td>
+                                 <td>{{$value->last_date}}</td>
                                  <td>
                                     <ul class="action">
-                                       <li class="edit"> <a href="{{route('admin.edit.batch')}}"><i class="icon-pencil-alt"></i></a>
+                                       <li class="edit"> <a href="{{route('admin.edit.batch',[$value->id])}}">
+                                          <i class="fas fa-pencil-alt"></i></a>
                                        </li>
-                                       <li class="delete"><a href="#"><i class="icon-trash"></i></a></li>
+                                       <li class="delete"><a href="#">
+                                          <i class="fa fa-trash"></i></a>
+                                       </li>
                                     </ul>
                                  </td>
                                  <td>
-                                    <div class="media-body text-end icon-state">
+                                    <div class="media-body text-end ">
                                        <label class="switch">
-                                       <input type="checkbox" checked=""><span class="switch-state"></span>
+                                       <input type="checkbox" {{ $value->status=='Active' ? 'checked' : '' }} onChange="batch_status({{ $value->id }},'{{ $value->status }}')">
+                                       <span class="switch-state"></span>
                                        </label>
                                     </div>
                                  </td>
                               </tr>
-                              <tr>
-                                 <td>2</td>
-                                 <td>Lorem Epsum</td>
-                                 <td>5-5-2024</td>
-                                 <td>12-9-2024</td>
-                                 <td>3-2-2024</td>
-                                 <td>
-                                    <ul class="action">
-                                       <li class="edit"> <a href="editbatch"><i class="icon-pencil-alt"></i></a>
-                                       </li>
-                                       <li class="delete"><a href="#"><i class="icon-trash"></i></a></li>
-                                    </ul>
-                                 </td>
-                                 <td>
-                                    <div class="media-body text-end icon-state">
-                                       <label class="switch">
-                                       <input type="checkbox" checked=""><span class="switch-state"></span>
-                                       </label>
-                                    </div>
-                                 </td>
-                              </tr>
-                              <tr>
-                                 <td>3</td>
-                                 <td>Lorem Epsum</td>
-                                 <td>6-9-2024</td>
-                                 <td>12-11-2024</td>
-                                 <td>9-10-2024</td>
-                                 <td>
-                                    <ul class="action">
-                                       <li class="edit"> <a href="editbatch"><i class="icon-pencil-alt"></i></a>
-                                       </li>
-                                       <li class="delete"><a href="#"><i class="icon-trash"></i></a></li>
-                                    </ul>
-                                 </td>
-                                 <td>
-                                    <div class="media-body text-end icon-state">
-                                       <label class="switch">
-                                       <input type="checkbox" checked=""><span class="switch-state"></span>
-                                       </label>
-                                    </div>
-                                 </td>
-                              </tr>
-                              <tr>
-                                 <td>4</td>
-                                 <td>Lorem Epsum</td>
-                                 <td>2-2-2024</td>
-                                 <td>4-5-2024</td>
-                                 <td>3-2-2024</td>
-                                 <td>
-                                    <ul class="action">
-                                       <li class="edit"> <a href="editbatch"><i class="icon-pencil-alt"></i></a>
-                                       </li>
-                                       <li class="delete"><a href="#"><i class="icon-trash"></i></a></li>
-                                    </ul>
-                                 </td>
-                                 <td>
-                                    <div class="media-body text-end icon-state">
-                                       <label class="switch">
-                                       <input type="checkbox" checked=""><span class="switch-state"></span>
-                                       </label>
-                                    </div>
-                                 </td>
-                              </tr>
+                              @endforeach
+
                            </tbody>
                         </table>
                      </div>
@@ -314,4 +258,78 @@
 </div>
 @endsection
 @section('script')
+
+
+<script type="text/javascript">
+
+      function batch_status(id,status){
+
+         if(status=='Active'){
+            msg = 'Are you sure? Suspend this Batch?';
+         }else{
+            msg = 'Are you sure? Activate this Batch?';
+         }
+         if (confirm(msg) == true) {
+             var id = id;
+             $.ajax({
+                 type:"POST",
+                 url: "{{ route('admin.batch.status.change') }}",
+                 data: { _token : "<?= csrf_token() ?>",
+                         id     : id
+                 },
+                 dataType: 'json',
+                 success: function(res){
+                     if (res.success== true){
+                        if(res.status=='Active'){
+                           $.notify({
+                              title:'User',
+                              message:'Batch Successfully Activated'
+                              },
+                              {
+                                 type:'primary',
+                                 offset:{
+                                   x:1155,
+                                   y:1140
+                                 },
+                                 animate:{
+                                   enter:'animated fadeIn',
+                                   exit:'animated fadeOut'
+                               }
+                           
+                           });
+                        }else{
+                           $.notify({
+                              title:'User',
+                              message:'Batch Successfully Suspended'
+                              },
+                              {
+                                 type:'primary',
+                                 offset:{
+                                   x:155,
+                                   y:140
+                                 },
+                                 animate:{
+                                   enter:'animated fadeIn',
+                                   exit:'animated fadeOut'
+                               }
+                           
+                           });
+                        }
+
+                     }else{
+                        toastr.error(res.msg)
+                     }
+                 },
+                 error: function(xhr, status, error) {
+                     console.error('AJAX request failed:', status, error);
+                     alert('Failed Activate/Deactivate Batch. Please try again later.');
+                 }
+             });
+         }else{
+            location.reload()
+
+         }
+      }
+ 
+</script>
 @endsection

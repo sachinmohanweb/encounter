@@ -13,6 +13,7 @@ use Exception;
 
 use App\Models\Course;
 use App\Models\CourseContent;
+use App\Models\Batch;
 
 class CourseController extends Controller
 {
@@ -90,7 +91,9 @@ class CourseController extends Controller
     {
         $course = Course::where('id',$id)->first();
 
-        return view('courses.CourseDetail',compact('course'));
+        $batches = Batch::where('course_id',$id)->get(); 
+
+        return view('courses.CourseDetail',compact('course','batches'));
 
     }
 
@@ -263,7 +266,7 @@ class CourseController extends Controller
             ]);
 
             $inputData = $request->all();
-dd($inputData);
+
             if($request['image']){
 
                 $time = microtime(true);
@@ -314,16 +317,104 @@ dd($inputData);
 
     }
 
-    public function NewBatch() : View
+    public function NewBatch($id) : View
     {
-        return view('courses.NewBatch',[]);
+        $course_id = $id;
+        return view('courses.NewBatch',compact('course_id'));
 
     }
 
-    public function EditBatch() : View
+    public function SaveBatch(Request $request): RedirectResponse
     {
-        return view('courses.EditNewBatch',[]);
+        DB::beginTransaction();
+        try {
+            $a =  $request->validate([
+                'course_id' => 'required',
+                'batch_name' => 'required',
+                'start_date' => 'required',
+                'end_date' => 'required',
+                'last_date' => 'required',
+                'status' => 'required',
+                
+            ]);
 
+            $inputData = $request->all();
+
+            $batch = Batch::create($inputData);
+            DB::commit();
+             
+            return redirect()->route('admin.course.details',['id' => $request['course_id']])
+                            ->with('success',"Success! New Batch has been successfully added.");
+        }catch (Exception $e) {
+
+            DB::rollBack();
+            $message = $e->getMessage();
+            return back()->withInput()->withErrors(['message' =>  $e->getMessage()]);;
+        }
+    }
+
+    public function EditBatch($id) : View
+    {
+        $batch = Batch::where('id',$id)->first();
+        return view('courses.EditNewBatch',compact('batch'));
+
+    }
+
+    public function UpdateBatch(Request $request): RedirectResponse
+    {
+        DB::beginTransaction();
+        try {
+
+            $batch = Batch::find($request->id);
+
+            $a =  $request->validate([
+                'course_id' => 'required',
+                'batch_name' => 'required',
+                'start_date' => 'required',
+                'end_date' => 'required',
+                'last_date' => 'required',
+                'status' => 'required',
+                
+            ]);
+
+            $inputData = $request->all();
+
+            $batch->update($inputData);
+            DB::commit();
+             
+            return redirect()->route('admin.course.details',['id' => $request['course_id']])
+                            ->with('success',"Success! New Batch has been successfully updated.");
+        }catch (Exception $e) {
+
+            DB::rollBack();
+            $message = $e->getMessage();
+            return back()->withInput()->withErrors(['message' =>  $e->getMessage()]);;
+        }
+    }
+
+
+    public function BatchStatusChange(Request $request): JsonResponse
+    {
+        DB::beginTransaction();
+        try {
+            $batch = Batch::find($request['id']);
+            if($batch->status=='Active'){
+                $batch->status=2;
+            }else{
+                $batch->status=1;
+            }
+            $batch->save();;
+            DB::commit();
+
+            return response()->json(['success' => true ,'msg' => 'Batch status updated','status' =>$course['status']]);
+
+        }catch (Exception $e) {
+
+            DB::rollBack();
+            $message = $e->getMessage();
+
+            return response()->json(['success' => false,'msg' => $e->getMessage()]);
+        }
     }
  
 }
