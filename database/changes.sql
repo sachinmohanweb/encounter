@@ -43,3 +43,28 @@ CREATE TABLE `courses` (
 	`status` INT NOT NULL , 
 	`created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , 
 	`updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`id`));
+
+/*-----------16/04/2024--------*/
+
+CREATE TABLE `course_contents` (
+	`id` INT NOT NULL AUTO_INCREMENT , 
+	`course_id` INT NOT NULL , 
+	`day` INT NOT NULL , 
+	`book` INT NOT NULL , 
+	`chapter` INT NOT NULL , 
+	`verse_from` INT NOT NULL , 
+	`verse_to` INT NOT NULL , 
+	`text_description` TEXT NULL DEFAULT NULL , 
+	`video_link` VARCHAR(256) NULL DEFAULT NULL , 
+	`audio_file` VARCHAR(256) NULL DEFAULT NULL , 
+	`spotify_link` VARCHAR(256) NULL DEFAULT NULL , 
+	`website_link` VARCHAR(256) NULL DEFAULT NULL , 
+	`image` VARCHAR(256) NULL DEFAULT NULL , 
+	`documents` VARCHAR(256) NULL DEFAULT NULL , 
+	`status` INT NOT NULL DEFAULT '1' , 
+	`created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , 
+	`update_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`id`));
+
+ALTER TABLE `course_contents` CHANGE `update_at` `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
+
+INSERT INTO `course_contents` (`id`, `course_id`, `day`, `book`, `chapter`, `verse_from`, `verse_to`, `text_description`, `video_link`, `audio_file`, `spotify_link`, `website_link`, `image`, `documents`, `status`, `created_at`, `update_at`) VALUES (NULL, '1', '1', '1', '1', '1', '10', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '1', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP), (NULL, '1', '2', '1', '1', '11', '12', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '1', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);

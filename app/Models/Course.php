@@ -22,4 +22,14 @@ class Course extends Model
     {
         return $value == 1 ? 'Active' : 'Suspended';
     }
+
+    public function contentExistsForDay($day)
+    {
+        return $this->CourseContents()->where('day', $day)->exists();
+    }
+
+    public function CourseContents(){
+
+        return $this->hasMany(CourseContent::class);
+    }
 }

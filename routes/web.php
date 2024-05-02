@@ -43,13 +43,18 @@ Route::middleware('auth:admin')->group(function(){
                 ->name('admin.course.status.change');
     Route::get('coursedetails/{id}', [CourseController::class,'CourseDetails'])->name('admin.course.details');
     Route::get('editcourse/{id}', [CourseController::class, 'EditCourse'])->name('admin.edit.course');
-    Route::post('updatecourse', [CourseController::class, 'UpdateCourse'])->name('admin.update.course');
+    Route::post('updatecourse', [CourseController::class, 'UpdateCourse'])
+            ->name('admin.update.course');
     
-    Route::get('coursecontent', [CourseController::class, 'CourseContent'])->name('admin.course.content');
-    Route::get('addcoursecontent', [CourseController::class, 'AddCourseContent'])
+    Route::get('coursecontent/{id}', [CourseController::class, 'CourseContent'])->name('admin.course.content');
+    Route::get('addcoursecontent/{course_id}/{day}', [CourseController::class, 'AddCourseContent'])
             ->name('admin.add.course.content');
-    Route::get('editcoursecontent', [CourseController::class, 'EditCourseContent'])
+    Route::post('savecoursecontent', [CourseController::class, 'SaveCourseContent'])
+            ->name('admin.save.course.content');
+    Route::get('editcoursecontent/{content_id}', [CourseController::class, 'EditCourseContent'])
             ->name('admin.edit.course.content');
+    Route::post('updatecoursecontent', [CourseController::class, 'UpdateCourseContent'])
+            ->name('admin.update.course.content');
 
     Route::get('batchdetail', [CourseController::class, 'BatchDetail'])->name('admin.batch.detail');
     Route::get('newbatch', [CourseController::class, 'NewBatch'])->name('admin.new.batch');

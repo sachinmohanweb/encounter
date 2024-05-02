@@ -14,83 +14,115 @@
    <div class="card course-content">
       <div class="d-flex align-items-start">
          <div class="nav d-block nav-pills me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-            <button class="nav-link active" id="v-pills-home-tab" data-bs-toggle="pill" data-bs-target="#v-pills-home" type="button" role="tab" aria-controls="v-pills-home" aria-selected="true">Day 01</button>
-            <button class="nav-link" id="v-pills-profile-tab" data-bs-toggle="pill" data-bs-target="#v-pills-profile" type="button" role="tab" aria-controls="v-pills-profile" aria-selected="false">Day 02</button>
-            <button class="nav-link" id="v-pills-messages-tab" data-bs-toggle="pill" data-bs-target="#v-pills-messages" type="button" role="tab" aria-controls="v-pills-messages" aria-selected="false">Day 03</button>
-            <button class="nav-link" id="v-pills-settings-tab" data-bs-toggle="pill" data-bs-target="#v-pills-settings" type="button" role="tab" aria-controls="v-pills-settings" aria-selected="false">Day 04</button>
-             <button class="nav-link" id="v-pills-profile-tab" data-bs-toggle="pill" data-bs-target="#v-pills-profile" type="button" role="tab" aria-controls="v-pills-profile" aria-selected="false">Day 05</button>
-            <button class="nav-link" id="v-pills-messages-tab" data-bs-toggle="pill" data-bs-target="#v-pills-messages" type="button" role="tab" aria-controls="v-pills-messages" aria-selected="false">Day 06</button>
-            <button class="nav-link" id="v-pills-settings-tab" data-bs-toggle="pill" data-bs-target="#v-pills-settings" type="button" role="tab" aria-controls="v-pills-settings" aria-selected="false">Day 07</button>
-             <button class="nav-link" id="v-pills-profile-tab" data-bs-toggle="pill" data-bs-target="#v-pills-profile" type="button" role="tab" aria-controls="v-pills-profile" aria-selected="false">Day 08</button>
-            <button class="nav-link" id="v-pills-messages-tab" data-bs-toggle="pill" data-bs-target="#v-pills-messages" type="button" role="tab" aria-controls="v-pills-messages" aria-selected="false">Day 09</button>
-            <button class="nav-link" id="v-pills-settings-tab" data-bs-toggle="pill" data-bs-target="#v-pills-settings" type="button" role="tab" aria-controls="v-pills-settings" aria-selected="false">Day 10</button>
-             <button class="nav-link" id="v-pills-profile-tab" data-bs-toggle="pill" data-bs-target="#v-pills-profile" type="button" role="tab" aria-controls="v-pills-profile" aria-selected="false">Day 11</button>
-            <button class="nav-link" id="v-pills-messages-tab" data-bs-toggle="pill" data-bs-target="#v-pills-messages" type="button" role="tab" aria-controls="v-pills-messages" aria-selected="false">Day 12</button>
-            <button class="nav-link" id="v-pills-settings-tab" data-bs-toggle="pill" data-bs-target="#v-pills-settings" type="button" role="tab" aria-controls="v-pills-settings" aria-selected="false">Day 13</button>
+
+            @for($i=1;$i<$course->no_of_days+1;$i++)
+               <button class="nav-link " id="v-pills-{{$i}}-tab" data-bs-toggle="pill" data-bs-target="#v-pills-{{$i}}" type="button" role="tab" aria-controls="v-pills-{{$i}}" aria-selected="false">Day {{$i}}</button>
+            @endfor
+
          </div>
          <div class="tab-content" id="v-pills-tabContent">
-            <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">
-               <ul class="action">
-                              
-                                 <li class="edit"> <a href="{{ route('admin.edit.course.content') }}"><i class="icon-pencil-alt"></i></a>
-                                 </li>
-                                
-                              </ul>
-               <table>
-                  <tr>
-                     <td>Course Id</td>
-                     <td>1</td>
-                  </tr>
-                  <tr>
-                     <td>Book</td>
-                     <td>Genesis</td>
-                  </tr>
-                  <tr>
-                     <td>Chapter</td>
-                     <td>01</td>
-                  </tr>
-                  <tr>
-                     <td>Verse from</td>
-                     <td>1</td>
-                  </tr>
-                  <tr>
-                     <td>Verse to</td>
-                     <td>50</td>
-                  </tr>
-                  <tr>
-                     <td>Text Description</td>
-                     <td>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Veniam magnam, sequi</td>
-                  </tr>
-                  <tr>
-                     <td>Video Links</td>
-                     <td>  http://template.test/assets/css/cascade.css</td>
-                  </tr>
-                  <tr>
-                     <td>Audio File</td>
-                     <td>http://template.test/assets/css/cascade.css</td>
-                  </tr>
-                  <tr>
-                     <td>Spotify Link</td>
-                     <td>http://template.test/assets/css/cascade.css</td>
-                  </tr>
-                  <tr>
-                     <td>Website Link</td>
-                     <td>http://template.test/assets/css/cascade.css</td>
-                  </tr>
-                  <tr>
-                     <td> Image</td>
-                     <td><img class="img-fluid for-light"
-                  src="{{ asset('assets/images/course1.jpg') }}" alt="" style="width:150px;"></td>
-                  </tr>
-                  <tr>
-                     <td>Documents</td>
-                     <td> File wil Goes Here</td>
-                  </tr>
-               </table>
-            </div>
-            <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">...</div>
-            <div class="tab-pane fade" id="v-pills-messages" role="tabpanel" aria-labelledby="v-pills-messages-tab">...</div>
-            <div class="tab-pane fade" id="v-pills-settings" role="tabpanel" aria-labelledby="v-pills-settings-tab">...</div>
+            @for($i=1;$i<$course->no_of_days+1;$i++)
+               @if($i==1)
+                     <div class="tab-pane fade show active " id="v-pills-{{$i}}" role="tabpanel" aria-labelledby="v-pills-{{$i}}-tab">
+               @else
+                     <div class="tab-pane fade show " id="v-pills-{{$i}}" role="tabpanel" aria-labelledby="v-pills-{{$i}}-tab">
+               @endif
+
+                     @if($course->contentExistsForDay($i))
+                        <ul class="action">   
+                           <li class="edit"> 
+                              <a href="{{ route('admin.edit.course.content',['content_id'=>$course->CourseContents[$i-1]->id]) }}">
+                                 <i class="fas fa-pencil-alt"></i>
+                              </a>
+                            </li>                  
+                        </ul>
+                        <table>
+                           <tr>
+                              <td>Course Id</td>
+                              <td>{{$course->CourseContents[$i-1]->course_id}}</td>
+                           </tr>
+                           <tr>
+                              <td>Book</td>
+                              <td>{{$course->CourseContents[$i-1]->book}}</td>
+                           </tr>
+                           <tr>
+                              <td>Chapter</td>
+                              <td>{{$course->CourseContents[$i-1]->chapter}}</td>
+                           </tr>
+                           <tr>
+                              <td>Verse from</td>
+                              <td>{{$course->CourseContents[$i-1]->verse_from}}</td>
+                           </tr>
+                           <tr>
+                              <td>Verse to</td>
+                              <td>{{$course->CourseContents[$i-1]->verse_to}}</td>
+                           </tr>
+                           <tr>
+                              <td>Text Description</td>
+                              <td>{{$course->CourseContents[$i-1]->text_description}}</td>
+                           </tr>
+                           <tr>
+                              <td>Video Links</td>
+                              <td> 
+                                 @if($course->CourseContents[$i-1]->video_link)
+                                 <a href="{{$course->CourseContents[$i-1]->video_link}}"
+                                 target="_blank">
+                                 @endif
+                              Click here </td>
+                           </tr>
+                           <tr>
+                              <td>Audio File</td>
+                              <td>
+                                 @if($course->CourseContents[$i-1]->audio_file)
+                                 <a href="{{$course->CourseContents[$i-1]->audio_file}}"
+                                 target="_blank">
+                                 @endif
+                              Click here</td>
+                           </tr>
+                           <tr>
+                              <td>Spotify Link</td>
+                              <td>
+                                 @if($course->CourseContents[$i-1]->spotify_link)
+                                 <a href="{{$course->CourseContents[$i-1]->spotify_link}}"
+                                 target="_blank">
+                                 @endif
+                              Click here</td>
+                           </tr>
+                           <tr>
+                              <td>Website Link</td>
+                              <td>
+                                 @if($course->CourseContents[$i-1]->website_link)
+                                 <a href="{{$course->CourseContents[$i-1]->website_link}}"
+                                 target="_blank">
+                                 @endif
+                              Click here</td>
+                           </tr>
+                           <tr>
+                              <td> Image</td>
+                              <td><img class="img-fluid for-light"
+                           src="{{ asset($course->CourseContents[$i-1]->image) }}" alt="image.jpg" style="width:150px;"></td>
+                           </tr>
+                           <tr>
+                              <td>Documents</td>
+                              <td>
+                                 @if($course->CourseContents[$i-1]->documents)
+                                 <a href="{{$course->CourseContents[$i-1]->documents}}"
+                                 target="_blank">
+                                 @endif
+                              Click here</td>
+                           </tr>
+                        </table>
+                     @else
+                        <ul class="action">   
+                           <li class="edit"> 
+                              <a href="{{ route('admin.add.course.content',['course_id'=>$course->id,'day'=>$i]) }}">
+                                 <i class="fas fa-pencil-alt"></i>
+                              </a>
+                            </li>                  
+                        </ul>
+                     @endif
+               </div>
+            @endfor
          </div>
       </div>
    </div>

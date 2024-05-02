@@ -54,7 +54,7 @@
                      <p>{{$course->course_creator}}</p>
                   </div>
                   <div class="course-action d-flex flex-wrap align-items-center">
-                  <a href="{{ route('admin.course.content') }}"><button class="btn btn-pill btn-info-gradien pt-2 pb-2" type="button" data-bs-original-title="" title="">Course Content ></button>
+                  <a href="{{ route('admin.course.content',[$course->id]) }}"><button class="btn btn-pill btn-info-gradien pt-2 pb-2" type="button" data-bs-original-title="" title="">Course Content ></button>
                   </a>
                    <ul class="action ms-5">
                      <li class="edit"> <a href="{{ route('admin.edit.course',[$course->id]) }}"><i class="fas fa-pencil-alt"></i></a>

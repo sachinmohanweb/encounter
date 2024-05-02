@@ -12,6 +12,7 @@ use Session;
 use Exception;
 
 use App\Models\Course;
+use App\Models\CourseContent;
 
 class CourseController extends Controller
 {
@@ -51,7 +52,7 @@ class CourseController extends Controller
             $course = Course::create($inputData);
             DB::commit();
              
-            return redirect()->route('admin.course.details',['course_id' => $course['id']])
+            return redirect()->route('admin.course.details',['id' => $course['id']])
                             ->with('success',"Success! New Course has been successfully added. Now, let's create course content.");
         }catch (Exception $e) {
 
@@ -137,22 +138,174 @@ class CourseController extends Controller
         }
     }
 
-    public function CourseContent() : View
+    public function CourseContent($id) : View
     {
-        return view('courses.CourseContent',[]);
+        $course = Course::where('id',$id)->with('CourseContents')->first();
+        return view('courses.CourseContent',compact('course'));
 
     }
 
-    public function AddCourseContent() : View
+    public function AddCourseContent($course_id,$day) : View
     {
-        return view('courses.AddCourseContent',[]);
+        return view('courses.AddCourseContent',compact('course_id','day'));
+    }
+
+    public function SaveCourseContent(Request $request): RedirectResponse
+    {
+
+        DB::beginTransaction();
+        try {
+            $a =  $request->validate([
+                'course_id' => 'required',
+                'day' => 'required',
+                'book' => 'required',
+                'chapter' => 'required',
+                'verse_from' => 'required',
+                'verse_to' => 'required',
+                
+            ]);
+
+            $inputData = $request->all();
+
+
+            if($request['image']){
+
+                $time = microtime(true);
+                $timeMilliseconds = round($time * 1000);
+                $timeString = (string) $timeMilliseconds;
+
+                $fileName =$timeString.'.'.$request['image']->extension();
+                $request->image->storeAs('course_contents/images', $fileName);
+                $inputData['image'] = 'storage/course_contents/images/'.$fileName;
+            }
+            if($request['documents']){
+
+                $time = microtime(true);
+                $timeMilliseconds = round($time * 1000);
+                $timeString = (string) $timeMilliseconds;
+
+                $fileName =$timeString.'.'.$request['documents']->extension();
+                $request->documents->storeAs('course_contents/documents', $fileName);
+                $inputData['documents'] = 'storage/course_contents/documents/'.$fileName;
+            }
+            if($request['audio_file']){
+
+                $time = microtime(true);
+                $timeMilliseconds = round($time * 1000);
+                $timeString = (string) $timeMilliseconds;
+
+                $fileName =$timeString.'.'.$request['audio_file']->extension();
+                $request->audio_file->storeAs('course_contents/audio', $fileName);
+                $inputData['audio_file'] = 'storage/course_contents/audio/'.$fileName;
+            }
+
+            $course_content = CourseContent::create($inputData);
+            DB::commit();
+             
+            return redirect()->route('admin.course.details',['id' => $request['course_id']])
+                            ->with('success',"Success! New Course Content has been successfully added.");
+        }catch (Exception $e) {
+
+            DB::rollBack();
+            $message = $e->getMessage();
+            return back()->withInput()->withErrors(['message' =>  $e->getMessage()]);;
+        }
+    }
+
+    public function EditCourseContent($content_id) : View
+    {      
+        $data = [
+            'books' => [
+                ['id' => 1, 'name' => 'Genesis'],
+                ['id' => 2, 'name' => 'Exodus'],
+                ['id' => 3, 'name' => 'Psalms'],
+                ['id' => 4, 'name' => 'Proverbs'],
+            ],
+            'chapters' => [
+                ['id' => 1, 'name' => '1'],
+                ['id' => 2, 'name' => '2'],
+                ['id' => 3, 'name' => '3'],
+            ],
+            'verse_from' => [
+                ['id' => 1, 'name' => '1'],
+                ['id' => 2, 'name' => '2'],
+                ['id' => 3, 'name' => '3'],
+                ['id' => 4, 'name' => '4'],
+            ],
+            'verse_to' => [
+                ['id' => 1, 'name' => '1'],
+                ['id' => 2, 'name' => '2'],
+                ['id' => 3, 'name' => '3'],
+                ['id' => 4, 'name' => '4'],
+                ['id' => 5, 'name' => '5'],
+            ]
+        ];
+        $content = CourseContent::where('id',$content_id)->first();
+        return view('courses.EditCourseContent',compact('content','data'));
 
     }
 
-    public function EditCourseContent() : View
+    public function UpdateCourseContent(Request $request): RedirectResponse
     {
-        return view('courses.EditCourseContent',[]);
+        DB::beginTransaction();
+        try {
 
+            $content = CourseContent::find($request->id);
+
+            $a =  $request->validate([
+                'course_id' => 'required',
+                'day' => 'required',
+                'book' => 'required',
+                'chapter' => 'required',
+                'verse_from' => 'required',
+                'verse_to' => 'required',
+                
+            ]);
+
+            $inputData = $request->all();
+dd($inputData);
+            if($request['image']){
+
+                $time = microtime(true);
+                $timeMilliseconds = round($time * 1000);
+                $timeString = (string) $timeMilliseconds;
+
+                $fileName =$timeString.'.'.$request['image']->extension();
+                $request->image->storeAs('course_contents/images', $fileName);
+                $inputData['image'] = 'storage/course_contents/images/'.$fileName;
+            }
+            if($request['documents']){
+
+                $time = microtime(true);
+                $timeMilliseconds = round($time * 1000);
+                $timeString = (string) $timeMilliseconds;
+
+                $fileName =$timeString.'.'.$request['documents']->extension();
+                $request->documents->storeAs('course_contents/documents', $fileName);
+                $inputData['documents'] = 'storage/course_contents/documents/'.$fileName;
+            }
+            if($request['audio_file']){
+
+                $time = microtime(true);
+                $timeMilliseconds = round($time * 1000);
+                $timeString = (string) $timeMilliseconds;
+
+                $fileName =$timeString.'.'.$request['audio_file']->extension();
+                $request->audio_file->storeAs('course_contents/audio', $fileName);
+                $inputData['audio_file'] = 'storage/course_contents/audio/'.$fileName;
+            }
+
+            $content->update($inputData);
+            DB::commit();
+             
+            return redirect()->route('admin.course.details',['id' => $request['course_id']])
+                            ->with('success',"Success! Course Content has been updated added.");
+        }catch (Exception $e) {
+
+            DB::rollBack();
+            $message = $e->getMessage();
+            return back()->withInput()->withErrors(['message' =>  $e->getMessage()]);;
+        }
     }
 
     public function BatchDetail() : View
