@@ -39,15 +39,15 @@
                         <table>
                            <tr>
                               <td>Course Id</td>
-                              <td>{{$course->CourseContents[$i-1]->course_id}}</td>
+                              <td>{{$course->CourseContents[$i-1]->course_name}}</td>
                            </tr>
                            <tr>
                               <td>Book</td>
-                              <td>{{$course->CourseContents[$i-1]->book}}</td>
+                              <td>{{$course->CourseContents[$i-1]->book_name}}</td>
                            </tr>
                            <tr>
                               <td>Chapter</td>
-                              <td>{{$course->CourseContents[$i-1]->chapter}}</td>
+                              <td>{{$course->CourseContents[$i-1]->chapter_name}}</td>
                            </tr>
                            <tr>
                               <td>Verse from</td>

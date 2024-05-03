@@ -15,6 +15,10 @@ use App\Models\Course;
 use App\Models\CourseContent;
 use App\Models\Batch;
 
+use App\Models\Book;
+use App\Models\Chapter;
+use App\Models\HolyStatement;
+
 class CourseController extends Controller
 {
     
@@ -217,34 +221,13 @@ class CourseController extends Controller
 
     public function EditCourseContent($content_id) : View
     {      
-        $data = [
-            'books' => [
-                ['id' => 1, 'name' => 'Genesis'],
-                ['id' => 2, 'name' => 'Exodus'],
-                ['id' => 3, 'name' => 'Psalms'],
-                ['id' => 4, 'name' => 'Proverbs'],
-            ],
-            'chapters' => [
-                ['id' => 1, 'name' => '1'],
-                ['id' => 2, 'name' => '2'],
-                ['id' => 3, 'name' => '3'],
-            ],
-            'verse_from' => [
-                ['id' => 1, 'name' => '1'],
-                ['id' => 2, 'name' => '2'],
-                ['id' => 3, 'name' => '3'],
-                ['id' => 4, 'name' => '4'],
-            ],
-            'verse_to' => [
-                ['id' => 1, 'name' => '1'],
-                ['id' => 2, 'name' => '2'],
-                ['id' => 3, 'name' => '3'],
-                ['id' => 4, 'name' => '4'],
-                ['id' => 5, 'name' => '5'],
-            ]
-        ];
+        $books = Book::all();
+        $chapters = Chapter::all();
+        $verses = HolyStatement::select('statement_id')->get();
+
         $content = CourseContent::where('id',$content_id)->first();
-        return view('courses.EditCourseContent',compact('content','data'));
+
+        return view('courses.EditCourseContent',compact('content','books','chapters','verses'));
 
     }
 

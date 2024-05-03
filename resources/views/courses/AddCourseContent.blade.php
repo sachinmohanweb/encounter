@@ -55,49 +55,25 @@
                         <div class="col-lg-4 col-md-6 col-12">
                            <div class="form-group">
                               <label for="">Book*</label>
-                              <select class="form-select" aria-label="Default select example" 
-                              name="book"required>
-                                 <option value="">Select Book</option>
-                                 <option value="1">Exodus</option>
-                                 <option value="2">Psalms</option>
-                                 <option value="3">Proverbs</option>
-                              </select>
+                              <select class="js-data-example-ajax form-select" id="book" name="book" required></select>
                            </div>
                         </div>
                         <div class="col-lg-4 col-md-3 col-12">
                            <div class="form-group">
                               <label for="">Chapter*</label>
-                              <select class="form-select" aria-label="Default select example"
-                              name="chapter" required>
-                                 <option value=""> Select Chapter</option>
-                                 <option value="1">1</option>
-                                 <option value="2">2</option>
-                                 <option value="3">3</option>
-                              </select>
+                              <select class="js-data-example-ajax form-select" id="chapter" name="chapter" required></select>
                            </div>
                         </div>
                         <div class="col-lg-3 col-md-3 col-12">
                            <div class="form-group">
                               <label for="">Verses From*</label>
-                              <select class="form-select" aria-label="Default select example"
-                              name="verse_from" required>
-                                 <option value=""> Select Starting Verse</option>
-                                 <option value="1">2</option>
-                                 <option value="2">3</option>
-                                 <option value="3">4</option>
-                              </select>
+                              <select class="js-data-example-ajax form-select" id="verse_no_s" name="verse_from" required></select>
                            </div>
                         </div>
                         <div class="col-lg-3 col-md-3 col-12">
                            <div class="form-group">
                               <label for="">Verses To*</label>
-                              <select class="form-select" aria-label="Default select example"
-                              name="verse_to" required>
-                                 <option value="">Select Ending Verse</option>
-                                 <option value="1">1</option>
-                                 <option value="2">2</option>
-                                 <option value="3">3</option>
-                              </select>
+                              <select class="js-data-example-ajax form-select" id="verse_no_l" name="verse_to" required></select>
                            </div>
                         </div>
                         <div class="col-lg-6 col-md-3 col-12">
@@ -125,11 +101,6 @@
                               <div class="add-link d-flex align-items-center">
                                  <input class="form-control" type="file" id="formFile" 
                                  name="audio_file">
-                                <!--  <ul class="action">
-                                    <li class="add"><i class="fa fa-plus-square-o"></i>
-                                    </li>
-                                    <li class="delete"><i class="fa fa-trash"></i></li>
-                                 </ul> -->
                               </div>
                            </div>
                         </div>
@@ -138,11 +109,6 @@
                               <label for=""> Spotify Link</label>
                               <div class="add-link d-flex align-items-center">
                                  <input type="text"  class="form-control" name="spotify_link">
-                                 <!-- <ul class="action">
-                                    <li class="add"><i class="fa fa-plus-square-o"></i>
-                                    </li>
-                                    <li class="delete"><i class="fa fa-trash"></i></li>
-                                 </ul> -->
                               </div>
                            </div>
                         </div>
@@ -151,11 +117,6 @@
                               <label for=""> Website Links</label>
                               <div class="add-link d-flex align-items-center">
                                  <input type="text"  class="form-control" name="website_link">
-                                 <!-- <ul class="action">
-                                    <li class="add"><i class="fa fa-plus-square-o"></i>
-                                    </li>
-                                    <li class="delete"><i class="fa fa-trash"></i></li>
-                                 </ul> -->
                               </div>
                            </div>
                         </div>
@@ -200,4 +161,114 @@
 <script src="{{ asset('assets/js/typeahead/typeahead.custom.js') }}"></script>
 <script src="{{ asset('assets/js/typeahead-search/handlebars.js') }}"></script>
 <script src="{{ asset('assets/js/typeahead-search/typeahead-custom.js') }}"></script>
+
+<script type="text/javascript">
+
+     $('#book').select2({
+         placeholder: "Select Book",
+         ajax: {
+             url: "<?= url('get_book_list') ?>",
+             dataType: 'json',
+             method: 'post',
+             delay: 250,
+
+              data: function(data) {
+                 return {
+                     _token    : "<?= csrf_token() ?>",
+                     search_tag: data.term,
+                 };
+             },
+             processResults: function(data, params) {
+                 params.page = params.page || 1;
+                 return {
+                     results: data.results,
+                     pagination: { more: (params.page * 30) < data.total_count }
+                 };
+             },
+             cache: true
+         }
+     });
+
+     $('#chapter').select2({
+         placeholder: "Select Chapter",
+         ajax: {
+             url: "<?= url('get_chapter_list') ?>",
+             dataType: 'json',
+             method: 'post',
+             delay: 250,
+
+              data: function(data) {
+                 return {
+                     _token    : "<?= csrf_token() ?>",
+                     search_tag: data.term,
+                     book_id:$('#book').val(),
+
+                 };
+             },
+             processResults: function(data, params) {
+                 params.page = params.page || 1;
+                 return {
+                     results: data.results,
+                     pagination: { more: (params.page * 30) < data.total_count }
+                 };
+             },
+             cache: true
+         }
+     });
+
+     $('#verse_no_s').select2({
+         placeholder: "Select Verse",
+         ajax: {
+
+             url: "<?= url('get_verse_no_list') ?>",
+             dataType: 'json',
+             method: 'post',
+             delay: 250,
+
+              data: function(data) {
+                 return {
+                     _token    : "<?= csrf_token() ?>",
+                     search_tag: data.term,
+                     chapter_id:$('#chapter').val(),
+
+                 };
+             },
+             processResults: function(data, params) {
+                 params.page = params.page || 1;
+                 return {
+                     results: data.results,
+                     pagination: { more: (params.page * 30) < data.total_count }
+                 };
+             },
+             cache: true
+         }
+     });
+
+     $('#verse_no_l').select2({
+         placeholder: "Select Verse",
+         ajax: {
+
+             url: "<?= url('get_verse_no_list') ?>",
+             dataType: 'json',
+             method: 'post',
+             delay: 250,
+
+              data: function(data) {
+                 return {
+                     _token    : "<?= csrf_token() ?>",
+                     search_tag: data.term,
+                     chapter_id:$('#chapter').val(),
+                 };
+             },
+             processResults: function(data, params) {
+                 params.page = params.page || 1;
+                 return {
+                     results: data.results,
+                     pagination: { more: (params.page * 30) < data.total_count }
+                 };
+             },
+             cache: true
+         }
+     });
+</script>
 @endsection

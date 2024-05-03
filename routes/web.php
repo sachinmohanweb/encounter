@@ -11,6 +11,7 @@ use App\Http\Controllers\BibleVerseController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\GenReferenceController;
+use App\Http\Controllers\BibleDbController;
 
 Route::get('admin', [HomeController::class, 'admin_index'])->name('index');
 Route::post('/login', [UserController::class, 'admin_login'])->name('admin.login');
@@ -46,6 +47,10 @@ Route::middleware('auth:admin')->group(function(){
     Route::post('updatecourse', [CourseController::class, 'UpdateCourse'])
             ->name('admin.update.course');
     
+    Route::post('/get_book_list', [BibleDbController::class, 'book_list'])->name('book.list');
+    Route::post('/get_chapter_list',[BibleDbController::class, 'chapter_list'])->name('chapter.list');
+    Route::post('/get_verse_no_list',[BibleDbController::class, 'verse_list'])->name('verse.list');
+
     Route::get('coursecontent/{id}', [CourseController::class, 'CourseContent'])->name('admin.course.content');
     Route::get('addcoursecontent/{course_id}/{day}', [CourseController::class, 'AddCourseContent'])
             ->name('admin.add.course.content');

@@ -45,61 +45,66 @@
                         <div class="col-lg-3 col-md-6 col-12">
                            <div class="form-group">
                               <label for="">Book*</label>
-                               <select class="form-select" aria-label="Default select example" 
-                              name="book"required>
-                              <option value="">Select Book</option>
-
-                              @foreach($data['books'] as $book)
-                                 <option value="{{ $book['id']}}" 
-                                 @if($content->book == $book['id']) selected @endif>
-                                    {{$book['name']}}
-                                 </option>
-                              @endforeach
-                                
+                              <select class="js-data-example-ajax form-select" id="book" name="book">
+                                   @foreach($books as $book)
+                                     @if($content->book == $book->book_id)
+                                           <option value="{{ $content->book }}" selected>
+                                             {{ $book->book_name }}</option>
+                                     @else
+                                           <option value="{{ $content->book }}">
+                                              {{ $book->book_name }}</option>
+                                     @endif
+                                   @endforeach                                
                               </select>
                            </div>
                         </div>
                         <div class="col-lg-3 col-md-3 col-12">
                            <div class="form-group">
                               <label for="">Chapter*</label>
-                              <select class="form-select" aria-label="Default select example"
-                              name="chapter" required>
-                              <option value=""> Select Chapter</option>
-                                 @foreach($data['chapters'] as $chapter)
-                                 <option value="{{ $chapter['id']}}"
-                                 @if($content->chapter == $chapter['id']) selected @endif>
-                                    {{$chapter['name']}}
-                                 </option>
-                                 @endforeach
+                              <select class="js-data-example-ajax form-select" id="chapter" name="chapter">
+                                   @foreach($chapters as $chapter)
+                                     @if($content->chapter == $chapter->chapter_id)
+                                           <option value="{{ $content->chapter }}" selected>
+                                             {{ $chapter->chapter_name }}</option>
+                                     @else
+                                           <option value="{{ $content->chapter }}">
+                                              {{ $chapter->chapter_name }}</option>
+                                     @endif
+                                   @endforeach                                
                               </select>
                            </div>
                         </div>
                         <div class="col-lg-3 col-md-3 col-12">
                            <div class="form-group">
                               <label for="">Verses From*</label>
-                               <select class="form-select" aria-label="Default select example"
-                              name="verse_from" required>
-                              <option value=""> Select Starting Verse</option>
-                                 @foreach($data['verse_from'] as $verse_1)
-                                 <option value="{{ $verse_1['id']}}"
-                                 @if($content->verse_from == $verse_1['id']) selected @endif>
-                                 {{$verse_1['name']}}</option>
-                                 @endforeach
+                              <select class="js-data-example-ajax form-select" id="verse_no_s" name="verse_from">
+                                   @foreach($verses as $verse)
+                                     @if($content->verse_from == $verse->statement_id)
+                                           <option value="{{ $verse->statement_id }}" selected>
+                                             {{ $verse->statement_id }}</option>
+                                     @else
+                                           <option value="{{ $verse->statement_id }}">
+                                              {{ $verse->statement_id }}</option>
+                                     @endif
+                                   @endforeach                                
                               </select>
                            </div>
                         </div>
                         <div class="col-lg-3 col-md-3 col-12">
                            <div class="form-group">
                               <label for="">Verses To*</label>
-                              <select class="form-select" aria-label="Default select example"
-                              name="verse_to" required>
-                                 <option value="">Select Ending Verse</option>
-                                 @foreach($data['verse_to'] as $verse_2)
-                                 <option value="{{ $verse_2['id']}}"
-                                    @if($content->verse_to == $verse_2['id']) selected @endif>{{$verse_2['name']}}</option>
-                                 @endforeach
-                                
+                              <select class="js-data-example-ajax form-select" id="verse_no_l" name="verse_to">
+                                   @foreach($verses as $verse)
+                                     @if($content->verse_to == $verse->statement_id)
+                                           <option value="{{ $verse->statement_id }}" selected>
+                                             {{ $verse->statement_id }}</option>
+                                     @else
+                                           <option value="{{ $verse->statement_id }}">
+                                              {{ $verse->statement_id }}</option>
+                                     @endif
+                                   @endforeach                                
                               </select>
+                              
                            </div>
                         </div>
                      </div>
@@ -214,4 +219,115 @@
 <script src="{{ asset('assets/js/typeahead/typeahead.custom.js') }}"></script>
 <script src="{{ asset('assets/js/typeahead-search/handlebars.js') }}"></script>
 <script src="{{ asset('assets/js/typeahead-search/typeahead-custom.js') }}"></script>
+
+<script type="text/javascript">
+
+     $('#book').select2({
+         placeholder: "Select Book",
+         ajax: {
+             url: "<?= url('get_book_list') ?>",
+             dataType: 'json',
+             method: 'post',
+             delay: 250,
+
+              data: function(data) {
+                 return {
+                     _token    : "<?= csrf_token() ?>",
+                     search_tag: data.term,
+                 };
+             },
+             processResults: function(data, params) {
+                 params.page = params.page || 1;
+                 return {
+                     results: data.results,
+                     pagination: { more: (params.page * 30) < data.total_count }
+                 };
+             },
+             cache: true
+         }
+     });
+
+     $('#chapter').select2({
+         placeholder: "Select Chapter",
+         ajax: {
+             url: "<?= url('get_chapter_list') ?>",
+             dataType: 'json',
+             method: 'post',
+             delay: 250,
+
+              data: function(data) {
+                 return {
+                     _token    : "<?= csrf_token() ?>",
+                     search_tag: data.term,
+                     book_id:$('#book').val(),
+
+                 };
+             },
+             processResults: function(data, params) {
+                 params.page = params.page || 1;
+                 return {
+                     results: data.results,
+                     pagination: { more: (params.page * 30) < data.total_count }
+                 };
+             },
+             cache: true
+         }
+     });
+
+     $('#verse_no_s').select2({
+         placeholder: "Select Verse",
+         ajax: {
+
+             url: "<?= url('get_verse_no_list') ?>",
+             dataType: 'json',
+             method: 'post',
+             delay: 250,
+
+              data: function(data) {
+                 return {
+                     _token    : "<?= csrf_token() ?>",
+                     search_tag: data.term,
+                     chapter_id:$('#chapter').val(),
+
+                 };
+             },
+             processResults: function(data, params) {
+                 params.page = params.page || 1;
+                 return {
+                     results: data.results,
+                     pagination: { more: (params.page * 30) < data.total_count }
+                 };
+             },
+             cache: true
+         }
+     });
+
+     $('#verse_no_l').select2({
+         placeholder: "Select Verse",
+         ajax: {
+
+             url: "<?= url('get_verse_no_list') ?>",
+             dataType: 'json',
+             method: 'post',
+             delay: 250,
+
+              data: function(data) {
+                 return {
+                     _token    : "<?= csrf_token() ?>",
+                     search_tag: data.term,
+                     chapter_id:$('#chapter').val(),
+
+                 };
+             },
+             processResults: function(data, params) {
+                 params.page = params.page || 1;
+                 return {
+                     results: data.results,
+                     pagination: { more: (params.page * 30) < data.total_count }
+                 };
+             },
+             cache: true
+         }
+     });
+</script>
 @endsection
