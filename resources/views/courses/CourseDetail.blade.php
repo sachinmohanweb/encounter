@@ -107,10 +107,12 @@
                                  <td>{{$value->last_date}}</td>
                                  <td>
                                     <ul class="action">
-                                       <li class="edit"> <a href="{{route('admin.edit.batch',[$value->id])}}">
+                                       <li class="edit"> 
+                                          <a href="{{route('admin.edit.batch',[$value->id])}}">
                                           <i class="fas fa-pencil-alt"></i></a>
                                        </li>
-                                       <li class="delete"><a href="#">
+                                       <li class="delete">
+                                          <a href="{{route('admin.delete.batch',[$value->id])}}">
                                           <i class="fa fa-trash"></i></a>
                                        </li>
                                     </ul>

@@ -68,6 +68,8 @@ Route::middleware('auth:admin')->group(function(){
     Route::post('updatebatch', [CourseController::class, 'UpdateBatch'])->name('admin.update.batch');
     Route::post('batchstatus', [CourseController::class, 'BatchStatusChange'])
                 ->name('admin.batch.status.change');
+    Route::get('deletebatch/{id}', [CourseController::class,'DeleteBatch'])
+                ->name('admin.delete.batch');
 
     Route::get('notifications', [NotificationController::class, 'Notifications'])
             ->name('admin.notification.list');

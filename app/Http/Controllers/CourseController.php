@@ -399,5 +399,28 @@ class CourseController extends Controller
             return response()->json(['success' => false,'msg' => $e->getMessage()]);
         }
     }
+
+    public function DeleteBatch($id): RedirectResponse
+    {
+
+        DB::beginTransaction();
+        try {
+            $batch = Batch::find($id);
+            $course_id = $batch['course_id'];
+            $batch->delete();
+            DB::commit();
+
+            return redirect()->route('admin.course.details',['id' => $course_id])
+                            ->with('success',"Success! Batch has been deleted successfully.");
+
+        }catch (Exception $e) {
+
+            DB::rollBack();
+            $message = $e->getMessage();
+
+            return redirect()->route('admin.course.details',['id' => $course_id])
+                            ->with('error',$e->getMessage());
+        }
+    }
  
 }
