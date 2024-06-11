@@ -41,6 +41,7 @@
             <div class="card-body">
                <h4>{{$course->course_name}}</h4>
                <p>{{$course->description}}</p>
+               <p><b>{{$course->bible_name}}</b></p>
                <div class="info d-flex justify-content-between flex-wrap">
                   <div class="days d-flex align-items-center">
                      <div class="image">

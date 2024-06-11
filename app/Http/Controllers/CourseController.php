@@ -15,6 +15,7 @@ use App\Models\Course;
 use App\Models\CourseContent;
 use App\Models\Batch;
 
+use App\Models\Bible;
 use App\Models\Book;
 use App\Models\Chapter;
 use App\Models\HolyStatement;
@@ -38,6 +39,7 @@ class CourseController extends Controller
         DB::beginTransaction();
         try {
             $a =  $request->validate([
+                'bible_id' => 'required',
                 'course_name' => 'required',
                 'course_creator' => 'required',
                 'no_of_days' => 'required',
@@ -104,7 +106,10 @@ class CourseController extends Controller
     public function EditCourse($id) : View
     {
         $course = Course::where('id',$id)->first();
-        return view('courses.EditCourse',compact('course'));
+
+        $bibles = Bible::get(); 
+
+        return view('courses.EditCourse',compact('course','bibles'));
 
     }
 
@@ -116,6 +121,7 @@ class CourseController extends Controller
             $course = Course::find($request->id);
 
             $a =  $request->validate([
+                'bible_id' => 'required',
                 'course_name' => 'required',
                 'course_creator' => 'required',
                 'no_of_days' => 'required',
@@ -134,8 +140,8 @@ class CourseController extends Controller
 
             $course->update($inputData);
             DB::commit();
-             
-            return redirect()->route('admin.course.details',['course_id' => $course['id']])
+
+            return redirect()->route('admin.course.details',['id' => $course['id']])
                             ->with('success',"Success! Course has been successfully updated.");
         }catch (Exception $e) {
 

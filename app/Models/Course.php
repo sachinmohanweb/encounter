@@ -11,6 +11,7 @@ class Course extends Model
 
     protected $fillable = [
         'course_name',
+        'bible_id',
         'course_creator',
         'no_of_days',
         'description',
@@ -18,9 +19,18 @@ class Course extends Model
         'status',
     ];
 
+    protected $appends = ['bible_name'];
+
+
     public function getStatusAttribute($value)
     {
         return $value == 1 ? 'Active' : 'Suspended';
+    }
+
+    public function getBibleNameAttribute()
+    {
+        $bible = Bible::where('bible_id',$this->bible_id)->first();
+        return $bible->bible_name;
     }
 
     public function contentExistsForDay($day)

@@ -14,6 +14,7 @@ use Session;
 use Exception;
 use Datatables;
 
+use App\Models\Bible;
 use App\Models\Book;
 use App\Models\Chapter;
 use App\Models\HolyStatement;
@@ -21,22 +22,39 @@ use App\Models\HolyStatement;
 class BibleDbController extends Controller
 {
     
-    public function book_list(Request $request): JsonResponse
+    public function bible_list(Request $request): JsonResponse
     {
         $searchTerm = $request->input('search_tag');
 
-        $books = Book::where('book_name', 'like',  $searchTerm . '%')
-                        ->get(['book_id', 'book_name']);
+        $bibles = Bible::where('bible_name', 'like',  $searchTerm . '%')
+                        ->get(['bible_id', 'bible_name']);
         $results = [];
 
-        foreach ($books as $book) {
+        foreach ($bibles as $bible) {
             $results[] = [
-                'id' => $book->book_id,
-                'text' => $book->book_name,
+                'id' => $bible->bible_id,
+                'text' => $bible->bible_name,
             ];
         }
         return response()->json(['results' => $results]);
     }
+
+    public function book_list(Request $request): JsonResponse
+        {
+            $searchTerm = $request->input('search_tag');
+
+            $books = Book::where('book_name', 'like',  $searchTerm . '%')
+                            ->get(['book_id', 'book_name']);
+            $results = [];
+
+            foreach ($books as $book) {
+                $results[] = [
+                    'id' => $book->book_id,
+                    'text' => $book->book_name,
+                ];
+            }
+            return response()->json(['results' => $results]);
+        }
 
     public function chapter_list(Request $request): JsonResponse
     {

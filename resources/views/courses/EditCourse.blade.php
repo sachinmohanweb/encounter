@@ -22,31 +22,61 @@
                      <div class="verse d-flex align-items-center flex-wrap">
                         <div class="col-lg-4 col-md-6 col-12">
                            <div class="form-group">
-                              <label for="">Course Name*</label>
-                              <input type="text" placeholder="Course Name"
+                              <label for="">Bible<span style="color:red">*</span></label>
+
+                              <select class="js-data-example-ajax form-select" id="bible" name="bible_id">
+                                   @foreach($bibles as $bible)
+                                     @if($course->bible_id == $bible->bible_id)
+                                           <option value="{{ $bible->bible_id }}" selected>
+                                             {{ $bible->bible_name }}</option>
+                                     @else
+                                           <option value="{{ $bible->bible_id }}">
+                                              {{ $bible->bible_name }}</option>
+                                     @endif
+                                   @endforeach                                
+                              </select>
+
+                           </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-12">
+                           <div class="form-group">
+                              <label for="">Course Name<span style="color:red">*</span></label>
+                              <input type="text" placeholder="Course name"
                               name="course_name" class="form-control" required value="{{$course->course_name}}">
                            </div>
                         </div>
                         <div class="col-lg-4 col-md-6 col-12">
                            <div class="form-group">
-                              <label for=""> Course Creator*</label>
-                              <input type="text" placeholder="Course Name" name="course_creator" class="form-control" required value="{{$course->course_creator}}">
+                              <label for=""> Course Creator<span style="color:red">*</span></label>
+                              <input type="text" placeholder="Course createor name" name="course_creator" class="form-control" required value="{{$course->course_creator}}">
                            </div>
                         </div>
                         <div class="col-lg-4 col-md-3 col-12">
                            <div class="form-group">
-                              <label for="">No of days*</label>
-                              <input type="number" placeholder="Course Name" name="no_of_days" class="form-control" required value="{{$course->no_of_days}}">
+                              <label for="">No of days<span style="color:red">*</span></label>
+                              <input type="number" placeholder="No of days" name="no_of_days" class="form-control" required value="{{$course->no_of_days}}">
                            </div>
                         </div>
-                        <div class="col-lg-4 col-12">
+                        
+                         <div class="col-lg-3 col-12">
                            <div class="form-group">
-                              <label for=""> Description</label>
-                              <textarea name="description" id="" rows="2" class="form-control">{{$course->description}}</textarea>
+                              <label for=""> Thumbnail</label>
+                             <input class="form-control" type="file" id="formFile"  name="thumbnail">
                            </div>
                         </div>
+                        @if($course->thumbnail && file_exists(public_path($course->thumbnail)))
+
+                           <div class="col-lg-2 col-12" id="OldImage">
+                              <div class="form-group" >
+                                 <img src="{{asset($course->thumbnail) }}" width="80px">
+                              </div>
+                           </div>
+                        @endif
+
                         <div class="col-lg-3 col-12">
                            <div class="form-group ps-5">
+                              <label for="">Current Visibility<span style="color:red">*</span></label>
+
                               <div class="form-check">
                                  <input class="form-check-input" type="radio" name="status" 
                                  id="flexRadioDefault1" value="1" {{ $course->status == 'Active' ? 'checked' : '' }}>
@@ -63,18 +93,10 @@
                               </div>
                            </div>
                         </div>
-                        @if($course->thumbnail && file_exists(public_path($course->thumbnail)))
-
-                           <div class="col-lg-2 col-12" id="OldImage">
-                              <div class="form-group" >
-                                 <img src="{{asset($course->thumbnail) }}" width="80px">
-                              </div>
-                           </div>
-                        @endif
-                         <div class="col-lg-3 col-12">
+                        <div class="col-lg-12 col-12">
                            <div class="form-group">
-                              <label for=""> Thumbnail</label>
-                             <input class="form-control" type="file" id="formFile"  name="thumbnail">
+                              <label for=""> Description</label>
+                              <textarea name="description" id="" rows="2" class="form-control">{{$course->description}}</textarea>
                            </div>
                         </div>
                        <div class="col-12">

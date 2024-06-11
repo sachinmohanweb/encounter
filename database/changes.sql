@@ -83,3 +83,20 @@ CREATE TABLE `batches` (
 
 ALTER TABLE `batches` ADD `course_id` INT NOT NULL AFTER `id`;
 
+
+/*-----------11/06/2024--------*/
+
+INSERT INTO `02_bible` (`bible_id`, `bible_name`, `bible_language`, `bible_desc`, `enabled`, `church_id`, `user_id`, `date_added`)
+VALUES (NULL, 'English Bible', 'English', NULL, b'1', '1', NULL, CURRENT_TIMESTAMP),
+(NULL, 'Hindi Bible', 'Hindi', NULL, b'1', '1', NULL, CURRENT_TIMESTAMP);
+
+
+INSERT INTO `03_testament` (`testament_id`, `testament_name`, `testament_no`, `bible_id`, `user_id`, `date_added`) 
+VALUES (NULL, 'English testament 1', '1', '2', NULL, CURRENT_TIMESTAMP), 
+(NULL, 'English testment 2', '2', '2', NULL, CURRENT_TIMESTAMP);
+
+INSERT INTO `03_testament` (`testament_id`, `testament_name`, `testament_no`, `bible_id`, `user_id`, `date_added`) 
+VALUES (NULL, 'Hindi testament 1', '1', '3', NULL, CURRENT_TIMESTAMP);
+
+
+ALTER TABLE `courses` ADD `bible_id` INT NOT NULL AFTER `course_name`;
