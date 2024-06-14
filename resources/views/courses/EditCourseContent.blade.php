@@ -42,10 +42,40 @@
                      <input type="hidden" name="day" value="{{$content->day}}">
 
                      <div class="book-from d-flex flex-wrap position-relative">
-                        <div class="col-lg-3 col-md-6 col-12">
+                        <div class="col-lg-1 col-md-1 col-12">
                            <div class="form-group">
-                              <label for="">Book*</label>
-                              <select class="js-data-example-ajax form-select" id="book" name="book">
+                              <label for="">Day No</label>
+                              <br>
+                              <button class="butn_disabled nav-link">{{$content->day}}</button>
+                           </div>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-12">
+                           <div class="form-group">
+                              <label for="">Bible</label>
+                              <button class="butn_disabled nav-link">{{$content->bible_name}}</button>
+
+                           </div>
+                        </div>
+                         <div class="col-lg-4 col-md-4 col-12">
+                           <div class="form-group">
+                              <label for="">Testament<span style="color:red">*</span></label>
+                              <select class="js-data-example-ajax form-select" id="testament" name="testament" required>
+                                   @foreach($testaments as $testament_value)
+                                     @if($content->testament == $testament_value->testament_id)
+                                           <option value="{{ $content->testament }}" selected>
+                                             {{ $testament_value->testament_name }}</option>
+                                     @else
+                                           <option value="{{ $content->testament }}">
+                                              {{ $testament_value->testament_name }}</option>
+                                     @endif
+                                   @endforeach                                
+                              </select>
+                           </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-12">
+                           <div class="form-group">
+                              <label for="">Book<span style="color:red">*</span></label>
+                              <select class="js-data-example-ajax form-select" id="book" name="book" required>
                                    @foreach($books as $book)
                                      @if($content->book == $book->book_id)
                                            <option value="{{ $content->book }}" selected>
@@ -58,9 +88,9 @@
                               </select>
                            </div>
                         </div>
-                        <div class="col-lg-3 col-md-3 col-12">
+                        <div class="col-lg-4 col-md-4 col-12">
                            <div class="form-group">
-                              <label for="">Chapter*</label>
+                              <label for="">Chapter<span style="color:red">*</span></label>
                               <select class="js-data-example-ajax form-select" id="chapter" name="chapter">
                                    @foreach($chapters as $chapter)
                                      @if($content->chapter == $chapter->chapter_id)
@@ -74,33 +104,33 @@
                               </select>
                            </div>
                         </div>
-                        <div class="col-lg-3 col-md-3 col-12">
+                        <div class="col-lg-4 col-md-4 col-12">
                            <div class="form-group">
-                              <label for="">Verses From*</label>
+                              <label for="">Verses From<span style="color:red">*</span></label>
                               <select class="js-data-example-ajax form-select" id="verse_no_s" name="verse_from">
                                    @foreach($verses as $verse)
                                      @if($content->verse_from == $verse->statement_id)
                                            <option value="{{ $verse->statement_id }}" selected>
-                                             {{ $verse->statement_id }}</option>
+                                             {{ $verse->statement_no }}</option>
                                      @else
                                            <option value="{{ $verse->statement_id }}">
-                                              {{ $verse->statement_id }}</option>
+                                              {{ $verse->statement_no }}</option>
                                      @endif
                                    @endforeach                                
                               </select>
                            </div>
                         </div>
-                        <div class="col-lg-3 col-md-3 col-12">
+                        <div class="col-lg-4 col-md-4 col-12">
                            <div class="form-group">
-                              <label for="">Verses To*</label>
+                              <label for="">Verses To<span style="color:red">*</span></label>
                               <select class="js-data-example-ajax form-select" id="verse_no_l" name="verse_to">
                                    @foreach($verses as $verse)
                                      @if($content->verse_to == $verse->statement_id)
                                            <option value="{{ $verse->statement_id }}" selected>
-                                             {{ $verse->statement_id }}</option>
+                                             {{ $verse->statement_no }}</option>
                                      @else
                                            <option value="{{ $verse->statement_id }}">
-                                              {{ $verse->statement_id }}</option>
+                                              {{ $verse->statement_no }}</option>
                                      @endif
                                    @endforeach                                
                               </select>
@@ -222,6 +252,33 @@
 
 <script type="text/javascript">
 
+      $('#testament').select2({
+         placeholder: "Select Testament",
+
+         ajax: {
+             url: "<?= url('get_testament_list') ?>",
+             dataType: 'json',
+             method: 'post',
+             delay: 250,
+
+              data: function(data) {
+                 return {
+                     _token    : "<?= csrf_token() ?>",
+                     search_tag: data.term,
+                     bible_id  : '<?= $course->bible_id ?>',
+                 };
+             },
+             processResults: function(data, params) {
+                 params.page = params.page || 1;
+                 return {
+                     results: data.results,
+                     pagination: { more: (params.page * 30) < data.total_count }
+                 };
+             },
+             cache: true
+         }
+     });
+
      $('#book').select2({
          placeholder: "Select Book",
          ajax: {
@@ -234,6 +291,7 @@
                  return {
                      _token    : "<?= csrf_token() ?>",
                      search_tag: data.term,
+                     testament_id:$('#testament').val(),
                  };
              },
              processResults: function(data, params) {

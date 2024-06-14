@@ -43,43 +43,56 @@
                      @csrf
                      <input type="hidden" name="course_id" value="{{$course_id}}">
                      <div class="verse d-flex flex-wrap">
-                        <div class="col-lg-4 col-md-6 col-12">
+                        <div class="col-lg-1 col-md-1 col-12">
                            <div class="form-group">
-                              <label for="">Day No*</label>
-                              <select class="form-select" aria-label="Default select example" 
-                              name="day" required>
-                                 <option value="{{$day}}" selected>Day {{$day}}</option>
-                              </select>
+                              <label for="">Day No</label>
+                              <br>
+                              <button class="butn_disabled nav-link">{{$day}}</button>
+                              <input type="hidden" class="form-control" name="day" value="{{$day}}" required>
                            </div>
                         </div>
-                        <div class="col-lg-4 col-md-6 col-12">
+                        <div class="col-lg-3 col-md-3 col-12">
                            <div class="form-group">
-                              <label for="">Book*</label>
+                              <label for="">Bible</label>
+                              <button class="butn_disabled nav-link">{{$course->bible_name}}</button>
+
+                           </div>
+                        </div>
+                         <div class="col-lg-4 col-md-4 col-12">
+                           <div class="form-group">
+                              <label for="">Testament<span style="color:red">*</span></label>
+                              <select class="js-data-example-ajax form-select" id="testament" name="testament" required 
+                              value="{{old('testament')}}"></select>
+                           </div>
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-12">
+                           <div class="form-group">
+                              <label for="">Book<span style="color:red">*</span></label>
                               <select class="js-data-example-ajax form-select" id="book" name="book" required></select>
                            </div>
                         </div>
-                        <div class="col-lg-4 col-md-3 col-12">
+                        <div class="col-lg-4 col-md-4 col-12">
                            <div class="form-group">
-                              <label for="">Chapter*</label>
+                              <label for="">Chapter<span style="color:red">*</span></label>
                               <select class="js-data-example-ajax form-select" id="chapter" name="chapter" required></select>
                            </div>
                         </div>
-                        <div class="col-lg-3 col-md-3 col-12">
+                        <div class="col-lg-4 col-md-4 col-12">
                            <div class="form-group">
-                              <label for="">Verses From*</label>
+                              <label for="">Verses From<span style="color:red">*</span></label>
                               <select class="js-data-example-ajax form-select" id="verse_no_s" name="verse_from" required></select>
                            </div>
                         </div>
-                        <div class="col-lg-3 col-md-3 col-12">
+                        <div class="col-lg-4 col-md-4 col-12">
                            <div class="form-group">
-                              <label for="">Verses To*</label>
+                              <label for="">Verses To<span style="color:red">*</span></label>
                               <select class="js-data-example-ajax form-select" id="verse_no_l" name="verse_to" required></select>
                            </div>
                         </div>
                         <div class="col-lg-6 col-md-3 col-12">
                            <div class="form-group">
-                              <label for="">Text Description*</label>
-                              <textarea name="text_description" id="" rows="2" class="form-control"></textarea>
+                              <label for="">Text Description</label>
+                              <textarea name="text_description" id="" rows="2" class="form-control" ></textarea>
                            </div>
                         </div>
                         <div class="col-lg-6 col-12">
@@ -164,6 +177,33 @@
 
 <script type="text/javascript">
 
+   $('#testament').select2({
+         placeholder: "Select Testament",
+
+         ajax: {
+             url: "<?= url('get_testament_list') ?>",
+             dataType: 'json',
+             method: 'post',
+             delay: 250,
+
+              data: function(data) {
+                 return {
+                     _token    : "<?= csrf_token() ?>",
+                     search_tag: data.term,
+                     bible_id  : '<?= $course->bible_id ?>',
+                 };
+             },
+             processResults: function(data, params) {
+                 params.page = params.page || 1;
+                 return {
+                     results: data.results,
+                     pagination: { more: (params.page * 30) < data.total_count }
+                 };
+             },
+             cache: true
+         }
+     });
+
      $('#book').select2({
          placeholder: "Select Book",
          ajax: {
@@ -176,6 +216,7 @@
                  return {
                      _token    : "<?= csrf_token() ?>",
                      search_tag: data.term,
+                     testament_id:$('#testament').val(),
                  };
              },
              processResults: function(data, params) {

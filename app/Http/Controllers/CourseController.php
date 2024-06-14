@@ -18,6 +18,7 @@ use App\Models\Batch;
 use App\Models\Bible;
 use App\Models\Book;
 use App\Models\Chapter;
+use App\Models\Testament;
 use App\Models\HolyStatement;
 
 class CourseController extends Controller
@@ -160,7 +161,8 @@ class CourseController extends Controller
 
     public function AddCourseContent($course_id,$day) : View
     {
-        return view('courses.AddCourseContent',compact('course_id','day'));
+        $course = Course::find($course_id);
+        return view('courses.AddCourseContent',compact('course_id','day','course'));
     }
 
     public function SaveCourseContent(Request $request): RedirectResponse
@@ -171,6 +173,7 @@ class CourseController extends Controller
             $a =  $request->validate([
                 'course_id' => 'required',
                 'day' => 'required',
+                'testament' => 'required',
                 'book' => 'required',
                 'chapter' => 'required',
                 'verse_from' => 'required',
@@ -179,8 +182,7 @@ class CourseController extends Controller
             ]);
 
             $inputData = $request->all();
-
-
+            
             if($request['image']){
 
                 $time = microtime(true);
@@ -227,13 +229,14 @@ class CourseController extends Controller
 
     public function EditCourseContent($content_id) : View
     {      
+        $content = CourseContent::where('id',$content_id)->first();
+        $course = Course::where('id',$content->course_id)->first();
+        $testaments = Testament::all();
         $books = Book::all();
         $chapters = Chapter::all();
-        $verses = HolyStatement::select('statement_id')->get();
+        $verses = HolyStatement::select('statement_id','statement_no')->get();
 
-        $content = CourseContent::where('id',$content_id)->first();
-
-        return view('courses.EditCourseContent',compact('content','books','chapters','verses'));
+        return view('courses.EditCourseContent',compact('content','books','chapters','verses','testaments','course'));
 
     }
 
@@ -247,6 +250,7 @@ class CourseController extends Controller
             $a =  $request->validate([
                 'course_id' => 'required',
                 'day' => 'required',
+                'testament' => 'required',
                 'book' => 'required',
                 'chapter' => 'required',
                 'verse_from' => 'required',

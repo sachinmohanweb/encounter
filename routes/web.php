@@ -47,6 +47,7 @@ Route::middleware('auth:admin')->group(function(){
     Route::post('updatecourse', [CourseController::class, 'UpdateCourse'])
             ->name('admin.update.course');
     
+    Route::post('/get_testament_list', [BibleDbController::class, 'testament_list'])->name('testament.list');
     Route::post('/get_bible_list', [BibleDbController::class, 'bible_list'])->name('bible.list');
     Route::post('/get_book_list', [BibleDbController::class, 'book_list'])->name('book.list');
     Route::post('/get_chapter_list',[BibleDbController::class, 'chapter_list'])->name('chapter.list');

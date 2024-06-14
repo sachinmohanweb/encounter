@@ -100,3 +100,7 @@ VALUES (NULL, 'Hindi testament 1', '1', '3', NULL, CURRENT_TIMESTAMP);
 
 
 ALTER TABLE `courses` ADD `bible_id` INT NOT NULL AFTER `course_name`;
+
+/*-----------13/06/2024--------*/
+
+ALTER TABLE `course_contents` ADD `testament` INT NULL DEFAULT NULL AFTER `day`;

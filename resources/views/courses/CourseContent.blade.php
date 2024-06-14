@@ -38,8 +38,16 @@
                         </ul>
                         <table>
                            <tr>
-                              <td>Course Id</td>
+                              <td>Course Name</td>
                               <td>{{$course->CourseContents[$i-1]->course_name}}</td>
+                           </tr>
+                           <tr>
+                              <td>Bible</td>
+                              <td>{{$course->CourseContents[$i-1]->bible_name}}</td>
+                           </tr>
+                           <tr>
+                              <td>Testament</td>
+                              <td>{{$course->CourseContents[$i-1]->testament_name}}</td>
                            </tr>
                            <tr>
                               <td>Book</td>
@@ -51,11 +59,11 @@
                            </tr>
                            <tr>
                               <td>Verse from</td>
-                              <td>{{$course->CourseContents[$i-1]->verse_from}}</td>
+                              <td>{{$course->CourseContents[$i-1]->verse_from_name}}</td>
                            </tr>
                            <tr>
                               <td>Verse to</td>
-                              <td>{{$course->CourseContents[$i-1]->verse_to}}</td>
+                              <td>{{$course->CourseContents[$i-1]->verse_to_name}}</td>
                            </tr>
                            <tr>
                               <td>Text Description</td>

@@ -14,9 +14,10 @@ use Session;
 use Exception;
 use Datatables;
 
-use App\Models\Bible;
 use App\Models\Book;
+use App\Models\Bible;
 use App\Models\Chapter;
+use App\Models\Testament;
 use App\Models\HolyStatement;
 
 class BibleDbController extends Controller
@@ -38,13 +39,41 @@ class BibleDbController extends Controller
         }
         return response()->json(['results' => $results]);
     }
+    
+    public function testament_list(Request $request): JsonResponse
+    {
+        $searchTerm = $request->input('search_tag');
+
+        $testaments = Testament::where('testament_name', 'like',  $searchTerm . '%');
+
+        if($request['bible_id']){
+            $testaments = $testaments->where('bible_id',$request['bible_id']);
+        }
+        $testaments = $testaments->get(['testament_id', 'testament_name']);
+
+                        
+        $results = [];
+
+        foreach ($testaments as $testament) {
+            $results[] = [
+                'id' => $testament->testament_id,
+                'text' => $testament->testament_name,
+            ];
+        }
+        return response()->json(['results' => $results]);
+    }
 
     public function book_list(Request $request): JsonResponse
         {
             $searchTerm = $request->input('search_tag');
 
-            $books = Book::where('book_name', 'like',  $searchTerm . '%')
-                            ->get(['book_id', 'book_name']);
+            $books = Book::where('book_name', 'like',  $searchTerm . '%');
+
+            if($request['testament_id']){
+                    $books = $books->where('testament_id',$request['testament_id']);
+            }
+            $books = $books ->get(['book_id', 'book_name']);
+                           
             $results = [];
 
             foreach ($books as $book) {
@@ -89,14 +118,14 @@ class BibleDbController extends Controller
             $verses = $verses->where('chapter_id',$request['chapter_id']);
         }
 
-        $verses = $verses->get(['statement_id']);
+        $verses = $verses->get(['statement_id','statement_no']);
 
         $results = [];
 
         foreach ($verses as $verse) {
             $results[] = [
                 'id' => $verse->statement_id,
-                'text' => $verse->statement_id,
+                'text' => $verse->statement_no,
             ];
         }
         return response()->json(['results' => $results]);       
