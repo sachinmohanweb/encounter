@@ -27,8 +27,20 @@ Route::middleware('auth:admin')->group(function(){
     Route::post('activatesuspenduser', [UserController::class, 'admin_user_status_change'])->name('admin.user.status.change');
 
     Route::get('gotquestion', [GotQuestionController::class, 'GotQuestion'])->name('admin.got-question');
-    Route::get('gotquestionanswer', [GotQuestionController::class, 'GotQuestionAnswer'])
-            ->name('admin.gotquestionanswer');
+    Route::post('get_gq_category_list', [GotQuestionController::class, 'gq_category_list'])->name('gqCategory.list');
+    Route::post('get_gq_subcategory_list', [GotQuestionController::class, 'gq_subcategory_list'])->name('gqSubcategory.list');
+    Route::post('gotquestionDatatable',[GotQuestionController::class,'QotQuestionDatatable'])
+            ->name('admin.gotquestion.datatable');
+    Route::get('creategotquestion', [GotQuestionController::class, 'AddGotQuestion'])
+            ->name('admin.add.GotQuestion');
+    Route::post('storegotquestion', [GotQuestionController::class, 'StoreGotQuestion'])
+            ->name('admin.store.GotQuestion');
+    Route::get('editgotquestion/{id}', [GotQuestionController::class, 'EditGotQuestion'])
+            ->name('admin.edit.GotQuestion');
+    Route::post('updategotquestion', [GotQuestionController::class, 'UpdateGotQuestion'])
+            ->name('admin.update.GotQuestion');
+    Route::post('deletegotquestion', [GotQuestionController::class, 'DeleteGotQuestion'])
+            ->name('admin.delete.GotQuestion');
 
     Route::get('dailybibleverse', [BibleVerseController::class, 'DailyBibleVerse'])
             ->name('admin.daily.bible.verse');

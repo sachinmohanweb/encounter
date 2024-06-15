@@ -16,13 +16,30 @@
    <div class="row widget-grid">
       <div class="col-sm-12">
          <div class="new-question d-flex justify-content-end mb-4">
-            <a href="{{ route('admin.gotquestionanswer') }}"><button class="btn btn-pill btn-info-gradien pt-2 pb-2" type="button" data-bs-original-title="" title="">New Question</button>
+            <a href="{{ route('admin.add.GotQuestion') }}"><button class="btn btn-pill btn-info-gradien pt-2 pb-2" type="button" data-bs-original-title="" title="">New Question</button>
             </a>
          </div>
          <div class="card">
+            @if (Session::has('success'))
+              <div class="alert alert-success">
+                 <ul>
+                    <li>{!! Session::get('success') !!}</li>
+                 </ul>
+              </div>
+            @endif
+            @if (Session::has('error'))
+              <div class="alert alert-danger">
+                 <ul>
+                    <li>{!! Session::get('error') !!}</li>
+                 </ul>
+              </div>
+            @endif
+            @if($errors->any())
+               <h6 style="color:red;padding: 20px 0px 0px 30px;">{{$errors->first()}}</h6>
+            @endif
             <div class="card-body">
                <div class="table-responsive">
-                  <table class="display" id="data-source-1" style="width:100%">
+                  <table class="display" id="got_question_data" style="width:100%">
                      <thead>
                         <tr>
                            <th>Questions</th>
@@ -33,96 +50,6 @@
                         </tr>
                      </thead>
                      <tbody>
-                        <tr>
-                           <td>The Bible is a collection of religious  dolor?</td>
-                           <td>The Bible is a collection of religious</td>
-                           <td>The Bible is a collection of religious texts?</td>
-                           <td>
-                              Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellendus provident repellat
-                           </td>
-                           <td>
-                              <ul class="action">
-                                 <li class="edit"> <a href="#"><i class="icon-pencil-alt"></i></a>
-                                 </li>
-                                 <li class="delete"><a href="#"><i class="icon-trash"></i></a></li>
-                              </ul>
-                           </td>
-                        </tr>
-                        <tr>
-                           <td>The Bible is a collection of religious  dolor?</td>
-                           <td>The Bible is a collection of religious</td>
-                           <td>The Bible is a collection of religious texts?</td>
-                           <td>
-                              Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellendus provident repellat
-                           </td>
-                           <td>
-                              <ul class="action">
-                                 <li class="edit"> <a href="#"><i class="icon-pencil-alt"></i></a>
-                                 </li>
-                                 <li class="delete"><a href="#"><i class="icon-trash"></i></a></li>
-                              </ul>
-                           </td>
-                        </tr>
-                        <tr>
-                           <td>The Bible is a collection of religious  dolor?</td>
-                           <td>The Bible is a collection of religious</td>
-                           <td>The Bible is a collection of religious texts?</td>
-                           <td>
-                              Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellendus provident repellat
-                           </td>
-                           <td>
-                              <ul class="action">
-                                 <li class="edit"> <a href="#"><i class="icon-pencil-alt"></i></a>
-                                 </li>
-                                 <li class="delete"><a href="#"><i class="icon-trash"></i></a></li>
-                              </ul>
-                           </td>
-                        </tr>
-                        <tr>
-                           <td>The Bible is a collection of religious  dolor?</td>
-                           <td>The Bible is a collection of religious</td>
-                           <td>The Bible is a collection of religious texts?</td>
-                           <td>
-                              Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellendus provident repellat
-                           </td>
-                           <td>
-                              <ul class="action">
-                                 <li class="edit"> <a href="#"><i class="icon-pencil-alt"></i></a>
-                                 </li>
-                                 <li class="delete"><a href="#"><i class="icon-trash"></i></a></li>
-                              </ul>
-                           </td>
-                        </tr>
-                        <tr>
-                           <td>The Bible is a collection of religious  dolor?</td>
-                           <td>The Bible is a collection of religious</td>
-                           <td>The Bible is a collection of religious texts?</td>
-                           <td>
-                              Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellendus provident repellat
-                           </td>
-                           <td>
-                              <ul class="action">
-                                 <li class="edit"> <a href="#"><i class="icon-pencil-alt"></i></a>
-                                 </li>
-                                 <li class="delete"><a href="#"><i class="icon-trash"></i></a></li>
-                              </ul>
-                           </td>
-                        </tr>
-                        <tr>
-                           <td>The Bible is a collection of religious  dolor?</td>
-                           <td>The Bible is a collection of religious</td>
-                           <td>The Bible is a collection of religious texts?</td>
-                           <td>
-                              Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellendus provident repellat
-                           </td>
-                           <td>
-                              <ul class="action">
-                                 <li class="edit"> <a href="#"><i class="icon-pencil-alt"></i></a>
-                                 </li>
-                                 <li class="delete"><a href="#"><i class="icon-trash"></i></a></li>
-                              </ul>
-                           </td>
-                        </tr>
                      </tbody>
                   </table>
                </div>
@@ -146,5 +73,94 @@
 <script src="{{ asset('assets/js/typeahead-search/typeahead-custom.js') }}"></script>
 <script src="{{ asset('assets/js/height-equal.js') }}"></script>
 <script src="{{ asset('assets/js/animation/wow/wow.min.js') }}"></script>
-<script src="{{ asset('assets/js/datatable/datatables/jquery.dataTables.min.js') }}"></script>   <script src="{{ asset('assets/js/datatable/datatables/datatable.custom.js') }}"></script>
+<script src="{{ asset('assets/js/datatable/datatables/jquery.dataTables.min.js') }}"></script>
+<script src="{{ asset('assets/js/datatable/datatables/datatable.custom.js') }}"></script>
+<script>
+   $(document).ready( function () {
+   
+      $('#got_question_data').DataTable({
+         processing: true,
+         serverSide: true,
+         ajax: {
+            url: "{{ route('admin.gotquestion.datatable') }}",
+            type: 'POST',
+            headers: {
+                  'X-CSRF-TOKEN': "{{ csrf_token() }}"
+            } 
+         },
+          columns: [
+              { data: 'question', name: 'question'},     
+              { data: 'category', name: 'category' , orderable: false},
+              { data: 'sub_category', name: 'sub_category' , orderable: false },
+              { data: 'answer', name: 'answer' },
+              { data: 'action', name: 'action', orderable: false},
+          ],
+      });
+   });
+         
+   function remove(id){
+
+      msg = 'Are you sure? Delete this user?';
+
+      if (confirm(msg) == true) {
+          var id = id;
+          $.ajax({
+              type:"POST",
+              url: "{{ route('admin.delete.GotQuestion') }}",
+              data: { _token : "<?= csrf_token() ?>",
+                  id     : id
+              },
+              dataType: 'json',
+              success: function(res){
+                  var oTable = $('#got_question_data').dataTable();
+                  if (res.status=='success'){
+                        $.notify({
+                           title:'Notification',
+                           message:'Question & answer Successfully deleted'
+                           },
+                           {
+                              type:'primary',
+                              offset:{
+                                x:35,
+                                y:230
+                              },
+                              animate:{
+                                enter:'animated fadeIn',
+                                exit:'animated fadeOut'
+                            }
+                        });
+                     table = $('#got_question_data').DataTable();
+                     table.ajax.reload(null, false);
+                  }else{
+                        $.notify({
+                           title:'Notification',
+                           message:'Question & answer Not deleted'
+                           },
+                           {
+                              type:'danger',
+                              offset:{
+                                x:35,
+                                y:230
+                              },
+                              animate:{
+                                enter:'animated fadeIn',
+                                exit:'animated fadeOut'
+                            }
+                        
+                        });
+                  }
+              },
+              error: function(xhr, status, error) {
+                  console.error('AJAX request failed:', status, error);
+                  alert('Failed to delete notification. Please try again later.');
+              }
+          });
+      }else{
+         table = $('#got_question_data').DataTable();
+         table.ajax.reload(null, false);
+      }
+   }
+ 
+</script>
+
 @endsection

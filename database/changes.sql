@@ -104,3 +104,42 @@ ALTER TABLE `courses` ADD `bible_id` INT NOT NULL AFTER `course_name`;
 /*-----------13/06/2024--------*/
 
 ALTER TABLE `course_contents` ADD `testament` INT NULL DEFAULT NULL AFTER `day`;
+
+
+/*-----------15/06/2024--------*/
+
+CREATE TABLE `got_questions` (
+	`id` INT NOT NULL AUTO_INCREMENT , 
+	`question` TEXT NOT NULL , 
+	`category_id` INT NOT NULL , 
+	`sub_category_id` INT NOT NULL , 
+	`answer` TEXT NOT NULL , 
+	`status` INT NOT NULL DEFAULT '1' , 
+	`created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , 
+	`updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`id`));
+
+
+CREATE TABLE `g_q_categories` (
+	`id` INT NOT NULL AUTO_INCREMENT , 
+	`name` VARCHAR(256) NOT NULL , 
+	`status` INT NOT NULL DEFAULT '1' , 
+	`created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , 
+	`updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`id`));
+
+CREATE TABLE `g_q_subcategories` (
+	`id` INT NOT NULL AUTO_INCREMENT , 
+	`cat_id` INT NOT NULL , 
+	`name` VARCHAR(256) NOT NULL , 
+	`status` INT NOT NULL DEFAULT '1' , 
+	`created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , 
+	`updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`id`));
+
+
+INSERT INTO `g_q_categories` (`id`, `name`, `status`, `created_at`, `updated_at`) VALUES 
+(NULL, 'category 1', '1', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP), (NULL, 'category 2', '1', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+INSERT INTO `g_q_subcategories` (`id`, `cat_id`, `name`, `status`, `created_at`, `updated_at`) VALUES 
+(NULL, '1', 'sub category 1', '1', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP), (NULL, '1', 'sub category 2', '1', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP), 
+(NULL, '2', 'sub category 3', '1', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP), (NULL, '2', 'sub category 4', '1', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+

@@ -18,27 +18,48 @@
          
          <div class="card">
             <div class="card-body">
-                <form action="{{route('admin.store.GotQuestion')}}" method="Post" enctype="multipart/form-data" 
+                <form action="{{route('admin.update.GotQuestion')}}" method="Post" enctype="multipart/form-data" 
                   class="got-question-answer">
                      @csrf
+                    <input type="hidden" name="id" value="{{$Got_Question->id}}">
                     <div class="form-froup mb-3">
                        <label for="">Question <span style="color:red">*</span> </label>
-                       <input type="text" class="form-control" name="question" required>
+                       <input type="text" class="form-control" name="question" value="{{$Got_Question->question}}" required>
                     </div>
                     <div class="form-group mb-3">
                        <label for="">Category <span style="color:red">*</span> </label>
-                        <select class="js-data-example-ajax form-select" id="category_id" name="category_id" required></select>
+                        <select class="js-data-example-ajax form-select" id="category_id" name="category_id" required>
+                             @foreach($GQ_Category as $GQ_Category_value)
+                               @if($Got_Question->category_id == $GQ_Category_value->id)
+                                     <option value="{{ $GQ_Category_value->id }}" selected>
+                                       {{ $GQ_Category_value->name }}</option>
+                               @else
+                                     <option value="{{ $GQ_Category_value->id }}">
+                                        {{ $GQ_Category_value->name }}</option>
+                               @endif
+                             @endforeach                                
+                        </select>
                      </div>
                      <div class="form-group mb-3">
                        <label for="">Sub Category <span style="color:red">*</span> </label>
-                        <select class="js-data-example-ajax form-select" id="sub_category_id" name="sub_category_id" required></select>
+                        <select class="js-data-example-ajax form-select" id="sub_category_id" name="sub_category_id" required>
+                            @foreach($GQ_SubCategory as $GQ_SubCategory_value)
+                               @if($Got_Question->sub_category_id == $GQ_SubCategory_value->id)
+                                     <option value="{{ $GQ_SubCategory_value->id }}" selected>
+                                       {{ $GQ_SubCategory_value->name }}</option>
+                               @else
+                                     <option value="{{ $GQ_SubCategory_value->id }}">
+                                        {{ $GQ_SubCategory_value->name }}</option>
+                               @endif
+                             @endforeach  
+                        </select>
                     </div>
                      <div class="form-froup mb-3">
                        <label for="">Answer <span style="color:red">*</span> </label>
-                       <textarea rows="5" class="form-control" name="answer" required></textarea>
+                       <textarea rows="5" class="form-control" name="answer" required>{{$Got_Question->answer}}</textarea>
                     </div>
                     <div class="form-group d-flex justify-content-end">
-                       <button class="btn btn-primary active" type="submit" data-bs-original-title="" title="">Submit</button>
+                       <button class="btn btn-primary" type="submit">Submit</button>
                     </div>
                 </form>
             </div>
