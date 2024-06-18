@@ -143,3 +143,18 @@ INSERT INTO `g_q_subcategories` (`id`, `cat_id`, `name`, `status`, `created_at`,
 (NULL, '2', 'sub category 3', '1', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP), (NULL, '2', 'sub category 4', '1', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 
+/*-----------17/06/2024--------*/
+
+CREATE TABLE `user_qna` (
+	`id` INT NOT NULL AUTO_INCREMENT , 
+	`question` TEXT NOT NULL , 
+	`answer` TEXT NOT NULL , 
+	`status` INT NOT NULL DEFAULT '1' , 
+	`created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , 
+	`updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`id`));
+
+ALTER TABLE `user_qna` ADD `user_id` INT NOT NULL AFTER `id`;
+
+
+ALTER TABLE `user_qna` CHANGE `answer` `answer` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL;
+

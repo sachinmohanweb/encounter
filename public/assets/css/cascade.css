@@ -162,3 +162,10 @@
      font-size: 16px;
      border: 0px;
 }
+.box_height_scroll{
+	min-height: 71px; 
+	max-height: 71px;
+	overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #c1c1c1 #f1f1f1;
+}

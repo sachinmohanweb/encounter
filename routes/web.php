@@ -12,6 +12,7 @@ use App\Http\Controllers\CourseController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\GenReferenceController;
 use App\Http\Controllers\BibleDbController;
+use App\Http\Controllers\UserQNAController;
 
 Route::get('admin', [HomeController::class, 'admin_index'])->name('index');
 Route::post('/login', [UserController::class, 'admin_login'])->name('admin.login');
@@ -41,6 +42,11 @@ Route::middleware('auth:admin')->group(function(){
             ->name('admin.update.GotQuestion');
     Route::post('deletegotquestion', [GotQuestionController::class, 'DeleteGotQuestion'])
             ->name('admin.delete.GotQuestion');
+
+    Route::get('user_qna', [UserQNAController::class, 'UserQNAList'])->name('admin.user_qna');
+    Route::get('user_qna_details/{id}', [UserQNAController::class,'UserQNADetails'])->name('admin.user_qna.details');
+    Route::get('get_user_qna/{id}', [UserQNAController::class, 'UserQNADetailsModal'])->name('admin.user_qna.details.modal');
+    Route::post('update_user_qna_answer', [UserQNAController::class, 'UpdateUserQNAAnswer'])->name('admin.update.user_qna.answer');
 
     Route::get('dailybibleverse', [BibleVerseController::class, 'DailyBibleVerse'])
             ->name('admin.daily.bible.verse');
