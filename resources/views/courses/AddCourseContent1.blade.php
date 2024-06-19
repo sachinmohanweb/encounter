@@ -58,6 +58,37 @@
 
                            </div>
                         </div>
+                         <div class="col-lg-4 col-md-4 col-12">
+                           <div class="form-group">
+                              <label for="">Testament<span style="color:red">*</span></label>
+                              <select class="js-data-example-ajax form-select" id="testament" name="testament" required 
+                              value="{{old('testament')}}"></select>
+                           </div>
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-12">
+                           <div class="form-group">
+                              <label for="">Book<span style="color:red">*</span></label>
+                              <select class="js-data-example-ajax form-select" id="book" name="book" required></select>
+                           </div>
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-12">
+                           <div class="form-group">
+                              <label for="">Chapter<span style="color:red">*</span></label>
+                              <select class="js-data-example-ajax form-select" id="chapter" name="chapter" required></select>
+                           </div>
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-12">
+                           <div class="form-group">
+                              <label for="">Verses From<span style="color:red">*</span></label>
+                              <select class="js-data-example-ajax form-select" id="verse_no_s" name="verse_from" required></select>
+                           </div>
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-12">
+                           <div class="form-group">
+                              <label for="">Verses To<span style="color:red">*</span></label>
+                              <select class="js-data-example-ajax form-select" id="verse_no_l" name="verse_to" required></select>
+                           </div>
+                        </div>
                         <div class="col-lg-6 col-md-3 col-12">
                            <div class="form-group">
                               <label for="">Text Description</label>
@@ -143,4 +174,142 @@
 <script src="{{ asset('assets/js/typeahead/typeahead.custom.js') }}"></script>
 <script src="{{ asset('assets/js/typeahead-search/handlebars.js') }}"></script>
 <script src="{{ asset('assets/js/typeahead-search/typeahead-custom.js') }}"></script>
+
+<script type="text/javascript">
+
+   $('#testament').select2({
+         placeholder: "Select Testament",
+
+         ajax: {
+             url: "<?= url('get_testament_list') ?>",
+             dataType: 'json',
+             method: 'post',
+             delay: 250,
+
+              data: function(data) {
+                 return {
+                     _token    : "<?= csrf_token() ?>",
+                     search_tag: data.term,
+                     bible_id  : '<?= $course->bible_id ?>',
+                 };
+             },
+             processResults: function(data, params) {
+                 params.page = params.page || 1;
+                 return {
+                     results: data.results,
+                     pagination: { more: (params.page * 30) < data.total_count }
+                 };
+             },
+             cache: true
+         }
+     });
+
+     $('#book').select2({
+         placeholder: "Select Book",
+         ajax: {
+             url: "<?= url('get_book_list') ?>",
+             dataType: 'json',
+             method: 'post',
+             delay: 250,
+
+              data: function(data) {
+                 return {
+                     _token    : "<?= csrf_token() ?>",
+                     search_tag: data.term,
+                     testament_id:$('#testament').val(),
+                 };
+             },
+             processResults: function(data, params) {
+                 params.page = params.page || 1;
+                 return {
+                     results: data.results,
+                     pagination: { more: (params.page * 30) < data.total_count }
+                 };
+             },
+             cache: true
+         }
+     });
+
+     $('#chapter').select2({
+         placeholder: "Select Chapter",
+         ajax: {
+             url: "<?= url('get_chapter_list') ?>",
+             dataType: 'json',
+             method: 'post',
+             delay: 250,
+
+              data: function(data) {
+                 return {
+                     _token    : "<?= csrf_token() ?>",
+                     search_tag: data.term,
+                     book_id:$('#book').val(),
+
+                 };
+             },
+             processResults: function(data, params) {
+                 params.page = params.page || 1;
+                 return {
+                     results: data.results,
+                     pagination: { more: (params.page * 30) < data.total_count }
+                 };
+             },
+             cache: true
+         }
+     });
+
+     $('#verse_no_s').select2({
+         placeholder: "Select Verse",
+         ajax: {
+
+             url: "<?= url('get_verse_no_list') ?>",
+             dataType: 'json',
+             method: 'post',
+             delay: 250,
+
+              data: function(data) {
+                 return {
+                     _token    : "<?= csrf_token() ?>",
+                     search_tag: data.term,
+                     chapter_id:$('#chapter').val(),
+
+                 };
+             },
+             processResults: function(data, params) {
+                 params.page = params.page || 1;
+                 return {
+                     results: data.results,
+                     pagination: { more: (params.page * 30) < data.total_count }
+                 };
+             },
+             cache: true
+         }
+     });
+
+     $('#verse_no_l').select2({
+         placeholder: "Select Verse",
+         ajax: {
+
+             url: "<?= url('get_verse_no_list') ?>",
+             dataType: 'json',
+             method: 'post',
+             delay: 250,
+
+              data: function(data) {
+                 return {
+                     _token    : "<?= csrf_token() ?>",
+                     search_tag: data.term,
+                     chapter_id:$('#chapter').val(),
+                 };
+             },
+             processResults: function(data, params) {
+                 params.page = params.page || 1;
+                 return {
+                     results: data.results,
+                     pagination: { more: (params.page * 30) < data.total_count }
+                 };
+             },
+             cache: true
+         }
+     });
+</script>
 @endsection

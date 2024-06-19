@@ -42,4 +42,9 @@ class Course extends Model
 
         return $this->hasMany(CourseContent::class);
     }
+
+    public function getContentForDay($day)
+    {
+        return $this->CourseContents()->where('day', $day)->first();
+    }
 }

@@ -13,6 +13,7 @@ use Exception;
 
 use App\Models\Course;
 use App\Models\CourseContent;
+use App\Models\CourseDayVerse;
 use App\Models\Batch;
 
 use App\Models\Bible;
@@ -173,12 +174,6 @@ class CourseController extends Controller
             $a =  $request->validate([
                 'course_id' => 'required',
                 'day' => 'required',
-                'testament' => 'required',
-                'book' => 'required',
-                'chapter' => 'required',
-                'verse_from' => 'required',
-                'verse_to' => 'required',
-                
             ]);
 
             $inputData = $request->all();
@@ -231,13 +226,8 @@ class CourseController extends Controller
     {      
         $content = CourseContent::where('id',$content_id)->first();
         $course = Course::where('id',$content->course_id)->first();
-        $testaments = Testament::all();
-        $books = Book::all();
-        $chapters = Chapter::all();
-        $verses = HolyStatement::select('statement_id','statement_no')->get();
 
-        return view('courses.EditCourseContent',compact('content','books','chapters','verses','testaments','course'));
-
+        return view('courses.EditCourseContent',compact('content','course'));
     }
 
     public function UpdateCourseContent(Request $request): RedirectResponse
@@ -249,13 +239,7 @@ class CourseController extends Controller
 
             $a =  $request->validate([
                 'course_id' => 'required',
-                'day' => 'required',
-                'testament' => 'required',
-                'book' => 'required',
-                'chapter' => 'required',
-                'verse_from' => 'required',
-                'verse_to' => 'required',
-                
+                'day' => 'required',                
             ]);
 
             $inputData = $request->all();
@@ -296,6 +280,90 @@ class CourseController extends Controller
              
             return redirect()->route('admin.course.details',['id' => $request['course_id']])
                             ->with('success',"Success! Course Content has been updated added.");
+        }catch (Exception $e) {
+
+            DB::rollBack();
+            $message = $e->getMessage();
+            return back()->withInput()->withErrors(['message' =>  $e->getMessage()]);;
+        }
+    }
+
+    public function AddContentVerses($content_id) : View
+    {
+        $content = CourseContent::find($content_id);
+        $course = Course::find($content['course_id']);
+        return view('courses.AddContentVerse',compact('content_id','content','course'));
+    }
+
+    public function SaveContentVerses(Request $request): RedirectResponse
+    {
+        DB::beginTransaction();
+        try {
+            $a =  $request->validate([
+                'course_content_id' => 'required',
+                'testament' => 'required',
+                'book' => 'required',
+                'chapter' => 'required',
+                'verse_from' => 'required',
+                'verse_to' => 'required',
+                
+            ]);
+
+            $inputData = $request->all();
+
+            $Course_Day_Verse = CourseDayVerse::create($inputData);
+            DB::commit();
+
+            $course_content=CourseContent::find($request['course_content_id']);
+             
+            return redirect()->route('admin.course.content',['id' => $course_content['course_id']])
+                            ->with('success',"Success! New verse details has been successfully added.");
+        }catch (Exception $e) {
+
+            DB::rollBack();
+            $message = $e->getMessage();
+            return back()->withInput()->withErrors(['message' =>  $e->getMessage()]);;
+        }
+    }
+
+    public function EditContentVerses($content_verse_id) : View
+    {      
+        $verse_date = CourseDayVerse::where('id',$content_verse_id)->first();
+        $content = CourseContent::where('id',$verse_date->course_content_id)->first();
+        $course = Course::where('id',$content->course_id)->first();
+
+        $testaments = Testament::all();
+        $books = Book::all();
+        $chapters = Chapter::all();
+        $verses = HolyStatement::select('statement_id','statement_no')->get();
+
+        return view('courses.EditContentVerse',compact('verse_date','content','course','testaments','books','chapters',
+            'verses'));
+    }
+
+    public function UpdateContentVerses(Request $request): RedirectResponse
+    {
+        DB::beginTransaction();
+        try {
+
+            $content = CourseDayVerse::find($request->id);
+
+            $a =  $request->validate([
+                'testament' => 'required',
+                'book' => 'required',
+                'chapter' => 'required',
+                'verse_from' => 'required',
+                'verse_to' => 'required',
+                
+            ]);
+
+            $inputData = $request->all();
+
+            $content->update($inputData);
+            DB::commit();
+             
+            return redirect()->route('admin.course.content',['id' => $content['course_content_id']])
+                            ->with('success',"Success! Verse details has been updated.");
         }catch (Exception $e) {
 
             DB::rollBack();

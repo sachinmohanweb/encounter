@@ -158,3 +158,18 @@ ALTER TABLE `user_qna` ADD `user_id` INT NOT NULL AFTER `id`;
 
 ALTER TABLE `user_qna` CHANGE `answer` `answer` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL;
 
+
+/*-----------17/06/2024--------*/
+
+CREATE TABLE `course_day_verses` (
+	`id` INT NOT NULL AUTO_INCREMENT , 
+	`course_content_id` INT NOT NULL , 
+	`testament` INT NOT NULL , 
+	`book` INT NOT NULL , 
+	`chapter` INT NOT NULL , 
+	`verse_from` INT NOT NULL , 
+	`verse_to` INT NOT NULL , 
+	`status` INT NOT NULL DEFAULT '1' , PRIMARY KEY (`id`));
+
+ALTER TABLE `course_day_verses` ADD `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `status`,
+ ADD `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `created_at`;

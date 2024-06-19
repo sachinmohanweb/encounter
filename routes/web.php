@@ -81,6 +81,15 @@ Route::middleware('auth:admin')->group(function(){
     Route::post('updatecoursecontent', [CourseController::class, 'UpdateCourseContent'])
             ->name('admin.update.course.content');
 
+    Route::get('addcontentverses/{content_id}', [CourseController::class, 'AddContentVerses'])
+            ->name('admin.add.content.verses');
+    Route::post('savecontentverses', [CourseController::class, 'SaveContentVerses'])
+            ->name('admin.save.content.verses');
+    Route::get('editcontentverses/{verse_id}', [CourseController::class, 'EditContentVerses'])
+            ->name('admin.edit.content.verses');
+    Route::post('updatecontentverses', [CourseController::class, 'UpdateContentVerses'])
+            ->name('admin.update.content.verses');
+
     Route::get('batchdetail', [CourseController::class, 'BatchDetail'])->name('admin.batch.detail');
     Route::get('newbatch/{id}', [CourseController::class, 'NewBatch'])->name('admin.new.batch');
     Route::post('savebatch', [CourseController::class, 'SaveBatch'])->name('admin.save.batch');

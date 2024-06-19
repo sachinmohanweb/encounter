@@ -1,7 +1,3 @@
-<?php
-   use App\Models\CourseDayVerse;
-?>
-
 @extends('layouts.simple.master')
 @section('title', 'Date Picker')
 @section('css')
@@ -33,30 +29,51 @@
                @endif
 
                      @if($course->contentExistsForDay($i))
-
-                     @php
-                           $content = $course->getContentForDay($i);
-                     @endphp
-
-                        <h6>Day details</h6>
+                        <ul class="action">   
+                           <li class="edit"> 
+                              <a href="{{ route('admin.edit.course.content',['content_id'=>$course->CourseContents[$i-1]->id]) }}">
+                                 <i class="fas fa-pencil-alt"></i>
+                              </a>
+                            </li>                  
+                        </ul>
                         <table>
                            <tr>
                               <td>Course Name</td>
-                              <td>{{$content->course_name}}</td>
+                              <td>{{$course->CourseContents[$i-1]->course_name}}</td>
                            </tr>
                            <tr>
                               <td>Bible</td>
-                              <td>{{$content->bible_name}}</td>
+                              <td>{{$course->CourseContents[$i-1]->bible_name}}</td>
+                           </tr>
+                           <tr>
+                              <td>Testament</td>
+                              <td>{{$course->CourseContents[$i-1]->testament_name}}</td>
+                           </tr>
+                           <tr>
+                              <td>Book</td>
+                              <td>{{$course->CourseContents[$i-1]->book_name}}</td>
+                           </tr>
+                           <tr>
+                              <td>Chapter</td>
+                              <td>{{$course->CourseContents[$i-1]->chapter_name}}</td>
+                           </tr>
+                           <tr>
+                              <td>Verse from</td>
+                              <td>{{$course->CourseContents[$i-1]->verse_from_name}}</td>
+                           </tr>
+                           <tr>
+                              <td>Verse to</td>
+                              <td>{{$course->CourseContents[$i-1]->verse_to_name}}</td>
                            </tr>
                            <tr>
                               <td>Text Description</td>
-                              <td>{{$content->text_description}}</td>
+                              <td>{{$course->CourseContents[$i-1]->text_description}}</td>
                            </tr>
                            <tr>
                               <td>Video Links</td>
                               <td> 
-                                 @if($content->video_link)
-                                 <a href="{{$content->video_link}}"
+                                 @if($course->CourseContents[$i-1]->video_link)
+                                 <a href="{{$course->CourseContents[$i-1]->video_link}}"
                                  target="_blank">
                                  @endif
                               Click here </td>
@@ -64,8 +81,8 @@
                            <tr>
                               <td>Audio File</td>
                               <td>
-                                 @if($content->audio_file)
-                                 <a href="{{$content->audio_file}}"
+                                 @if($course->CourseContents[$i-1]->audio_file)
+                                 <a href="{{$course->CourseContents[$i-1]->audio_file}}"
                                  target="_blank">
                                  @endif
                               Click here</td>
@@ -73,8 +90,8 @@
                            <tr>
                               <td>Spotify Link</td>
                               <td>
-                                 @if($content->spotify_link)
-                                 <a href="{{$content->spotify_link}}"
+                                 @if($course->CourseContents[$i-1]->spotify_link)
+                                 <a href="{{$course->CourseContents[$i-1]->spotify_link}}"
                                  target="_blank">
                                  @endif
                               Click here</td>
@@ -82,8 +99,8 @@
                            <tr>
                               <td>Website Link</td>
                               <td>
-                                 @if($content->website_link)
-                                 <a href="{{$content->website_link}}"
+                                 @if($course->CourseContents[$i-1]->website_link)
+                                 <a href="{{$course->CourseContents[$i-1]->website_link}}"
                                  target="_blank">
                                  @endif
                               Click here</td>
@@ -91,71 +108,26 @@
                            <tr>
                               <td> Image</td>
                               <td><img class="img-fluid for-light"
-                           src="{{ asset($content->image) }}" alt="image.jpg" style="width:150px;"></td>
+                           src="{{ asset($course->CourseContents[$i-1]->image) }}" alt="image.jpg" style="width:150px;"></td>
                            </tr>
                            <tr>
                               <td>Documents</td>
                               <td>
-                                 @if($content->documents)
-                                 <a href="{{$content->documents}}"
+                                 @if($course->CourseContents[$i-1]->documents)
+                                 <a href="{{$course->CourseContents[$i-1]->documents}}"
                                  target="_blank">
                                  @endif
                               Click here</td>
                            </tr>
-                           <tr>
-                              <td  colspan="2" style="text-align: center;">
-                                 <a href="{{ route('admin.edit.course.content',['content_id'=>$content->id]) }}"><button class="btn btn-pill btn-info-gradien pt-2 pb-2">Edit Course content</button></a>
-                              </td>
-                           </tr>
                         </table>
-
-                        <h6>Verse details</h6>
-                        <a href="{{ route('admin.add.content.verses',['content_id'=>$content->id]) }}"><button class="btn btn-pill btn-info-gradien pt-2 pb-2">Add verse</button></a>
-
-                        <?php
-                           $course_day_verses = CourseDayVerse::where('course_content_id',$content->id)->get();
-                        ?>
-
-                        @if($course_day_verses)
-                              <div>
-                                 @foreach($course_day_verses as $key=>$value)
-                                    <table>
-                                        <tr>
-                                          <td  colspan="2" style="text-align: center;">
-                                                Verse {{$key+1}}
-                                          </td>
-                                       </tr>
-                                       <tr>
-                                          <td>Testament Name</td>
-                                          <td>{{$value->testament_name}}</td>
-                                       </tr>
-                                       <tr>
-                                          <td>Book</td>
-                                          <td>{{$value->book_name}}</td>
-                                       </tr>
-                                       <tr>
-                                          <td>Chapter</td>
-                                          <td>{{$value->chapter_name}}</td>
-                                       </tr>
-                                       <tr>
-                                          <td>Verse From</td>
-                                          <td>{{$value->verse_from_name}}</td>
-                                       </tr>
-                                       <tr>
-                                          <td>Verse To</td>
-                                          <td>{{$value->verse_to_name}}</td>
-                                       </tr>
-                                       <tr>
-                                          <td  colspan="2" style="text-align: center;">
-                                             <a href="{{ route('admin.edit.content.verses',['verse_id'=>$value->id]) }}"><button class="btn btn-pill btn-info-gradien pt-2 pb-2">Edit</button></a>
-                                          </td>
-                                       </tr>
-                                    </table><br>
-                                 @endforeach
-                              </div>
-                        @endif
                      @else
-                        <a href="{{ route('admin.add.course.content',['course_id'=>$course->id,'day'=>$i]) }}"><button class="btn btn-pill btn-info-gradien pt-2 pb-2">Add Course Content</button></a>
+                        <ul class="action">   
+                           <li class="edit"> 
+                              <a href="{{ route('admin.add.course.content',['course_id'=>$course->id,'day'=>$i]) }}">
+                                 <i class="fas fa-pencil-alt"></i>
+                              </a>
+                            </li>                  
+                        </ul>
                      @endif
                </div>
             @endfor
