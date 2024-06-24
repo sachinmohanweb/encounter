@@ -9,6 +9,22 @@
 @section('style')
 <link rel="stylesheet" type="text/css" href="{{asset('assets/css/vendors/date-picker.css')}}">
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/cascade.css') }}">
+<style type="text/css">
+   .image_td {
+    width: 120px;
+    height: 120px;
+    text-align: center;
+    vertical-align: middle;
+    padding: 0;
+}
+
+.image_td img {
+    max-width: 100%;
+    max-height: 100%;
+    display: block;
+    margin: auto;
+}
+</style>
 @endsection
 @section('breadcrumb-title')
 <h3>Course Content</h3>
@@ -90,8 +106,8 @@
                            </tr>
                            <tr>
                               <td> Image</td>
-                              <td><img class="img-fluid for-light"
-                           src="{{ asset($content->image) }}" alt="image.jpg" style="width:150px;"></td>
+                              <td class="image_td"><img class="img-fluid for-light"
+                           src="{{ asset($content->image) }}" alt="image.jpg"></td>
                            </tr>
                            <tr>
                               <td>Documents</td>
