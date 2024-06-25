@@ -24,12 +24,24 @@ Route::middleware('auth:admin')->group(function(){
 
     Route::get('userprofile', [UserController::class, 'UsersList'])->name('admin.user-profile');
     Route::post('usersDatatable', [UserController::class, 'admin_users_Datatable'])
-            ->name('admin.users.datatable');
-    Route::post('activatesuspenduser', [UserController::class, 'admin_user_status_change'])->name('admin.user.status.change');
+                ->name('admin.users.datatable');
+    Route::post('activatesuspenduser', [UserController::class, 'admin_user_status_change'])
+                ->name('admin.user.status.change');
+
+
+    Route::get('usernotes', [UserController::class, 'UsersNotes'])->name('admin.user.notes');
+    Route::post('usernotesDatatable', [UserController::class, 'UsersNotes_Datatable'])
+                ->name('admin.user.notes.datatable');
+    Route::post('activatesusernotes', [UserController::class, 'UsersNotes_status_change'])
+                ->name('admin.user.notes.status.change');
+    
+    Route::get('userlms', [UserController::class, 'UserLms'])->name('admin.user.lms');
+
 
     Route::get('gotquestion', [GotQuestionController::class, 'GotQuestion'])->name('admin.got-question');
     Route::post('get_gq_category_list', [GotQuestionController::class, 'gq_category_list'])->name('gqCategory.list');
-    Route::post('get_gq_subcategory_list', [GotQuestionController::class, 'gq_subcategory_list'])->name('gqSubcategory.list');
+    Route::post('get_gq_subcategory_list', [GotQuestionController::class, 'gq_subcategory_list'])
+            ->name('gqSubcategory.list');
     Route::post('gotquestionDatatable',[GotQuestionController::class,'QotQuestionDatatable'])
             ->name('admin.gotquestion.datatable');
     Route::get('creategotquestion', [GotQuestionController::class, 'AddGotQuestion'])
@@ -45,8 +57,10 @@ Route::middleware('auth:admin')->group(function(){
 
     Route::get('user_qna', [UserQNAController::class, 'UserQNAList'])->name('admin.user_qna');
     Route::get('user_qna_details/{id}', [UserQNAController::class,'UserQNADetails'])->name('admin.user_qna.details');
-    Route::get('get_user_qna/{id}', [UserQNAController::class, 'UserQNADetailsModal'])->name('admin.user_qna.details.modal');
-    Route::post('update_user_qna_answer', [UserQNAController::class, 'UpdateUserQNAAnswer'])->name('admin.update.user_qna.answer');
+    Route::get('get_user_qna/{id}', [UserQNAController::class, 'UserQNADetailsModal'])
+            ->name('admin.user_qna.details.modal');
+    Route::post('update_user_qna_answer', [UserQNAController::class, 'UpdateUserQNAAnswer'])
+            ->name('admin.update.user_qna.answer');
 
     Route::get('dailybibleverse', [BibleVerseController::class, 'DailyBibleVerse'])
             ->name('admin.daily.bible.verse');
@@ -135,7 +149,6 @@ Route::middleware('auth:admin')->group(function(){
     Route::get('editgereralreference', [GenReferenceController::class, 'EditGereralReference'])
             ->name('admin.edit.gereralreference');
 
-    Route::get('userlms', [UserController::class, 'UserLms'])->name('admin.user.lms');
 
 });
 

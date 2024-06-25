@@ -49,7 +49,8 @@
                             </svg><span class="">Users</span></a>
                         <ul class="sidebar-submenu">
                             <li><a href="{{ route('admin.user-profile') }}">User Profile</a></li>
-                            <li><a href="{{ route('admin.user.lms') }}">Use Lms</a></li>
+                            <li><a href="{{ route('admin.user.lms') }}">User Lms</a></li>
+                            <li><a href="{{ route('admin.user.notes') }}">User Notes</a></li>
                         </ul>
                     </li>
                 
