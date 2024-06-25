@@ -219,3 +219,15 @@ CREATE TABLE `user_notes` (
 INSERT INTO `user_notes` (`id`, `user_id`, `bible_id`, `testament_id`, `book_id`, `chapter_id`, `verse_id`, `note`, `category`, `sub_category`, `status`, `created_at`, `updated_at`) VALUES
  (NULL, '1', '1', '1', '4', '135', '4161', 'VPC integrates seamlessly with other AWS services such as AWS Direct Connect (for dedicated network connections), AWS VPN (for secure access to your VPC from on-premises), Amazon Route 53 (for DNS management), and AWS CloudWatch (for monitoring VPC flow logs and metrics).', 'family', 'family love', '1', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP), 
  (NULL, '2', '1', '1', '3', '94', '2770', 'Hosting Web Applications: You can deploy web servers in a public subnet with internet access through an Internet Gateway, while database servers are placed in a private subnet without direct internet access.', 'relations', 'marital relations', '1', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+
+CREATE TABLE `user_l_m_s` (`id` INT NOT NULL AUTO_INCREMENT , `user_id` INT NOT NULL , 
+	`course_id` INT NOT NULL , `batch_id` INT NOT NULL , `start_date` DATE NOT NULL , 
+	`end_date` DATE NOT NULL , `progress` VARCHAR(256) NOT NULL , 
+	`completed_status` INT NOT NULL DEFAULT '1' COMMENT '1-Not started,2-Ongoing,3-Completed' , 
+	`status` INT NOT NULL DEFAULT '1' , `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , 
+	`updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`id`));
+
+INSERT INTO `user_l_m_s` (`id`, `user_id`, `course_id`, `batch_id`, `start_date`, `end_date`, `progress`, `completed_status`, `status`, `created_at`, `updated_at`) VALUES 
+(NULL, '1', '1', '1', '2024-07-10', '2024-08-10', '10%', '2', '1', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP), 
+(NULL, '2', '1', '1', '2024-07-10', '2024-08-10', ' 20%', '2', '1', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);

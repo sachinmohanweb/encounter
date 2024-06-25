@@ -14,6 +14,7 @@ use Datatables;
 
 use App\Models\User;
 use App\Models\UserNote;
+use App\Models\UserLMS;
 
 class UserController extends Controller
 {
@@ -110,24 +111,24 @@ class UserController extends Controller
         if(request()->ajax()) {
             return datatables()
             ->of(UserNote::select('*'))
-            ->addColumn('user', function ($bibleverse) {
-                return $bibleverse->user_name;
+            ->addColumn('user', function ($user_note) {
+                return $user_note->user_name;
 
             })
-            ->addColumn('bible', function ($bibleverse) {
-                return $bibleverse->bible_name;
+            ->addColumn('bible', function ($user_note) {
+                return $user_note->bible_name;
             })
-            ->addColumn('testament', function ($bibleverse) {
-                return $bibleverse->testament_name;
+            ->addColumn('testament', function ($user_note) {
+                return $user_note->testament_name;
             })
-            ->addColumn('book', function ($bibleverse) {
-                return $bibleverse->book_name;
+            ->addColumn('book', function ($user_note) {
+                return $user_note->book_name;
             })
-            ->addColumn('chapter', function ($bibleverse) {
-                return $bibleverse->chapter_name;
+            ->addColumn('chapter', function ($user_note) {
+                return $user_note->chapter_name;
             })
-            ->addColumn('verse', function ($bibleverse) {
-                return $bibleverse->verse_no;
+            ->addColumn('verse', function ($user_note) {
+                return $user_note->verse_no;
             })
             ->addColumn('action', 'users.user_notes_status_datatable-action')
             ->rawColumns(['user','bible','book','chapter','verse','action'])
@@ -165,5 +166,58 @@ class UserController extends Controller
     {
         return view('users.UserLms',[]);
     }
+
+    public function UsersLMS_Datatable()
+    {
+
+        if(request()->ajax()) {
+            return datatables()
+            ->of(UserLMS::select('*'))
+            ->addColumn('user', function ($user_lms) {
+                return $user_lms->user_name;
+
+            })
+            ->addColumn('course', function ($user_lms) {
+                return $user_lms->course_name;
+            })
+            ->addColumn('batch', function ($user_lms) {
+                return $user_lms->batch_name;
+            })
+            ->addColumn('completed_status', function ($user_lms) {
+                return $user_lms->completed_status_name;
+            })
+           
+            ->addColumn('action', 'users.user_lms_status_datatable-action')
+            ->rawColumns(['user','course','batch','completed_status','action'])
+            ->addIndexColumn()
+            ->make(true);
+        }
+        return view('bible_verse.DailyBibleVerse');
+    }
+
+    public function UsersLMS_status_change(Request $request): JsonResponse
+    {
+        DB::beginTransaction();
+        try {
+            $user = UserLMS::find($request['id']);
+            if($user->status==1){
+                $user->status=2;
+            }else{
+                $user->status=1;
+            }
+            $user->save();;
+            DB::commit();
+
+            return response()->json(['success' => true ,'msg' => 'User status updated','status' =>$user['status']]);
+
+        }catch (Exception $e) {
+
+            DB::rollBack();
+            $message = $e->getMessage();
+
+            return response()->json(['success' => false,'msg' => $e->getMessage()]);
+        }
+    }
+
     
 }

@@ -36,7 +36,10 @@ Route::middleware('auth:admin')->group(function(){
                 ->name('admin.user.notes.status.change');
     
     Route::get('userlms', [UserController::class, 'UserLms'])->name('admin.user.lms');
-
+    Route::post('userlmsDatatable', [UserController::class, 'UsersLMS_Datatable'])
+                ->name('admin.user.lms.datatable');
+    Route::post('activatesuserlms', [UserController::class, 'UsersLMS_status_change'])
+                ->name('admin.user.lms.status.change');
 
     Route::get('gotquestion', [GotQuestionController::class, 'GotQuestion'])->name('admin.got-question');
     Route::post('get_gq_category_list', [GotQuestionController::class, 'gq_category_list'])->name('gqCategory.list');
