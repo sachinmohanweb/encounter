@@ -50,10 +50,22 @@ Route::middleware('auth:admin')->group(function(){
 
     Route::get('dailybibleverse', [BibleVerseController::class, 'DailyBibleVerse'])
             ->name('admin.daily.bible.verse');
+    Route::post('dialybibleverseDatatable',[BibleVerseController::class,'BibleVerseDatatable'])
+            ->name('admin.bible_verse.datatable');
     Route::get('adddailybibleverse', [BibleVerseController::class, 'AddDailyBibleVerse'])
             ->name('admin.add.daily.bible.verse');
-    Route::get('editdailybibleverse', [BibleVerseController::class, 'EditDailyBibleVerse'])
+    Route::post('storedailybibleverse', [BibleVerseController::class, 'StoreDailyBibleVerse'])
+            ->name('admin.store.DailyBibleVerse');
+    Route::get('editdailybibleverse/{id}', [BibleVerseController::class, 'EditDailyBibleVerse'])
             ->name('admin.edit.daily.bible.verse');
+    Route::post('updatedailybibleverse', [BibleVerseController::class, 'UpdateDailyBibleVerse'])
+            ->name('admin.update.DailyBibleVerse');
+    Route::post('deletedailybibleverse', [BibleVerseController::class, 'DeleteDailyBibleVerse'])
+            ->name('admin.delete.DailyBibleVerse');
+    Route::post('statuschangebibleverse', [BibleVerseController::class, 'admin_bible_verse_status_change'])
+            ->name('admin.bible.verse.status.change');
+    Route::post('/get_bible_verse_theme_list', [BibleVerseController::class, 'BibleVerseTheme'])
+            ->name('bible.verse.theme.list');
 
     Route::get('courselist', [CourseController::class, 'CourseList'])->name('admin.course.list');
     Route::get('addcourse', [CourseController::class, 'AddCourse'])->name('admin.add.course');

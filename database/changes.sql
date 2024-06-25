@@ -173,3 +173,34 @@ CREATE TABLE `course_day_verses` (
 
 ALTER TABLE `course_day_verses` ADD `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `status`,
  ADD `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `created_at`;
+
+
+/*-----------24/06/2024--------*/
+
+CREATE TABLE `bible_verse_themes` (
+	`id` INT NOT NULL AUTO_INCREMENT , `
+	name` VARCHAR(256) NOT NULL , 
+	`status` INT NOT NULL DEFAULT '1' , 
+	`created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , 
+	`updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`id`));
+
+INSERT INTO `bible_verse_themes` (`id`, `name`, `status`, `created_at`, `updated_at`) VALUES 
+(NULL, 'General', '1', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP), (NULL, 'Christmas', '1', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP), 
+(NULL, 'Easter', '1', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP), (NULL, 'Period of Lent', '1', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+
+CREATE TABLE `daily_bible_verses` (
+	`id` INT NOT NULL AUTO_INCREMENT , 
+	`bible_id` INT NOT NULL , 
+	`book_id` INT NOT NULL , 
+	`chapter_id` INT NOT NULL , 
+	`verse_id` INT NOT NULL , 
+	`date` DATE NOT NULL , 
+	`theme_id` INT NOT NULL , 
+	`status` INT NOT NULL DEFAULT '1' , 
+	`created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , 
+	`updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`id`));
+ALTER TABLE `daily_bible_verses` ADD `testament_id` INT NOT NULL AFTER `bible_id`;
+ALTER TABLE `daily_bible_verses` CHANGE `theme_id` `theme_id` INT NOT NULL DEFAULT '1';
+ALTER TABLE `daily_bible_verses` CHANGE `date` `date` DATE NULL;
+

@@ -7,7 +7,7 @@
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/cascade.css') }}">
 @endsection
 @section('breadcrumb-title')
-<h3>Edit Daily Bible Verse</h3>
+<h3>Add Daily Bible Verse</h3>
 @endsection
 
 @section('content')
@@ -15,89 +15,132 @@
    <div class="card">
       
       <div class="card-body">
+         @if (Session::has('success'))
+           <div class="alert alert-success">
+              <ul>
+                 <li>{!! Session::get('success') !!}</li>
+              </ul>
+           </div>
+         @endif
+         @if (Session::has('error'))
+           <div class="alert alert-danger">
+              <ul>
+                 <li>{!! Session::get('error') !!}</li>
+              </ul>
+           </div>
+         @endif
+         @if($errors->any())
+            <h6 style="color:red;padding: 20px 0px 0px 30px;">{{$errors->first()}}</h6>
+         @endif
          <div class="row">
             <div class="col-md-12">
                <div class="date-picker">
-                  <form class="theme-form">
+                  <form class="theme-form" action="{{route('admin.update.DailyBibleVerse',[])}}" method="Post"
+                  enctype="multipart/form-data">
+                     @csrf
+                     <input type="hidden" name="id" value="{{$verse->id}}">
                      <div class="verse d-flex flex-wrap">
-                        <div class="col-lg-4 col-md-6 col-12">
+                        <div class="col-lg-3 col-md-6 col-12">
                            <div class="form-group">
-                              <label for="">Book*</label>
-                              <select class="form-select" aria-label="Default select example">
-                                 <option selected>Genesis</option>
-                                 <option value="1">Exodus</option>
-                                 <option value="2">Psalms</option>
-                                 <option value="3">Proverbs</option>
+                              <label for="">Bible</label>
+                              <input type="hidden" name="bible_id" value="{{$default_bible_id}}">
+                              <button class="butn_disabled nav-link" style="width: 100%;">{{$default_bible['bible_name']}}</button>
+                           </div>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-12">
+                           <div class="form-group">
+                             <label for="">Testament<span style="color:red">*</span></label>
+                              <select class="js-data-example-ajax form-select" id="testament" name="testament_id" required>
+                                 @foreach($testaments as $testament_value)
+                                     @if($verse->testament_id == $testament_value->testament_id)
+                                           <option value="{{ $testament_value->testament_id }}" selected>
+                                             {{ $testament_value->testament_name }}</option>
+                                     @else
+                                           <option value="{{ $testament_value->testament_id }}">
+                                              {{ $testament_value->testament_name }}</option>
+                                     @endif
+                                   @endforeach 
                               </select>
                            </div>
                         </div>
-                        <div class="col-lg-2 col-md-3 col-12">
+                        <div class="col-lg-3 col-md-3 col-12">
                            <div class="form-group">
-                              <label for="">Chapter*</label>
-                              <select class="form-select" aria-label="Default select example">
-                                 <option selected>1</option>
-                                 <option value="1">2</option>
-                                 <option value="2">3</option>
-                                 <option value="3">4</option>
+                             <label for="">Book<span style="color:red">*</span></label>
+                              <select class="js-data-example-ajax form-select" id="book" name="book_id" required>
+                                 @foreach($books as $book_value)
+                                     @if($verse->book_id == $book_value->book_id)
+                                           <option value="{{ $book_value->book_id }}" selected>
+                                             {{ $book_value->book_name }}</option>
+                                     @else
+                                           <option value="{{ $book_value->book_id }}">
+                                              {{ $book_value->book_name }}</option>
+                                     @endif
+                                   @endforeach
                               </select>
                            </div>
                         </div>
-                        <div class="col-lg-2 col-md-3 col-12">
+                        <div class="col-lg-3 col-md-3 col-12">
                            <div class="form-group">
-                              <label for="">Verses*</label>
-                              <select class="form-select" aria-label="Default select example">
-                                 <option selected>1</option>
-                                 <option value="1">2</option>
-                                 <option value="2">3</option>
-                                 <option value="3">4</option>
+                              <label for="">Chapter<span style="color:red">*</span></label>
+                              <select class="js-data-example-ajax form-select" id="chapter" name="chapter_id" required>
+                                 @foreach($chapters as $chapter)
+                                     @if($verse->chapter_id == $chapter->chapter_id)
+                                           <option value="{{ $chapter->chapter_id }}" selected>
+                                             {{ $chapter->chapter_name }}</option>
+                                     @else
+                                           <option value="{{ $chapter->chapter_id }}">
+                                              {{ $chapter->chapter_name }}</option>
+                                     @endif
+                                   @endforeach 
+
+                              </select>
+                           </div>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-12">
+                           <div class="form-group">
+                              <label for="">Verse<span style="color:red">*</span></label>
+                              <select class="js-data-example-ajax form-select" id="verse" name="verse_id" required>
+                                  @foreach($verses as $verse_data)
+                                     @if($verse->verse_from == $verse_data->statement_id)
+                                           <option value="{{ $verse_data->statement_id }}" selected>
+                                             {{ $verse_data->statement_no }}</option>
+                                     @else
+                                           <option value="{{ $verse_data->statement_id }}">
+                                              {{ $verse_data->statement_no }}</option>
+                                     @endif
+                                   @endforeach
                               </select>
                            </div>
                         </div>
                         <div class="col-lg-4 col-12">
-                            <div class="form-group">
-                           <label for="">Date</label>
-                           <div class="input-group">
-                              <input class="datepicker-here form-control digits" type="text" data-language="en">
-                           </div>
-                        </div>
-                        </div>
-                        <div class="col-lg-4 col-12"> 
-                            <div class="form-group">
-                            <label for="">Season</label>
-                            <select class="form-select" aria-label="Default select example">
-                                 <option selected>Season Select here</option>
-                                 <option value="1">One</option>
-                                 <option value="2">Two</option>
-                                 <option value="3">Three</option>
-                              </select>
-                           </div>
-                        </div>
-                        <div class="col-lg-4 col-12"> 
-                            <div class="form-group">
-                            <label for="">Trend</label>
-                            <select class="form-select" aria-label="Default select example">
-                                 <option selected>Season Select here</option>
-                                 <option value="1">One</option>
-                                 <option value="2">Two</option>
-                                 <option value="3">Three</option>
-                              </select>
+                           <div class="form-group">
+                              <label for="">Date</label>
+                              <div class="input-group">
+                                 <input class="datepicker-here form-control digits" type="text" data-language="en" 
+                                 name="date" value="{{$verse->date}}">
+                              </div>
                            </div>
                         </div>
                         <div class="col-lg-4 col-12"> 
                             <div class="form-group">
                             <label for="">Theme</label>
-                            <select class="form-select" aria-label="Default select example">
-                                 <option selected>Season Select here</option>
-                                 <option value="1">One</option>
-                                 <option value="2">Two</option>
-                                 <option value="3">Three</option>
+                              <select class="js-data-example-ajax form-select" id="theme" name="theme_id">
+                                 @foreach($themes as $theme)
+                                     @if($verse->theme_id == $theme->id)
+                                           <option value="{{ $theme->id }}" selected>
+                                             {{ $theme->name }}</option>
+                                     @else
+                                           <option value="{{ $theme->id }}">
+                                              {{ $theme->name }}</option>
+                                     @endif
+                                   @endforeach
                               </select>
                            </div>
                         </div>
                         <div class="col-12">
                             <div class="encounter-btn d-flex justify-content-center mt-4">
-                                <button class="btn btn-pill btn-danger btn-lg" type="button" data-bs-original-title="" title="">Cancel</button>
-                                <button class="btn btn-pill btn-success btn-lg ms-3" type="button" data-bs-original-title="" title="">Submit</button>
+                                <button class="btn btn-pill btn-danger btn-lg" type="button" onclick="window.location='{{ route('admin.daily.bible.verse') }}'">Cancel</button>
+                                <button class="btn btn-pill btn-success btn-lg ms-3" type="submit" data-bs-original-title="" title="">Submit</button>
                             </div>
                         </div>
                      </div>
@@ -113,4 +156,149 @@
 <script src="{{asset('assets/js/datepicker/date-picker/datepicker.js')}}"></script>
 <script src="{{asset('assets/js/datepicker/date-picker/datepicker.en.js')}}"></script>
 <script src="{{asset('assets/js/datepicker/date-picker/datepicker.custom.js')}}"></script>
+<script src="{{ asset('assets/js/dashboard/default.js') }}"></script>
+<script src="{{ asset('assets/js/notify/index.js') }}"></script>
+<script src="{{ asset('assets/js/typeahead/handlebars.js') }}"></script>
+<script src="{{ asset('assets/js/typeahead/typeahead.bundle.js') }}"></script>
+<script src="{{ asset('assets/js/typeahead/typeahead.custom.js') }}"></script>
+<script src="{{ asset('assets/js/typeahead-search/handlebars.js') }}"></script>
+<script src="{{ asset('assets/js/typeahead-search/typeahead-custom.js') }}"></script>
+
+<script type="text/javascript">
+
+   $('#testament').select2({
+         placeholder: "Select Testament",
+
+         ajax: {
+             url: "<?= url('get_testament_list') ?>",
+             dataType: 'json',
+             method: 'post',
+             delay: 250,
+
+              data: function(data) {
+                 return {
+                     _token    : "<?= csrf_token() ?>",
+                     search_tag: data.term,
+                     bible_id  : '<?= $default_bible_id?>',
+
+                 };
+             },
+             processResults: function(data, params) {
+                 params.page = params.page || 1;
+                 return {
+                     results: data.results,
+                     pagination: { more: (params.page * 30) < data.total_count }
+                 };
+             },
+             cache: true
+         }
+     });
+
+     $('#book').select2({
+         placeholder: "Select Book",
+         ajax: {
+             url: "<?= url('get_book_list') ?>",
+             dataType: 'json',
+             method: 'post',
+             delay: 250,
+
+              data: function(data) {
+                 return {
+                     _token    : "<?= csrf_token() ?>",
+                     search_tag: data.term,
+                     testament_id:$('#testament').val(),
+                 };
+             },
+             processResults: function(data, params) {
+                 params.page = params.page || 1;
+                 return {
+                     results: data.results,
+                     pagination: { more: (params.page * 30) < data.total_count }
+                 };
+             },
+             cache: true
+         }
+     });
+
+     $('#chapter').select2({
+         placeholder: "Select Chapter",
+         ajax: {
+             url: "<?= url('get_chapter_list') ?>",
+             dataType: 'json',
+             method: 'post',
+             delay: 250,
+
+              data: function(data) {
+                 return {
+                     _token    : "<?= csrf_token() ?>",
+                     search_tag: data.term,
+                     book_id:$('#book').val(),
+
+                 };
+             },
+             processResults: function(data, params) {
+                 params.page = params.page || 1;
+                 return {
+                     results: data.results,
+                     pagination: { more: (params.page * 30) < data.total_count }
+                 };
+             },
+             cache: true
+         }
+     });
+
+     $('#verse').select2({
+         placeholder: "Select Verse",
+         ajax: {
+
+             url: "<?= url('get_verse_no_list') ?>",
+             dataType: 'json',
+             method: 'post',
+             delay: 250,
+
+              data: function(data) {
+                 return {
+                     _token    : "<?= csrf_token() ?>",
+                     search_tag: data.term,
+                     chapter_id:$('#chapter').val(),
+
+                 };
+             },
+             processResults: function(data, params) {
+                 params.page = params.page || 1;
+                 return {
+                     results: data.results,
+                     pagination: { more: (params.page * 30) < data.total_count }
+                 };
+             },
+             cache: true
+         }
+     });
+
+     $('#theme').select2({
+         placeholder: "Select Theme",
+         ajax: {
+
+             url: "<?= url('get_bible_verse_theme_list') ?>",
+             dataType: 'json',
+             method: 'post',
+             delay: 250,
+
+              data: function(data) {
+                 return {
+                     _token    : "<?= csrf_token() ?>",
+                     search_tag: data.term,
+                 };
+             },
+             processResults: function(data, params) {
+                 params.page = params.page || 1;
+                 return {
+                     results: data.results,
+                     pagination: { more: (params.page * 30) < data.total_count }
+                 };
+             },
+             cache: true
+         }
+     });
+</script>
 @endsection
