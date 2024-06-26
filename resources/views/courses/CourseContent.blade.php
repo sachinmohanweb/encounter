@@ -118,7 +118,7 @@
                               <td  colspan="2" style="text-align: center;">
                                  <a href="{{ route('admin.edit.course.content',['content_id'=>$content->id]) }}"><button class="btn btn-pill btn-info-gradien pt-2 pb-2">Edit course content</button></a>
 
-                                 <a href="{{ route('admin,view.course.content.verse',['content_id'=>$content->id]) }}"><button class="btn btn-pill btn-info-gradien pt-2 pb-2">View verses</button></a>
+                                 <a href="{{ route('admin.view.course.content.verse',['content_id'=>$content->id]) }}"><button class="btn btn-pill btn-info-gradien pt-2 pb-2">View verses</button></a>
                               </td>
                            </tr>
                         </table>
