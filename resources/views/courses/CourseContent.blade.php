@@ -1,7 +1,3 @@
-<?php
-   use App\Models\CourseDayVerse;
-?>
-
 @extends('layouts.simple.master')
 @section('title', 'Date Picker')
 @section('css')
@@ -120,56 +116,12 @@
                            </tr>
                            <tr>
                               <td  colspan="2" style="text-align: center;">
-                                 <a href="{{ route('admin.edit.course.content',['content_id'=>$content->id]) }}"><button class="btn btn-pill btn-info-gradien pt-2 pb-2">Edit Course content</button></a>
+                                 <a href="{{ route('admin.edit.course.content',['content_id'=>$content->id]) }}"><button class="btn btn-pill btn-info-gradien pt-2 pb-2">Edit course content</button></a>
+
+                                 <a href="{{ route('admin,view.course.content.verse',['content_id'=>$content->id]) }}"><button class="btn btn-pill btn-info-gradien pt-2 pb-2">View verses</button></a>
                               </td>
                            </tr>
                         </table>
-
-                        <h6>Verse details</h6>
-                        <a href="{{ route('admin.add.content.verses',['content_id'=>$content->id]) }}"><button class="btn btn-pill btn-info-gradien pt-2 pb-2">Add verse</button></a>
-
-                        <?php
-                           $course_day_verses = CourseDayVerse::where('course_content_id',$content->id)->get();
-                        ?>
-
-                        @if($course_day_verses)
-                              <div>
-                                 @foreach($course_day_verses as $key=>$value)
-                                    <table>
-                                        <tr>
-                                          <td  colspan="2" style="text-align: center;">
-                                                Verse {{$key+1}}
-                                          </td>
-                                       </tr>
-                                       <tr>
-                                          <td>Testament Name</td>
-                                          <td>{{$value->testament_name}}</td>
-                                       </tr>
-                                       <tr>
-                                          <td>Book</td>
-                                          <td>{{$value->book_name}}</td>
-                                       </tr>
-                                       <tr>
-                                          <td>Chapter</td>
-                                          <td>{{$value->chapter_name}}</td>
-                                       </tr>
-                                       <tr>
-                                          <td>Verse From</td>
-                                          <td>{{$value->verse_from_name}}</td>
-                                       </tr>
-                                       <tr>
-                                          <td>Verse To</td>
-                                          <td>{{$value->verse_to_name}}</td>
-                                       </tr>
-                                       <tr>
-                                          <td  colspan="2" style="text-align: center;">
-                                             <a href="{{ route('admin.edit.content.verses',['verse_id'=>$value->id]) }}"><button class="btn btn-pill btn-info-gradien pt-2 pb-2">Edit</button></a>
-                                          </td>
-                                       </tr>
-                                    </table><br>
-                                 @endforeach
-                              </div>
-                        @endif
                      @else
                         <a href="{{ route('admin.add.course.content',['course_id'=>$course->id,'day'=>$i]) }}"><button class="btn btn-pill btn-info-gradien pt-2 pb-2">Add Course Content</button></a>
                      @endif

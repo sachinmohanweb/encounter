@@ -110,6 +110,8 @@ Route::middleware('auth:admin')->group(function(){
     Route::post('updatecoursecontent', [CourseController::class, 'UpdateCourseContent'])
             ->name('admin.update.course.content');
 
+    Route::get('viewcoursecontentverse/{content_id}', [CourseController::class, 'ViewCourseContentVerse'])
+            ->name('admin,view.course.content.verse');
     Route::get('addcontentverses/{content_id}', [CourseController::class, 'AddContentVerses'])
             ->name('admin.add.content.verses');
     Route::post('savecontentverses', [CourseController::class, 'SaveContentVerses'])

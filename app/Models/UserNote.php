@@ -51,12 +51,20 @@ class UserNote extends Model
     public function getChapterNameAttribute()
     {
         $chapter = Chapter::where('chapter_id',$this->chapter_id)->first();
-        return $chapter->chapter_name;
+        if($chapter){
+            return $chapter->chapter_name;
+        }else{
+            return '';
+        }
     }
 
     public function getVerseNoAttribute()
     {
         $verse = HolyStatement::where('statement_id',$this->verse_id)->first();
-        return $verse->statement_no;
+        if($verse){
+            return $verse->statement_no;
+        }else{
+            return '';
+        }
     }
 }

@@ -288,6 +288,15 @@ class CourseController extends Controller
         }
     }
 
+    public function ViewCourseContentVerse($content_id) : View
+    {
+        $content = CourseContent::find($content_id);
+        $course = Course::find($content['course_id']);
+        $courseVerses = CourseDayVerse::where('course_content_id',$content_id)->get();
+
+        return view('courses.CourseContentVerseList',compact('course','content','courseVerses'));
+    }
+
     public function AddContentVerses($content_id) : View
     {
         $content = CourseContent::find($content_id);

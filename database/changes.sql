@@ -204,6 +204,9 @@ ALTER TABLE `daily_bible_verses` ADD `testament_id` INT NOT NULL AFTER `bible_id
 ALTER TABLE `daily_bible_verses` CHANGE `theme_id` `theme_id` INT NOT NULL DEFAULT '1';
 ALTER TABLE `daily_bible_verses` CHANGE `date` `date` DATE NULL;
 
+ALTER TABLE `user_notes` CHANGE `chapter_id` `chapter_id` INT(11) NULL;
+ALTER TABLE `user_notes` CHANGE `verse_id` `verse_id` INT(11) NULL;
+ALTER TABLE `user_notes` CHANGE `sub_category` `sub_category` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL;
 
 /*-----------24/06/2024--------*/
 
