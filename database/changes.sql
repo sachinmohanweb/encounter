@@ -234,3 +234,30 @@ CREATE TABLE `user_l_m_s` (`id` INT NOT NULL AUTO_INCREMENT , `user_id` INT NOT 
 INSERT INTO `user_l_m_s` (`id`, `user_id`, `course_id`, `batch_id`, `start_date`, `end_date`, `progress`, `completed_status`, `status`, `created_at`, `updated_at`) VALUES 
 (NULL, '1', '1', '1', '2024-07-10', '2024-08-10', '10%', '2', '1', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP), 
 (NULL, '2', '1', '1', '2024-07-10', '2024-08-10', ' 20%', '2', '1', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+
+
+-- 02/07/24----
+
+CREATE TABLE `email_verifications` (
+	`id` INT NOT NULL AUTO_INCREMENT , 
+	`email` VARCHAR(256) NOT NULL , 
+	`otp` VARCHAR(4) NOT NULL , 
+	`otp_expiry` TIMESTAMP NOT NULL , 
+	`otp_used` INT NOT NULL DEFAULT '0' , 
+	`created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , 
+	`updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`id`));
+
+ALTER TABLE `users` ADD `device_id` VARCHAR(256) NULL DEFAULT NULL AFTER `ip`, 
+ADD `refresh_token` VARCHAR(256) NULL DEFAULT NULL AFTER `device_id`;
+
+
+composer require laravel/sanctum
+php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
+php artisan migrate
+
+ALTER TABLE `users` ADD `remember_token` VARCHAR(100) NULL DEFAULT NULL AFTER `status`;
+
+ALTER TABLE `users` CHANGE `last_name` `last_name` VARCHAR(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL;
+ALTER TABLE `users` CHANGE `age` `age` INT NULL DEFAULT NULL;
+ALTER TABLE `users` CHANGE `password` `password` VARCHAR(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL;
