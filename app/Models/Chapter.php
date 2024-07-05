@@ -13,4 +13,8 @@ class Chapter extends Model
     protected $table = '05_chapter';
     protected $guard = [];
 
+    public function statements()
+    {
+        return $this->hasMany(HolyStatement::class,'chapter_id','chapter_id');
+    }
 }

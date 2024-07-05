@@ -13,4 +13,8 @@ class Book extends Model
     protected $table = '04_book';
     protected $guard = [];
 
+    public function chapters()
+    {
+        return $this->hasMany(Chapter::class,'book_id','book_id');
+    }
 }

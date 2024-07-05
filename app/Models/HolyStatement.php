@@ -13,4 +13,8 @@ class HolyStatement extends Model
     protected $table = '06_holy_statement';
     protected $guard = [];
 
+    public function chapter()
+    {
+        return $this->belongsTo(Chapter::class);
+    }
 }

@@ -13,4 +13,8 @@ class Testament extends Model
     protected $table = '03_testament';
     protected $guard = [];
 
+    public function books()
+    {
+        return $this->hasMany(Book::class,'testament_id','testament_id');
+    }
 }
