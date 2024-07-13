@@ -130,4 +130,63 @@ class BibleDbController extends Controller
         }
         return response()->json(['results' => $results]);       
     }
+
+    public function BibleView() : View
+    {
+        return view('bible_view.BibleView',[]);
+    }
+
+    public function BibleVeiewDatatable(Request $request)
+    {
+        if(request()->ajax()) {
+
+            $query = HolyStatement::with(['bible', 'testament', 'book', 'chapter'])
+                    ->select('chapter_id', 'bible_id', 'testament_id', 'book_id', DB::raw('COUNT(*) as total_verse'));
+            if($request['bible_id']){
+                    $query->where('bible_id',$request['bible_id']);
+            }
+            if($request['testament_id']){
+                    $query->where('testament_id',$request['testament_id']);
+            }
+            if($request['book_id']){
+                    $query->where('book_id',$request['book_id']);
+            }
+            if($request['chapter_id']){
+                    $query->where('chapter_id',$request['chapter_id']);
+            }
+            $query = $query->groupBy('chapter_id', 'bible_id', 'testament_id', 'book_id');
+            return datatables()
+                ->of($query)
+                ->addColumn('bible', function ($holyStatement) {
+                    return $holyStatement->bible->bible_name;
+                })
+                ->addColumn('testament', function ($holyStatement) {
+                    return $holyStatement->testament->testament_name;
+                })
+                ->addColumn('book', function ($holyStatement) {
+                    return $holyStatement->book->book_name;
+                })
+                ->addColumn('chapter', function ($holyStatement) {
+                    return $holyStatement->chapter->chapter_name;
+                })
+                ->addColumn('total_verse', function ($holyStatement) {
+                    return $holyStatement->total_verse;
+                })
+                ->addColumn('action', 'bible_view.datatable-action')
+                ->rawColumns(['bible', 'testament', 'book', 'chapter', 'total_verse', 'action'])
+                ->addIndexColumn()
+                ->make(true);
+        }
+        return view('bible_view.BibleView');
+    }
+
+    public function BibleViewRead($chapter_id) : View
+    {
+        
+        $verses = HolyStatement::select('*')->where('chapter_id',$chapter_id)->get();
+        $chapter_details = HolyStatement::select('*')->where('chapter_id',$chapter_id)->first();
+
+        return view('bible_view.ReadBibleVerse',compact('verses','chapter_details'));
+
+    }
 }

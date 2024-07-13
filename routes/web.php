@@ -99,6 +99,9 @@ Route::middleware('auth:admin')->group(function(){
     Route::post('/get_book_list', [BibleDbController::class, 'book_list'])->name('book.list');
     Route::post('/get_chapter_list',[BibleDbController::class, 'chapter_list'])->name('chapter.list');
     Route::post('/get_verse_no_list',[BibleDbController::class, 'verse_list'])->name('verse.list');
+    Route::get('bibleview', [BibleDbController::class, 'BibleView'])->name('admin.bible.view');
+    Route::post('bibleviewDatatable',[BibleDbController::class,'BibleVeiewDatatable'])->name('admin.bible_view.datatable');
+    Route::get('bibleviewread/{chapter_id}', [BibleDbController::class, 'BibleViewRead'])->name('admin.read.bible.view.verse');
 
     Route::get('coursecontent/{id}', [CourseController::class, 'CourseContent'])->name('admin.course.content');
     Route::get('addcoursecontent/{course_id}/{day}', [CourseController::class, 'AddCourseContent'])

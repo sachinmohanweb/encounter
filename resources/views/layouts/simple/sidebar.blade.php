@@ -53,6 +53,19 @@
                             <li><a href="{{ route('admin.user.notes') }}">User Notes</a></li>
                         </ul>
                     </li>
+
+                    <li class="sidebar-list">
+                        <a class="sidebar-link sidebar-title link-nav" 
+                        href="{{route('admin.bible.view')}}">
+                            <svg class="stroke-icon">
+                                <use href="{{ asset('assets/svg/icon-sprite.svg#stroke-knowledgebase') }}"></use>
+                            </svg>
+                            <svg class="fill-icon">
+                                <use href="{{ asset('assets/svg/icon-sprite.svg#fill-home') }}"></use>
+                            </svg>
+                            <span>Bible View</span>
+                        </a>
+                    </li>
                 
                     <li class="sidebar-list">
                         <a class="sidebar-link sidebar-title link-nav" 

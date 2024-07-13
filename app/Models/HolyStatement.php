@@ -15,6 +15,19 @@ class HolyStatement extends Model
 
     public function chapter()
     {
-        return $this->belongsTo(Chapter::class);
+        return $this->belongsTo(Chapter::class,'chapter_id','chapter_id');
+    }
+
+    public function Bible()
+    {
+        return $this->belongsTo(Bible::class,'bible_id','bible_id');
+    }
+    public function Testament()
+    {
+        return $this->belongsTo(Testament::class,'testament_id','testament_id');
+    }
+    public function Book()
+    {
+        return $this->belongsTo(Book::class,'book_id','book_id');
     }
 }
