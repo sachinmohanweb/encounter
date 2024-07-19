@@ -61,7 +61,11 @@
          <div class="col-sm-12 col-lg-6">
             <div class="card course-bible">
                <div class="card-body statement_scroll">
-                  <h5>Statement : {{$value->statement_no}} </h5>
+                  @if($chapter_details->chapter->chapter_name=='ആമുഖം')
+                     <h5>{{$chapter_details->chapter->chapter_name}} </h5>
+                  @else
+                     <h5>Verse : {{$value->statement_no}} </h5>
+                  @endif
                   @if($value->statement_heading)
                      <h5>{{$value->statement_heading}}</p>
                   @endif
