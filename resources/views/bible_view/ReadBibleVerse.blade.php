@@ -74,20 +74,68 @@
                         <p style="font-weight:600">{{$value->statement_text}}</p>
                      </div>
                   </div>
-                  <div class="view-course d-flex align-items-center justify-content-between mt-3">
+                  <div class="view-course d-flex align-items-center justify-content-end mt-3">
  
-                     <a ><button class="btn btn-pill btn-info-gradien pt-2 pb-2" type="button" data-bs-original-title="" title="">Edit  </button></a>
+                     <a ><button class="btn btn-pill btn-info-gradien pt-2 pb-2" type="button" onclick="EditFunc('{{$value->statement_id}}')">Edit  </button></a>
                   </div>
                </div>
             </div>
          </div>
       @endforeach
+   </div>
+</div>
 
+<div class="modal fade" id="EditBibleVerseModal" tabindex="-1" role="dialog" aria-hidden="true">
+   <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 650px !important;"> 
+      <div class="modal-content">
+         <div class="modal-header">
+            <h5 class="modal-title">Bible Verse</h5>
+            <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+         </div>
+         <form class="needs-validation" id="EditBibleVerseModalForm" novalidate="" method="Post">
+            @csrf
+            <div class="modal-body">
+               <div class="row g-3 mb-3">
+                  <div class="col-md-12">
+                     <label class="form-label" for="validationCustom02">Verse</label>
+                     <textarea name="statement_text" id="statement_text" rows="5" class="form-control" required>{{$value->statement_text}}</textarea>
+                     <div class="valid-feedback">Looks good!</div>
+                  </div>
+                  <div class="modal-footer">
+                     <button class="btn btn-secondary" type="button" data-bs-dismiss="modal" onclick="window.location='{{route('admin.read.bible.view.verse', ['chapter_id' => $value->chapter_id])}}'">Close</button>
+                     <button class="btn btn-success" type="submit">Update</button>
+                  </div>
+               </div>
+            </div>
+         </form>
+      </div>
+   </div>
+</div>
       
-   </div>
-   </div>
-
 @endsection
 @section('script')
+<script type="text/javascript">
+   
+function EditFunc(id){
+   $.ajax({
+       type:"post",
+       url: "{{ route('admin.get.holy_statement') }}",
+       data: { _token : "<?= csrf_token() ?>",
+               id     : id
+       },
+       dataType: 'json',
+       success: function(res){
+           $('#statement_id').val(res.statement_id);
+           $('#statement_text').val(res.statement_text);
+            $('#EditBibleVerseModalForm').attr('action', "{{ url('updateholystatement') }}/" + id);
+           $('#EditBibleVerseModal').modal('show');
+       },
+       error: function(xhr, status, error) {
+           console.error('AJAX request failed:', status, error);
+           alert('Failed get data. Please try again later.');
+       }
+   });
+}  
 
+</script>
 @endsection

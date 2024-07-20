@@ -11,7 +11,9 @@ class HolyStatement extends Model
 
     protected $connection = 'mysql_bible';
     protected $table = '06_holy_statement';
-    protected $guard = [];
+    protected $primaryKey = 'statement_id';
+    public $timestamps = false;
+    protected $fillable = ['statement_text'];
 
     public function chapter()
     {

@@ -189,4 +189,36 @@ class BibleDbController extends Controller
         return view('bible_view.ReadBibleVerse',compact('verses','chapter_details'));
 
     }
+
+    public function get_holy_statement(Request $request) : JsonResponse
+    {
+        $statement = HolyStatement::where('statement_id',$request['id'])->first();
+        return response()->json($statement);
+    }
+    
+    public function UpdateHolyStatement(Request $request): RedirectResponse
+    {
+        DB::beginTransaction();
+        try {
+
+            $statement = HolyStatement::where('statement_id',$request->id)->first();
+
+            $a =  $request->validate([
+                'statement_text' => 'required',
+            ]);
+
+            $inputData['statement_text'] = $request['statement_text'];
+
+            $statement->update($inputData);
+            DB::commit();
+
+            return redirect()->route('admin.read.bible.view.verse', ['chapter_id' => $statement['chapter_id']])
+                            ->with('success',"Success! Verse has been successfully updated.");
+        }catch (Exception $e) {
+
+            DB::rollBack();
+            $message = $e->getMessage();
+            return back()->withInput()->withErrors(['message' =>  $e->getMessage()]);;
+        }
+    }
 }
