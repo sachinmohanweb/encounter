@@ -260,45 +260,6 @@ class SidebarController extends Controller
         }
     }
 
-    public function BibleStudy(Request $request){
-
-        try {
-
-            $testament_id = $request['testament_id'];
-
-            $testament = Testament::with('books.chapters')->where('testament_id',$testament_id)->first();
-
-            $books = $testament->books->map(function ($book) {
-                return [
-                    'book_id' => $book->book_id,
-                    'book_name' => $book->book_name,
-                    'total_chapters' => $book->chapters->count(),
-                    'chapters' => $book->chapters->map(function ($chapter) {
-                        return [
-                            'chapter_id' => $chapter->chapter_id,
-                            'chapter_number' => $chapter->chapter_no,
-                            'statements' => $chapter->statements->map(function ($statement,$chapter) {
-                                return [
-                                    'statement_id' => $statement->statement_id,
-                                    'statement_no' => $statement->statement_no,
-                                    'statement_heading' => $statement->statement_heading,
-                                    'statement_text' => $statement->statement_text,
-                                ];
-                            }),
-                        ];
-                    })
-                ];
-            });
-            
-            return $this->outputer->code(200)->success($books)->json();
-
-        }catch (\Exception $e) {
-
-            $return['result']=$e->getMessage();
-            return $this->outputer->code(422)->error($return)->json();
-        }
-    }
-
     public function ClearCache(Request $request) {
         
         Artisan::call('cache:clear');

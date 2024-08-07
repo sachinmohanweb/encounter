@@ -11,7 +11,7 @@ class Outputer
 	protected $data;
 	protected $count;
 	protected $metadata = [];
-	protected $DailyDigest = [];
+	protected $BibleVerse = [];
 	protected $LoginUser = [];
 	protected $code = 200;
 	protected $success = true;
@@ -35,9 +35,9 @@ class Outputer
 		$this->metadata = $metadata;
 		return $this;
 	}
-	public function DailyDigest($DailyDigest)
+	public function BibleVerse($BibleVerse)
 	{
-	    $this->DailyDigest = $DailyDigest;
+	    $this->BibleVerse = $BibleVerse;
 	    return $this;
 	}
 	public function LoginUser($LoginUser)
@@ -134,8 +134,8 @@ class Outputer
 			!is_null($this->count) ? $res->count = $this->count : '';
 			$res->metadata = $this->metadata;
 			$res->data = $this->data;
-			if (!empty($this->DailyDigest)) {
-					$res->DailyDigest = $this->DailyDigest;
+			if (!empty($this->BibleVerse)) {
+					$res->BibleVerse = $this->BibleVerse;
 			}
 			if (!empty($this->LoginUser)) {
 					$res->LoginUser = $this->LoginUser;

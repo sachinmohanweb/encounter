@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\SidebarController;
+use App\Http\Controllers\Api\HomeController;
 
 
 Route::post('login',[UserController::class, 'loginUser']);
@@ -22,5 +23,6 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('asked_questions',[SidebarController::class, 'AskedQuestions']);
     Route::post('ask_a_question',[SidebarController::class, 'AskAQuestion']);
 
-    Route::get('bible_study',[SidebarController::class, 'BibleStudy']);
+    Route::get('home', [HomeController::class, 'Home']);
+    Route::get('bible_study' , [HomeController::class, 'BibleStudy']);
 });
