@@ -25,5 +25,8 @@ Route::middleware('auth:sanctum')->group(function(){
 
     Route::get('home', [HomeController::class, 'Home']);
     Route::get('course_details', [HomeController::class, 'CourseDetails']);
+    Route::post('enroll_batch',[HomeController::class, 'EnrollBatch']);
+    Route::get('course_day_content',[HomeController::class, 'CourseDayContent']);
+
     Route::get('bible_study' , [HomeController::class, 'BibleStudy']);
 });

@@ -173,6 +173,62 @@ class HomeController extends Controller
         }
     }
 
+    public function EnrollBatch(Request $request){
+        
+        DB::beginTransaction();
+
+        try {
+
+            $a =  $request->validate([
+                    'batch_id'      => 'required',
+                ]);
+            $batch = Batch::find($request['batch_id']);
+            $user_id = Auth::user()->id;
+
+            $inputData['user_id'] = $user_id;
+            $inputData['course_id'] = $batch['course_id'];
+            $inputData['batch_id'] = $batch['id'];
+            $inputData['start_date'] = $batch['start_date'];
+            $inputData['end_date'] = $batch['end_date'];
+            $inputData['progress'] = '0%';
+            $inputData['completed_status'] = 1;
+            $inputData['completed_status'] = 1;
+
+            $enrollment = UserLMS::create($inputData);
+            DB::commit();
+
+            $return['messsage']  =  'Success.You are enrolled to - '.$batch['batch_name'] .' batch.';
+            return $this->outputer->code(200)->success($return)->json();
+
+
+        }catch (\Exception $e) {
+
+            DB::rollBack();
+            $return['result']=$e->getMessage();
+            return $this->outputer->code(422)->error($return)->json();
+        }
+    }
+
+    public function CourseDayContent(Request $request){
+
+        try {
+            $course_id = $request['course_id'];
+
+            $course_day_content = CourseContent::where('course_id',$course_id)
+                        ->where('status',1)
+                        ->with(['CourseDayVerse'])
+                        ->get();
+
+
+            return $this->outputer->code(200)->success($course_day_content)->json();
+
+        }catch (\Exception $e) {
+
+            $return['result']=$e->getMessage();
+            return $this->outputer->code(422)->error($return)->json();
+        }
+    }
+
     public function BibleStudy(Request $request){
 
         try {

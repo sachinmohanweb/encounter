@@ -42,5 +42,9 @@ class CourseContent extends Model
         $bible = Bible::where('bible_id',$course->bible_id)->first();
         return $bible->bible_name;
     }
+    public function CourseDayVerse(){
+
+        return $this->hasMany(CourseDayVerse::class,'course_content_id', 'id');
+    }
 
 }
