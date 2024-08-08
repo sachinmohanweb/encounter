@@ -14,6 +14,7 @@ use App\Models\GQSubCategory;
 use App\Models\UserQNA;
 
 use App\Models\Bible;
+use App\Models\UserNote;
 use App\Models\Testament;
 use App\Models\Book;
 use App\Models\Chapter;
@@ -232,6 +233,64 @@ class SidebarController extends Controller
 
     public function AskAQuestion(Request $request){
         
+        DB::beginTransaction();
+
+        try {
+
+            $a =  $request->validate([
+                    'question'      => 'required',
+                ]);
+
+            $user_id = Auth::user()->id;
+
+            $inputData['user_id'] = $user_id;
+            $inputData['question'] = $request['question'];
+
+            $question = UserQNA::create($inputData);
+            DB::commit();
+
+            $return['messsage']  =  'Success.Your question submitted';
+            return $this->outputer->code(200)->success($return)->json();
+
+
+        }catch (\Exception $e) {
+
+            DB::rollBack();
+            $return['result']=$e->getMessage();
+            return $this->outputer->code(422)->error($return)->json();
+        }
+    }
+
+    public function MyNotes(Request $request){
+
+        try {
+
+            $user_id = Auth::user()->id;
+
+            $user_notes = UserNote::select('*')
+                        ->where('user_id',$user_id)
+                        ->where('status',1)
+                        ->get();
+
+            if(empty($user_notes)) {
+                $return['result']=  "Empty user notes ";
+                return $this->outputer->code(422)->error($return)->json();
+            }
+
+            return $this->outputer->code(200)
+                        ->success($user_notes)->json();
+
+        }catch (\Exception $e) {
+
+            $return['result']=$e->getMessage();
+            return $this->outputer->code(422)->error($return)->json();
+        }
+    }
+
+    public function AddNote(Request $request){
+        
+        dd("add note");
+
         DB::beginTransaction();
 
         try {
