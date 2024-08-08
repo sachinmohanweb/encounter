@@ -8,8 +8,11 @@ use App\Helpers\Outputer;
 use Illuminate\Http\Request;
 
 use App\Models\User;
+use App\Models\Batch;
 use App\Models\Course;
+use App\Models\UserLMS;
 use App\Models\Testament;
+use App\Models\CourseContent;
 use App\Models\HolyStatement;
 use App\Models\DailyBibleVerse;
 
@@ -62,19 +65,21 @@ class HomeController extends Controller
             $bible_verse->makeHidden(['bible_name','testament_name','book_name','chapter_name','verse_no','theme_name']);
             /*---------Courses----------*/
 
-            $courses = Course::select('id','course_name as data1','thumbnail as image','course_creator as data2')
-                        ->where('status',1);
+            $courses = Course::from(with(new Course)->getTable(). ' as a')
+                        ->join(with(new Batch)->getTable(). ' as b' , 'a.id','b.course_id')
+                        ->select('a.id','a.course_name as data1','a.course_creator as data2','a.thumbnail as image')
+                        ->where('a.status',1);
 
             if($request['search_word']){
-                $courses->where('course_name','like',$request['search_word'].'%')
-                        ->orwhere('course_creator','like',$request['search_word'].'%');
+                $courses->where('a.course_name','like',$request['search_word'].'%')
+                        ->orwhere('a.course_creator','like',$request['search_word'].'%');
             }
 
             if($request['length']){
                 $courses->take($request['length']);
             }
 
-            $courses=$courses->orderBy('course_name','asc')->get();
+            $courses=$courses->orderBy('a.course_name','asc')->get();
 
             $courses->transform(function ($item, $key) {
 
@@ -88,7 +93,7 @@ class HomeController extends Controller
             $courses->makeHidden([ 'bible_name']);
 
             if(empty($courses)) {
-                $return['result']=  "Empty messages list ";
+                $return['result']=  "Empty course list ";
                 return $this->outputer->code(422)->error($return)->json();
             }
 
@@ -102,6 +107,63 @@ class HomeController extends Controller
                         ->success($mergedData )
                         ->BibleVerse($bible_verse)
                         ->LoginUser($login_user)
+                        ->json();
+
+        }catch (\Exception $e) {
+
+            $return['result']=$e->getMessage();
+            return $this->outputer->code(422)->error($return)->json();
+        }
+    }
+
+    public function CourseDetails(Request $request){
+        try {
+
+            $courses = Course::from(with(new Course)->getTable(). ' as a')
+                        ->join(with(new Batch)->getTable(). ' as b' , 'a.id','b.course_id')
+                        ->select('a.id','a.course_name','a.no_of_days','a.description','a.thumbnail',
+                            'a.course_creator',DB::raw("'null' as course_creator_image"),'b.id as batch_id','b.batch_name',
+                            'b.start_date','b.end_date','b.last_date')
+                        ->where('a.id',$request['id'])
+                        ->with(['CourseContents' => function($query) {
+                            $query->select('id as day_id','day', 'text_description','course_id')
+                                    ->where('status', 1);
+                        }])
+                        ->get();
+
+
+            $courses->transform(function ($item, $key) {
+
+                if ($item->thumbnail !== null) {
+                    $item->thumbnail = asset('/') . $item->thumbnail;
+                } else {
+                    $item->thumbnail = null;
+                }
+                $item->CourseContents->makeHidden(['course_name', 'bible_name']);
+
+                $item->course_creator_image = asset('/').'assets/images/user/user-dp.png';
+                $user_lms = UserLMS::where('user_id',Auth::user()->id)
+                            ->where('course_id',$item->id)
+                            ->where('batch_id',$item->batch_id)
+                            ->where('status',1)->count();
+                if($user_lms==1){
+                    $item->user_enrolled = true;
+                }else{
+                    $item->user_enrolled = false;
+                }
+
+                return $item;
+            });
+
+            $courses->makeHidden([ 'bible_name']);
+
+            if(empty($courses)) {
+                $return['result']=  "Empty course list ";
+                return $this->outputer->code(422)->error($return)->json();
+            }
+
+            return $this->outputer->code(200)
+                        ->success($courses )
                         ->json();
 
         }catch (\Exception $e) {

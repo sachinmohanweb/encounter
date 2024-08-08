@@ -40,7 +40,7 @@ class Course extends Model
 
     public function CourseContents(){
 
-        return $this->hasMany(CourseContent::class);
+        return $this->hasMany(CourseContent::class,'course_id', 'id');
     }
 
     public function getContentForDay($day)

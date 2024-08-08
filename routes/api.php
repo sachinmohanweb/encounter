@@ -24,5 +24,6 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::post('ask_a_question',[SidebarController::class, 'AskAQuestion']);
 
     Route::get('home', [HomeController::class, 'Home']);
+    Route::get('course_details', [HomeController::class, 'CourseDetails']);
     Route::get('bible_study' , [HomeController::class, 'BibleStudy']);
 });
