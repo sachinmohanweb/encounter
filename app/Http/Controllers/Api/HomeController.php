@@ -14,6 +14,7 @@ use App\Models\UserLMS;
 use App\Models\Testament;
 use App\Models\CourseContent;
 use App\Models\HolyStatement;
+use App\Models\CourseDayVerse;
 use App\Models\DailyBibleVerse;
 
 use App\Http\Controllers\Controller;
@@ -38,11 +39,13 @@ class HomeController extends Controller
             /*--------Authenticated User---------*/
 
             $login_user = User::select('id',DB::raw('"null" as image'))->where('id',Auth::user()->id)->first();
-            if (!$login_user->image) {
-                if ($login_user->image !== null) {
-                    $login_user->image = asset('/') . $login_user->image;
-                }
+
+            if($login_user->image !== 'null') {
+                $login_user->image = asset('/') . $login_user->image;
+            }else{
+                $login_user->image = asset('/').'assets/images/user/user-dp.png';
             }
+
 
             /*---------Daily Bible verse----------*/
             
@@ -68,7 +71,9 @@ class HomeController extends Controller
             $courses = Course::from(with(new Course)->getTable(). ' as a')
                         ->join(with(new Batch)->getTable(). ' as b' , 'a.id','b.course_id')
                         ->select('a.id','a.course_name as data1','a.course_creator as data2','a.thumbnail as image')
-                        ->where('a.status',1);
+                         ->where('b.end_date', '>', now()->subDay()->format('Y-m-d'))
+                        ->where('a.status',1)
+                        ->where('b.status',1);
 
             if($request['search_word']){
                 $courses->where('a.course_name','like',$request['search_word'].'%')
@@ -79,7 +84,7 @@ class HomeController extends Controller
                 $courses->take($request['length']);
             }
 
-            $courses=$courses->orderBy('a.course_name','asc')->get();
+            $courses=$courses->orderBy('b.end_date','asc')->get();
 
             $courses->transform(function ($item, $key) {
 
@@ -122,11 +127,15 @@ class HomeController extends Controller
             $courses = Course::from(with(new Course)->getTable(). ' as a')
                         ->join(with(new Batch)->getTable(). ' as b' , 'a.id','b.course_id')
                         ->select('a.id','a.course_name','a.no_of_days','a.description','a.thumbnail',
-                            'a.course_creator',DB::raw("'null' as course_creator_image"),'b.id as batch_id','b.batch_name',
-                            'b.start_date','b.end_date','b.last_date')
+                            'a.course_creator',DB::raw("'null' as course_creator_image"),
+                            DB::raw("'Asst.Vicar' as creator_designation"),'b.id as batch_id','b.batch_name',
+                            'b.start_date','b.end_date','b.last_date',
+                            DB::raw("'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliqu consequat.' as intro_commentary"
+                        )
+                        )
                         ->where('a.id',$request['id'])
                         ->with(['CourseContents' => function($query) {
-                            $query->select('id as day_id','day', 'text_description','course_id')
+                            $query->select('id as day_id','day','course_id')
                                     ->where('status', 1);
                         }])
                         ->get();
@@ -139,9 +148,26 @@ class HomeController extends Controller
                 } else {
                     $item->thumbnail = null;
                 }
+                
                 $item->CourseContents->makeHidden(['course_name', 'bible_name']);
 
-                $item->course_creator_image = asset('/').'assets/images/user/user-dp.png';
+                $item->CourseContents->transform(function ($content,$key1) {
+                    $day_verse =CourseDayVerse::select('book','chapter')
+                                ->where('course_content_id',$content['day_id'])->first();
+                    $content->book = null;
+                    $content->chapter = null;
+                    if($day_verse){
+                        $day_verse->makeHidden(['testament_name','verse_from_name','verse_to_name']);
+                        $content->book = $day_verse->book_name;
+                        $content->chapter = $day_verse->chapter_name;
+                    }
+                    return $content;
+                });
+
+                $item->course_creator_image = asset('/').'assets/images/blog/9.jpg';
+                $item->intro_video = asset('/').'assets/images/login/1.jpg';
+                $item->intro_audio = asset('/').'assets/audio/audio.mp3';
+
                 $user_lms = UserLMS::where('user_id',Auth::user()->id)
                             ->where('course_id',$item->id)
                             ->where('batch_id',$item->batch_id)
