@@ -41,6 +41,9 @@
             <div class="card-body">
                <h4>{{$course->course_name}}</h4>
                <p>{{$course->description}}</p>
+               <p>{{$course->intro_video}}</p>
+               <p>{{$course->intro_audio}}</p>
+               <p>{{$course->intro_commentary}}</p>
                <p><b>{{$course->bible_name}}</b></p>
                <div class="info d-flex justify-content-between flex-wrap">
                   <div class="days d-flex align-items-center">
@@ -50,9 +53,25 @@
                      </div>
                      <h3><span>No of Days</span>{{$course->no_of_days}}</h3>
                   </div>
-                  <div class="course-creator text-right">
+                  <div class="course-creator text-right align-items-center">
                      <h5>Course Creator</h5>
-                     <p>{{$course->course_creator}}</p>
+                  <div class="row">
+                     <div class="col-md-6">
+                        <p>{{$course->course_creator}}<br>{{$course->creator_designation}}</p>
+                        
+                     </div>
+                     <div class="col-md-6">
+                        
+                        @if($course->creator_image && file_exists(public_path($course->creator_image)))
+                               <img class="img-fluid for-light" src="{{ asset($course->creator_image) }}" alt="" 
+                               style="width:100px; height: 120px;">
+                        @else
+                              <img class="img-fluid for-light" src="{{ asset('assets/images/course1.jpg') }}" alt="" style="width:100px; height: 120px;">
+                        @endif                  
+                     </div>
+                     
+                  </div>
+
                   </div>
                   <div class="course-action d-flex flex-wrap align-items-center">
                   <a href="{{ route('admin.course.content',[$course->id]) }}"><button class="btn btn-pill btn-info-gradien pt-2 pb-2" type="button" data-bs-original-title="" title="">Course Content </button>

@@ -127,11 +127,9 @@ class HomeController extends Controller
             $courses = Course::from(with(new Course)->getTable(). ' as a')
                         ->join(with(new Batch)->getTable(). ' as b' , 'a.id','b.course_id')
                         ->select('a.id','a.course_name','a.no_of_days','a.description','a.thumbnail',
-                            'a.course_creator',DB::raw("'null' as course_creator_image"),
-                            DB::raw("'Asst.Vicar' as creator_designation"),'b.id as batch_id','b.batch_name',
-                            'b.start_date','b.end_date','b.last_date',
-                            DB::raw("'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliqu consequat.' as intro_commentary"
-                        )
+                            'a.course_creator','a.creator_image','a.creator_designation','a.intro_commentary',
+                            'a.intro_video','a.intro_audio','b.id as batch_id','b.batch_name','b.start_date','b.end_date',
+                            'b.last_date'
                         )
                         ->where('a.id',$request['id'])
                         ->with(['CourseContents' => function($query) {
@@ -148,6 +146,11 @@ class HomeController extends Controller
                 } else {
                     $item->thumbnail = null;
                 }
+                if ($item->creator_image !== null) {
+                    $item->creator_image = asset('/') . $item->creator_image;
+                } else {
+                    $item->creator_image = null;
+                }
                 
                 $item->CourseContents->makeHidden(['course_name', 'bible_name']);
 
@@ -163,10 +166,6 @@ class HomeController extends Controller
                     }
                     return $content;
                 });
-
-                $item->course_creator_image = asset('/').'assets/images/blog/9.jpg';
-                $item->intro_video = asset('/').'assets/images/login/1.jpg';
-                $item->intro_audio = asset('/').'assets/audio/audio.mp3';
 
                 $user_lms = UserLMS::where('user_id',Auth::user()->id)
                             ->where('course_id',$item->id)

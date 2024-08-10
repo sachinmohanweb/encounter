@@ -13,9 +13,14 @@ class Course extends Model
         'course_name',
         'bible_id',
         'course_creator',
+        'creator_designation',
+        'creator_image',
         'no_of_days',
         'description',
         'thumbnail',
+        'intro_commentary',
+        'intro_video',
+        'intro_audio',
         'status',
     ];
 

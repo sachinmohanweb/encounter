@@ -261,3 +261,13 @@ ALTER TABLE `users` ADD `remember_token` VARCHAR(100) NULL DEFAULT NULL AFTER `s
 ALTER TABLE `users` CHANGE `last_name` `last_name` VARCHAR(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL;
 ALTER TABLE `users` CHANGE `age` `age` INT NULL DEFAULT NULL;
 ALTER TABLE `users` CHANGE `password` `password` VARCHAR(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL;
+
+
+-- 09/08/24----
+
+ALTER TABLE `courses` ADD `creator_designation` VARCHAR(256) NULL DEFAULT NULL AFTER `course_creator`, 
+	ADD `creator_image` VARCHAR(256) NULL DEFAULT NULL AFTER `creator_designation`;
+
+ALTER TABLE `courses` ADD `intro_commentary` LONGTEXT NULL DEFAULT NULL AFTER `thumbnail`, 
+ADD `intro_video` VARCHAR(256) NULL DEFAULT NULL AFTER `intro_commentary`, 
+ADD `intro_audio` VARCHAR(256) NULL DEFAULT NULL AFTER `intro_video`;

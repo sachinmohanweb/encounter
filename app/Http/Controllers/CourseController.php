@@ -58,6 +58,13 @@ class CourseController extends Controller
                 $inputData['thumbnail'] = 'storage/courses/'.$fileName;
             }
 
+            if($request['creator_image']){
+
+                $fileName =str_replace(' ', '_',$request->course_creator).'.'.$request['creator_image']->extension();
+                $request->creator_image->storeAs('courses_creator', $fileName);
+                $inputData['creator_image'] = 'storage/courses_creator/'.$fileName;
+            }
+
             $course = Course::create($inputData);
             DB::commit();
              
@@ -138,6 +145,13 @@ class CourseController extends Controller
                 $fileName =str_replace(' ', '_',$request->course_name).'.'.$request['thumbnail']->extension();
                 $request->thumbnail->storeAs('courses', $fileName);
                 $inputData['thumbnail'] = 'storage/courses/'.$fileName;
+            }
+
+            if($request['creator_image']){
+
+                $fileName =str_replace(' ', '_',$request->course_creator).'.'.$request['creator_image']->extension();
+                $request->creator_image->storeAs('courses_creator', $fileName);
+                $inputData['creator_image'] = 'storage/courses_creator/'.$fileName;
             }
 
             $course->update($inputData);

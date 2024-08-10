@@ -49,22 +49,34 @@
                               <input type="text" placeholder="Course name" name="course_name" class="form-control" required>
                            </div>
                         </div>
-                        <div class="col-lg-4 col-md-6 col-12">
-                           <div class="form-group">
-                              <label for=""> Course Creator<span style="color:red">*</span></label>
-                              <input type="text" placeholder="Course creator name" name="course_creator" class="form-control" required>
-                           </div>
-                        </div>
                         <div class="col-lg-4 col-md-3 col-12">
                            <div class="form-group">
                               <label for="">No of days<span style="color:red">*</span></label>
                                <input type="number" placeholder="No. of days" name="no_of_days" class="form-control" required>
                            </div>
                         </div>
+                        <div class="col-lg-4 col-md-6 col-12">
+                           <div class="form-group">
+                              <label for=""> Course Creator<span style="color:red">*</span></label>
+                              <input type="text" placeholder="Course creator name" name="course_creator" class="form-control" required>
+                           </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-12">
+                           <div class="form-group">
+                              <label for=""> Creator Designation<span style="color:red">*</span></label>
+                              <input type="text" placeholder="Course creator designation" name="creator_designation" class="form-control" required>
+                           </div>
+                        </div>
                         <div class="col-lg-4 col-12">
                            <div class="form-group">
-                              <label for=""> Thumbnail</label>
-                             <input class="form-control" type="file"  name="thumbnail">
+                              <label for=""> Creator Image <span style="color:red">*</span></label>
+                             <input class="form-control" type="file"  name="creator_image" required>
+                           </div>
+                        </div>
+                        <div class="col-lg-4 col-12">
+                           <div class="form-group">
+                              <label for=""> Thumbnail <span style="color:red">*</span></label>
+                             <input class="form-control" type="file"  name="thumbnail" required>
                            </div>
                         </div>
                         <div class="col-lg-4 col-12">
@@ -87,15 +99,28 @@
                               </div>
                            </div>
                         </div>
-                       <!--  <div class="col-lg-1 col-12">
-                           <div class="form-group">
-                              <img src="" id="ImagePreview" width="80px">
-                           </div>
-                        </div> -->
                         <div class="col-lg-12 col-12">
                            <div class="form-group">
-                              <label for=""> Description</label>
+                              <label for=""> Course Description <span style="color:red">*</span></label>
                               <textarea name="description" id="" rows="2" class="form-control"></textarea>
+                           </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-12">
+                           <div class="form-group">
+                              <label for=""> Introduction Video Link<span style="color:red">*</span></label>
+                              <input type="text" placeholder="Introduction Video LInk" name="intro_video" class="form-control" required>
+                           </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-12">
+                           <div class="form-group">
+                              <label for=""> Introduction Audio Link<span style="color:red">*</span></label>
+                              <input type="text" placeholder="Introduction Audio LInk" name="intro_audio" class="form-control" required>
+                           </div>
+                        </div>
+                         <div class="col-lg-12 col-12">
+                           <div class="form-group">
+                              <label for=""> Introduction Commentary <span style="color:red">*</span></label>
+                              <textarea name="intro_commentary" id="" rows="2" class="form-control"></textarea>
                            </div>
                         </div>
                          
