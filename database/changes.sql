@@ -271,3 +271,7 @@ ALTER TABLE `courses` ADD `creator_designation` VARCHAR(256) NULL DEFAULT NULL A
 ALTER TABLE `courses` ADD `intro_commentary` LONGTEXT NULL DEFAULT NULL AFTER `thumbnail`, 
 ADD `intro_video` VARCHAR(256) NULL DEFAULT NULL AFTER `intro_commentary`, 
 ADD `intro_audio` VARCHAR(256) NULL DEFAULT NULL AFTER `intro_video`;
+
+-- 09/08/24----
+
+ALTER TABLE `courses` ADD `intro_video_thumb` VARCHAR(256) NOT NULL DEFAULT 'storage/course_intro_thumb/video_thumb.png' AFTER `intro_audio`;

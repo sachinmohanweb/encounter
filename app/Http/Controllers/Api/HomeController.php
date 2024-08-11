@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use DB;
 use Auth;
+use Carbon\Carbon;
 use App\Helpers\Outputer;
 use Illuminate\Http\Request;
 
@@ -30,11 +31,6 @@ class HomeController extends Controller
 
             $today= now();
             $today_string = now()->toDateString();
-            // $day = $today->format('d');
-            // $month = $today->format('m');
-            // $monthDay = $today->format('m-d');
-            // $todayFormatted = date('d/m/Y');
-
 
             /*--------Authenticated User---------*/
 
@@ -50,13 +46,13 @@ class HomeController extends Controller
             /*---------Daily Bible verse----------*/
             
             $bible_verse =  DailyBibleVerse::from(with(new DailyBibleVerse)->getTable(). ' as a')
-                            ->select('a.id',DB::raw('"null" as image'),DB::raw('"null" as data2'),'a.verse_id')
+                            ->select('a.id','a.verse_id')
                             ->whereRaw("DATE_FORMAT(date, '%m-%d') = DATE_FORMAT('$today_string', '%m-%d')")
                             ->where('status', 1)
                             ->first();
             if (!$bible_verse) {
                 $bible_verse = DailyBibleVerse::from(with(new DailyBibleVerse)->getTable(). ' as a')
-                            ->select('a.id',DB::raw('"null" as image'),DB::raw('"null" as data2'),'a.verse_id')
+                            ->select('a.id','a.verse_id')
                             ->where('status', 1)
                             ->inRandomOrder()
                             ->first();
@@ -64,13 +60,15 @@ class HomeController extends Controller
             if($bible_verse) {
                 $statement = HolyStatement::where('statement_id',$bible_verse->verse_id)->first();
                 $bible_verse->data1 = $statement->statement_text;
+                $bible_verse->data2 = $statement->book->book_name.'--'.$statement->chapter->chapter_name;
             }
             $bible_verse->makeHidden(['bible_name','testament_name','book_name','chapter_name','verse_no','theme_name']);
+            
             /*---------Courses----------*/
 
             $courses = Course::from(with(new Course)->getTable(). ' as a')
                         ->join(with(new Batch)->getTable(). ' as b' , 'a.id','b.course_id')
-                        ->select('a.id','a.course_name as data1','a.course_creator as data2','a.thumbnail as image')
+                        ->select('a.id','a.course_name as data1','a.course_creator as data2','a.thumbnail as image','b.batch_name as data3','b.start_date','a.no_of_days')
                          ->where('b.end_date', '>', now()->subDay()->format('Y-m-d'))
                         ->where('a.status',1)
                         ->where('b.status',1);
@@ -88,6 +86,20 @@ class HomeController extends Controller
 
             $courses->transform(function ($item, $key) {
 
+                if($item->start_date >= now()->format('Y-m-d')){
+                    $item->data4 = 'New Batch';
+                    $item->data5 = 0;
+                }else{
+                    $item->data4 = '';
+
+                    $startDate = Carbon::parse($item->start_date);
+                    $currentDate = now();
+                    $daysDifference = $startDate->diffInDays($currentDate);
+                    $percentage = ceil(($daysDifference/$item->no_of_days)*100);
+
+                    $item->data5 = $percentage;
+
+                }
                 if ($item->image !== null) {
                     $item->image = asset('/') . $item->image;
                 } else {
@@ -128,16 +140,13 @@ class HomeController extends Controller
                         ->join(with(new Batch)->getTable(). ' as b' , 'a.id','b.course_id')
                         ->select('a.id','a.course_name','a.no_of_days','a.description','a.thumbnail',
                             'a.course_creator','a.creator_image','a.creator_designation','a.intro_commentary',
-                            'a.intro_video','a.intro_audio','b.id as batch_id','b.batch_name','b.start_date','b.end_date',
-                            'b.last_date'
+                            'a.intro_video','a.intro_audio','a.intro_video_thumb','b.id as batch_id','b.batch_name','b.start_date','b.end_date','b.last_date',
+                            DB::raw('DATE_FORMAT(b.start_date, "%b %d,%Y") as start_date'),
+                            DB::raw('DATE_FORMAT(b.end_date, "%b %d,%Y") as end_date'),
+                            DB::raw('DATE_FORMAT(b.last_date, "%b %d,%Y") as last_date')
                         )
                         ->where('a.id',$request['id'])
-                        ->with(['CourseContents' => function($query) {
-                            $query->select('id as day_id','day','course_id')
-                                    ->where('status', 1);
-                        }])
                         ->get();
-
 
             $courses->transform(function ($item, $key) {
 
@@ -146,26 +155,19 @@ class HomeController extends Controller
                 } else {
                     $item->thumbnail = null;
                 }
+
                 if ($item->creator_image !== null) {
                     $item->creator_image = asset('/') . $item->creator_image;
                 } else {
                     $item->creator_image = null;
                 }
-                
-                $item->CourseContents->makeHidden(['course_name', 'bible_name']);
 
-                $item->CourseContents->transform(function ($content,$key1) {
-                    $day_verse =CourseDayVerse::select('book','chapter')
-                                ->where('course_content_id',$content['day_id'])->first();
-                    $content->book = null;
-                    $content->chapter = null;
-                    if($day_verse){
-                        $day_verse->makeHidden(['testament_name','verse_from_name','verse_to_name']);
-                        $content->book = $day_verse->book_name;
-                        $content->chapter = $day_verse->chapter_name;
-                    }
-                    return $content;
-                });
+                if ($item->intro_video_thumb !== null) {
+                    $item->intro_video_thumb = asset('/') . $item->intro_video_thumb;
+                } else {
+                    $item->intro_video_thumb = null;
+                }
+                
 
                 $user_lms = UserLMS::where('user_id',Auth::user()->id)
                             ->where('course_id',$item->id)
@@ -173,8 +175,29 @@ class HomeController extends Controller
                             ->where('status',1)->count();
                 if($user_lms==1){
                     $item->user_enrolled = true;
+
+                    $course_content = CourseContent::select('id as course_content_id','course_id','day')
+                                        ->where('course_id',$item->id)->get();
+                    $course_content->makeHidden(['course_name', 'bible_name']);
+
+                    $item->course_content = $course_content;
+
+                    $item->course_content->transform(function ($content,$key1) {
+                        $day_verse =CourseDayVerse::select('book','chapter')
+                                    ->where('course_content_id',$content['course_content_id'])->first();
+                        $content->book = null;
+                        $content->chapter = null;
+                        if($day_verse){
+                            $day_verse->makeHidden(['testament_name','verse_from_name','verse_to_name']);
+                            $content->book = $day_verse->book_name;
+                            $content->chapter = $day_verse->chapter_name;
+                        }
+                        return $content;
+                    });
+
                 }else{
                     $item->user_enrolled = false;
+                    $item->course_content = '';
                 }
 
                 return $item;
@@ -237,13 +260,49 @@ class HomeController extends Controller
     public function CourseDayContent(Request $request){
 
         try {
-            $course_id = $request['course_id'];
+            $course_content_id = $request['course_content_id'];
 
-            $course_day_content = CourseContent::where('course_id',$course_id)
-                        ->where('status',1)
-                        ->with(['CourseDayVerse'])
-                        ->get();
+           $course_day_content = CourseContent::select('id','course_id','day','text_description','video_link',
+                'audio_file','spotify_link','website_link','image','documents')
+                ->where('id', $course_content_id)
+                ->where('status', 1)
+                ->with(['CourseDayVerse' => function($query) {
+                    $query->select('id', 'course_content_id', 'testament', 'book', 'chapter',
+                            'verse_from', 'verse_to');
+                }])
+                ->first();
 
+            if ($course_day_content) {
+                $course_day_content->makeHidden(['verse_from_name', 'verse_to_name']);
+
+                if ($course_day_content->image !== null) {
+                    $course_day_content->image = asset('/') . $course_day_content->image;
+                } else {
+                    $course_day_content->image = null;
+                }
+
+                if ($course_day_content->documents !== null) {
+                    $course_day_content->documents = asset('/') . $course_day_content->documents;
+                } else {
+                    $course_day_content->documents = null;
+                }
+
+                if ($course_day_content->audio_file !== null) {
+                    $course_day_content->audio_file = asset('/') . $course_day_content->audio_file;
+                } else {
+                    $course_day_content->audio_file = null;
+                }
+
+                $course_day_content->CourseDayVerse->map(function($verse) {
+                    $statements = HolyStatement::where('statement_id', '>=', $verse->verse_from)
+                        ->where('statement_id', '<=', $verse->verse_to)
+                        ->pluck('statement_text')
+                        ->toArray();
+
+                    $verse->statements = implode(",\n", $statements);
+                    return $verse;
+                });
+            }
 
             return $this->outputer->code(200)->success($course_day_content)->json();
 
