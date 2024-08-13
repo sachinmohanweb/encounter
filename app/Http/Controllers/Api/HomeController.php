@@ -9,8 +9,10 @@ use App\Helpers\Outputer;
 use Illuminate\Http\Request;
 
 use App\Models\User;
+use App\Models\Book;
 use App\Models\Batch;
 use App\Models\Course;
+use App\Models\Chapter;
 use App\Models\UserLMS;
 use App\Models\Testament;
 use App\Models\CourseContent;
@@ -325,25 +327,40 @@ class HomeController extends Controller
                 return [
                     'book_id' => $book->book_id,
                     'book_name' => $book->book_name,
-                    'total_chapters' => $book->chapters->count(),
-                    'chapters' => $book->chapters->map(function ($chapter) {
-                        return [
-                            'chapter_id' => $chapter->chapter_id,
-                            'chapter_number' => $chapter->chapter_no,
-                            'statements' => $chapter->statements->map(function ($statement,$chapter) {
-                                return [
-                                    'statement_id' => $statement->statement_id,
-                                    'statement_no' => $statement->statement_no,
-                                    'statement_heading' => $statement->statement_heading,
-                                    'statement_text' => $statement->statement_text,
-                                ];
-                            }),
-                        ];
-                    })
+                    'total_chapters' => $book->chapters->count()
                 ];
             });
             
             return $this->outputer->code(200)->success($books)->json();
+
+        }catch (\Exception $e) {
+
+            $return['result']=$e->getMessage();
+            return $this->outputer->code(422)->error($return)->json();
+        }
+    }
+
+    public function BibleStudyChapters(Request $request){
+
+        try {
+
+            $book_id = $request['book_id'];
+
+            $chapters = Chapter::where('book_id',$book_id)->get();
+
+            $chapters->transform(function ($item, $key) {
+
+                $book = Book::where('book_id',$item->book_id)->first();
+                $item->book_name = $book->book_name;
+                
+                $statements = $item->statements()->get(['statement_id','statement_text']);
+                $item->statements = $statements;
+
+                return $item;
+            });
+
+            
+            return $this->outputer->code(200)->success($chapters)->json();
 
         }catch (\Exception $e) {
 

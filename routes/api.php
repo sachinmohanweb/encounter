@@ -32,4 +32,5 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('course_day_content',[HomeController::class, 'CourseDayContent']);
 
     Route::get('bible_study' , [HomeController::class, 'BibleStudy']);
+    Route::get('bible_study_chapters' , [HomeController::class, 'BibleStudyChapters']);
 });
