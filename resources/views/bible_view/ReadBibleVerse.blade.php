@@ -101,10 +101,10 @@
                      <textarea name="statement_text" id="statement_text" rows="5" class="form-control" required>{{$value->statement_text}}</textarea>
                      <div class="valid-feedback">Looks good!</div>
                   </div>
-                  <div class="modal-footer">
-                     <button class="btn btn-secondary" type="button" data-bs-dismiss="modal" onclick="window.location='{{route('admin.read.bible.view.verse', ['chapter_id' => $value->chapter_id])}}'">Close</button>
-                     <button class="btn btn-success" type="submit">Update</button>
-                  </div>
+               </div>
+               <div class="modal-footer">
+                  <button class="btn btn-secondary" type="button" data-bs-dismiss="modal" onclick="window.location='{{route('admin.read.bible.view.verse', ['chapter_id' => $value->chapter_id])}}'">Close</button>
+                  <button class="btn btn-success" type="submit">Update</button>
                </div>
             </div>
          </form>
@@ -125,9 +125,21 @@ function EditFunc(id){
        },
        dataType: 'json',
        success: function(res){
+           $('#EditBibleVerseModalForm').attr('action', "{{ url('updateholystatement') }}/" + id);
+           if(res.statement_heading !== null) {
+               if($('#statement_heading_input').length === 0) {
+                  var inputField = '<div class="col-md-12"><label for="statement_heading_input">Statement Heading</label><input type="text" class="form-control" id="statement_heading_input" name="statement_heading" value="' + res.statement_heading + '"></div>';
+                  $('.row.g-3.mb-3').before(inputField);
+               }else {
+                  $('#statement_heading_input').val(res.statement_heading);
+               }
+           }else {
+               $('#statement_heading_input').closest('.col-md-12').remove();
+           }
+
            $('#statement_id').val(res.statement_id);
            $('#statement_text').val(res.statement_text);
-            $('#EditBibleVerseModalForm').attr('action', "{{ url('updateholystatement') }}/" + id);
+
            $('#EditBibleVerseModal').modal('show');
        },
        error: function(xhr, status, error) {

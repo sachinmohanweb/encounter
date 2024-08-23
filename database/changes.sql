@@ -275,3 +275,8 @@ ADD `intro_audio` VARCHAR(256) NULL DEFAULT NULL AFTER `intro_video`;
 -- 09/08/24----
 
 ALTER TABLE `courses` ADD `intro_video_thumb` VARCHAR(256) NOT NULL DEFAULT 'storage/course_intro_thumb/video_thumb.png' AFTER `intro_audio`;
+
+-- 09/08/24----
+
+UPDATE `05_chapter` SET `chapter_id` = '0' WHERE `05_chapter`.`chapter_id` = 1413;
+UPDATE `06_holy_statement` SET `chapter_id` = '0' WHERE `06_holy_statement`.`statement_id` = 1;

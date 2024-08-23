@@ -13,7 +13,7 @@ class HolyStatement extends Model
     protected $table = '06_holy_statement';
     protected $primaryKey = 'statement_id';
     public $timestamps = false;
-    protected $fillable = ['statement_text'];
+    protected $fillable = ['statement_text','statement_heading'];
 
     public function chapter()
     {

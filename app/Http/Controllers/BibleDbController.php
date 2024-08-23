@@ -208,6 +208,9 @@ class BibleDbController extends Controller
             ]);
 
             $inputData['statement_text'] = $request['statement_text'];
+            if($request['statement_heading']){
+                $inputData['statement_heading'] = $request['statement_heading'];
+            }
 
             $statement->update($inputData);
             DB::commit();

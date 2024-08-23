@@ -327,7 +327,7 @@ class HomeController extends Controller
                 return [
                     'book_id' => $book->book_id,
                     'book_name' => $book->book_name,
-                    'total_chapters' => $book->chapters->count()
+                    'total_chapters' => $book->chapters->count()-1
                 ];
             });
             
