@@ -6,13 +6,13 @@
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/cascade.css') }}">
 @endsection
 @section('breadcrumb-title')
-<h3>Courses Content Verses</h3>
+<h3>Courses Content Sections</h3>
 @endsection
 @section('content')
 <div class="container-fluid">
    <div class="row">
       <div class="new-question d-flex justify-content-end mb-4">
-         <a href="{{ route('admin.add.content.verses',['content_id'=>$content->id]) }}"><button class="btn btn-pill btn-info-gradien pt-2 pb-2" type="button" data-bs-original-title="" title="">Add New Verse</button>
+         <a href="{{ route('admin.add.content.verses',['content_id'=>$content->id]) }}"><button class="btn btn-pill btn-info-gradien pt-2 pb-2" type="button" data-bs-original-title="" title="">Add New Section</button>
          </a>
       </div>
       @foreach($courseVerses as $key=>$value)
@@ -22,7 +22,7 @@
                   <table>
                       <tr>
                         <td  colspan="2" style="text-align: center;">
-                              <h6>Verse {{$key+1}}<h6>
+                              <h6>Section {{$key+1}}<h6>
                         </td>
                      </tr>
                      <tr>
@@ -41,12 +41,12 @@
                         <td>{{$value->chapter_name}}</td>
                      </tr>
                      <tr>
-                        <td>Verse From</td>
+                        <td>Section From</td>
                         <td>:</td>
                         <td>{{$value->verse_from_name}}</td>
                      </tr>
                      <tr>
-                        <td>Verse To</td>
+                        <td>Section To</td>
                         <td>:</td>
                         <td>{{$value->verse_to_name}}</td>
                      </tr>
@@ -55,7 +55,7 @@
                           
                            <div class="view-course d-flex align-items-center justify-content-between mt-3">
                               <a href="{{  route('admin.edit.content.verses',['verse_id'=>$value->id]) }}">
-                                 <button class="btn btn-pill btn-info-gradien pt-2 pb-2" type="button" data-bs-original-title="" title="">Edit Verse</button>
+                                 <button class="btn btn-pill btn-info-gradien pt-2 pb-2" type="button" data-bs-original-title="" title="">Edit Section</button>
                               </a>   
                            </div>
                         </td>

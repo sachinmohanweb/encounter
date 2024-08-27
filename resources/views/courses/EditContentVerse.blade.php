@@ -7,11 +7,11 @@
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/cascade.css') }}">
 @endsection
 @section('breadcrumb-title')
-<h3>Add Course Content Verse</h3>
+<h3>Edit Course Content Section</h3>
 @endsection
 @section('breadcrumb-items')
-<li class="breadcrumb-item">Course Content Verse</li>
-<li class="breadcrumb-item active">Add Course Content Verse</li>
+<li class="breadcrumb-item">Course Content Section</li>
+<li class="breadcrumb-item active">Add Course Content Section</li>
 @endsection
 @section('content')
 <div class="container-fluid">
@@ -108,7 +108,7 @@
                         </div>
                         <div class="col-lg-4 col-md-4 col-12">
                            <div class="form-group">
-                              <label for="">Verses From<span style="color:red">*</span></label>
+                              <label for="">Section From<span style="color:red">*</span></label>
                               <select class="js-data-example-ajax form-select" id="verse_no_s" name="verse_from" required>
                                  @foreach($verses as $verse)
                                      @if($verse_date->verse_from == $verse->statement_id)
@@ -124,7 +124,7 @@
                         </div>
                         <div class="col-lg-4 col-md-4 col-12">
                            <div class="form-group">
-                              <label for="">Verses To<span style="color:red">*</span></label>
+                              <label for="">Section To<span style="color:red">*</span></label>
                               <select class="js-data-example-ajax form-select" id="verse_no_l" name="verse_to" required>
                                  @foreach($verses as $verse)
                                      @if($verse_date->verse_to == $verse->statement_id)

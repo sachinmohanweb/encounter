@@ -10,8 +10,8 @@
 <h3>Add Course Content Verse</h3>
 @endsection
 @section('breadcrumb-items')
-<li class="breadcrumb-item">Course Content Verse</li>
-<li class="breadcrumb-item active">Add Course Content Verse</li>
+<li class="breadcrumb-item">Course Content Section</li>
+<li class="breadcrumb-item active">Add Course Content Section</li>
 @endsection
 @section('content')
 <div class="container-fluid">
@@ -79,13 +79,13 @@
                         </div>
                         <div class="col-lg-4 col-md-4 col-12">
                            <div class="form-group">
-                              <label for="">Verses From<span style="color:red">*</span></label>
+                              <label for="">Section From<span style="color:red">*</span></label>
                               <select class="js-data-example-ajax form-select" id="verse_no_s" name="verse_from" required></select>
                            </div>
                         </div>
                         <div class="col-lg-4 col-md-4 col-12">
                            <div class="form-group">
-                              <label for="">Verses To<span style="color:red">*</span></label>
+                              <label for="">Section To<span style="color:red">*</span></label>
                               <select class="js-data-example-ajax form-select" id="verse_no_l" name="verse_to" required></select>
                            </div>
                         </div>

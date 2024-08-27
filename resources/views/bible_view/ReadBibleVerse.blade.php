@@ -64,7 +64,7 @@
                   @if($chapter_details->chapter->chapter_name=='ആമുഖം')
                      <h5>{{$chapter_details->chapter->chapter_name}} </h5>
                   @else
-                     <h5>Verse : {{$value->statement_no}} </h5>
+                     <h5>Section : {{$value->statement_no}} </h5>
                   @endif
                   @if($value->statement_heading)
                      <h5>{{$value->statement_heading}}</p>
@@ -89,7 +89,7 @@
    <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 650px !important;"> 
       <div class="modal-content">
          <div class="modal-header">
-            <h5 class="modal-title">Bible Verse</h5>
+            <h5 class="modal-title">Bible Section</h5>
             <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
          </div>
          <form class="needs-validation" id="EditBibleVerseModalForm" novalidate="" method="Post">
@@ -97,7 +97,7 @@
             <div class="modal-body">
                <div class="row g-3 mb-3">
                   <div class="col-md-12">
-                     <label class="form-label" for="validationCustom02">Verse</label>
+                     <label class="form-label" for="validationCustom02">Section</label>
                      <textarea name="statement_text" id="statement_text" rows="5" class="form-control" required>{{$value->statement_text}}</textarea>
                      <div class="valid-feedback">Looks good!</div>
                   </div>

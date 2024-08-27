@@ -75,7 +75,7 @@
                            <th>Testament</th>
                            <th>Book</th>
                            <th>Chapter</th>
-                           <th>Total Verses</th>
+                           <th>Total Sections</th>
                            <th>Action</th>
                         </tr>
                      </thead>
