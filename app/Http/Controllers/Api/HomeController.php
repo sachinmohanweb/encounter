@@ -135,6 +135,67 @@ class HomeController extends Controller
         }
     }
 
+    public function AllCourses(Request $request){
+        try {
+
+            $today= now();
+            $today_string = now()->toDateString();
+
+            $courses = Course::from(with(new Course)->getTable(). ' as a')
+                        ->join(with(new Batch)->getTable(). ' as b' , 'a.id','b.course_id')
+                        ->select('a.id','a.course_name as data1','a.course_creator as data2','a.thumbnail as image','b.batch_name as data3','b.start_date','a.no_of_days')
+                         ->where('b.end_date', '>', now()->subDay()->format('Y-m-d'))
+                        ->where('a.status',1)
+                        ->where('b.status',1);
+
+            if($request['search_word']){
+                $courses->where('a.course_name','like',$request['search_word'].'%')
+                        ->orwhere('a.course_creator','like',$request['search_word'].'%');
+            }
+
+            $courses=$courses->orderBy('b.end_date','asc')->get();
+
+            $courses->transform(function ($item, $key) {
+
+                if($item->start_date >= now()->format('Y-m-d')){
+                    $item->data4 = 'New Batch';
+                    $item->data5 = 0;
+                }else{
+                    $item->data4 = '';
+
+                    $startDate = Carbon::parse($item->start_date);
+                    $currentDate = now();
+                    $daysDifference = $startDate->diffInDays($currentDate);
+                    $percentage = ceil(($daysDifference/$item->no_of_days)*100);
+
+                    $item->data5 = $percentage;
+
+                }
+                if ($item->image !== null) {
+                    $item->image = asset('/') . $item->image;
+                } else {
+                    $item->image = null;
+                }
+                return $item;
+            });
+            $courses->makeHidden([ 'bible_name']);
+
+            if(empty($courses)) {
+                $return['result']=  "Empty course list ";
+                return $this->outputer->code(422)->error($return)->json();
+            }
+
+            return $this->outputer->code(200)
+                        ->success($courses )
+                        ->json();
+
+        }catch (\Exception $e) {
+
+            $return['result']=$e->getMessage();
+            return $this->outputer->code(422)->error($return)->json();
+        }
+    }
+
     public function CourseDetails(Request $request){
         try {
 

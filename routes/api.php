@@ -27,6 +27,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::post('add_note',[SidebarController::class, 'AddNote']);
 
     Route::get('home', [HomeController::class, 'Home']);
+    Route::get('all_courses', [HomeController::class, 'AllCourses']);
     Route::get('course_details', [HomeController::class, 'CourseDetails']);
     Route::post('enroll_batch',[HomeController::class, 'EnrollBatch']);
     Route::get('course_day_content',[HomeController::class, 'CourseDayContent']);
