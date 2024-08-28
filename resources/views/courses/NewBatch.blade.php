@@ -35,7 +35,7 @@
                <div class="date-picker">
                   <form class="theme-form" action="{{route('admin.save.batch')}}" method="Post" enctype="multipart/form-data">
                      @csrf
-                     <input type="hidden" name="course_id" value="{{$course_id}}">
+                     <input type="hidden" name="course_id" value="{{$course->id}}">
                      <div class="verse d-flex align-items-center flex-wrap">
                         <div class="col-md-6 col-12">
                            <div class="form-group">
@@ -49,7 +49,7 @@
                               <label for=""> Start Date*</label>
                               <div class="input-group">
                                  <!-- datepicker-here -->
-                              <input class="form-control digits" type="date" data-language="en" name="start_date" required>
+                              <input class="form-control digits" type="date" data-language="en" id="start_date" name="start_date" required>
                            </div>
                            </div>
                         </div>
@@ -57,7 +57,7 @@
                            <div class="form-group">
                               <label for=""> End Date*</label>
                               <div class="input-group">
-                              <input class="form-control digits" type="date" data-language="en" name="end_date" required>
+                              <input class="form-control digits" type="date" data-language="en" id="end_date" name="end_date" readonly required>
                            </div>
                            </div>
                         </div>
@@ -88,7 +88,8 @@
                         </div>
                         <div class="col-12">
                            <div class="encounter-btn d-flex justify-content-center mt-4">
-                              <button class="btn btn-pill btn-danger btn-lg" type="button" data-bs-original-title="" title="" onclick="window.location='{{ route('admin.course.details',[$course_id]) }}'">Cancel</button>
+                              <button class="btn btn-pill btn-danger btn-lg" type="button" data-bs-original-title=""
+                               onclick="window.location='{{ route('admin.course.details',[$course->id]) }}'">Cancel</button>
                               <button class="btn btn-pill btn-success btn-lg ms-3" type="submit" data-bs-original-title="" title="">Submit</button>
                            </div>
                         </div>
@@ -113,4 +114,24 @@
 <script src="{{ asset('assets/js/typeahead/typeahead.custom.js') }}"></script>
 <script src="{{ asset('assets/js/typeahead-search/handlebars.js') }}"></script>
 <script src="{{ asset('assets/js/typeahead-search/typeahead-custom.js') }}"></script>
+
+<script>
+   $(document).ready(function() {
+      $('#start_date').on('change', function() {
+        var startDate = $(this).val();
+        if (startDate) {
+            var start = new Date(startDate);
+            var daysToAdd = parseInt("<?php echo ($course->no_of_days-1);?>");
+            var endDate = new Date(start);
+            endDate.setDate(start.getDate() + daysToAdd);
+
+            var endDateFormatted = endDate.toISOString().split('T')[0];
+            $('#end_date').val(endDateFormatted);
+        } else {
+            $('#end_date').val('');
+        }
+    });
+});
+</script>
+
 @endsection

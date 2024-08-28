@@ -403,8 +403,8 @@ class CourseController extends Controller
 
     public function NewBatch($id) : View
     {
-        $course_id = $id;
-        return view('courses.NewBatch',compact('course_id'));
+        $course = Course::find($id);
+        return view('courses.NewBatch',compact('course'));
 
     }
 
@@ -440,7 +440,8 @@ class CourseController extends Controller
     public function EditBatch($id) : View
     {
         $batch = Batch::where('id',$id)->first();
-        return view('courses.EditNewBatch',compact('batch'));
+        $course = Course::find($batch['course_id']);
+        return view('courses.EditNewBatch',compact('course','batch'));
 
     }
 

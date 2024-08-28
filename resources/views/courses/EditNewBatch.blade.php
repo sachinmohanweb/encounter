@@ -50,7 +50,8 @@
                               <label for=""> Start Date*</label>
                               <div class="input-group">
                                  <!-- datepicker-here -->
-                              <input class="form-control digits" type="date" data-language="en" name="start_date" value="{{$batch->start_date}}" required>
+                              <input class="form-control digits" type="date" data-language="en" id="start_date" 
+                              name="start_date" value="{{$batch->start_date}}" required>
                            </div>
                            </div>
                         </div>
@@ -58,7 +59,8 @@
                            <div class="form-group">
                               <label for=""> End Date*</label>
                               <div class="input-group">
-                              <input class="form-control digits" type="date" data-language="en" name="end_date" value="{{$batch->end_date}}" required>
+                              <input class="form-control digits" type="date" data-language="en" id="end_date" 
+                              name="end_date" value="{{$batch->end_date}}" readonly  required>
                            </div>
                            </div>
                         </div>
@@ -66,7 +68,8 @@
                            <div class="form-group">
                               <label for=""> Last Date for Enrollment*</label>
                               <div class="input-group">
-                              <input class="form-control digits" type="date" data-language="en" name="last_date" value="{{$batch->last_date}}" required>
+                              <input class="form-control digits" type="date" data-language="en"  name="last_date" 
+                              value="{{$batch->last_date}}"  required>
                            </div>
                            </div>
                         </div>
@@ -114,4 +117,23 @@
 <script src="{{ asset('assets/js/typeahead/typeahead.custom.js') }}"></script>
 <script src="{{ asset('assets/js/typeahead-search/handlebars.js') }}"></script>
 <script src="{{ asset('assets/js/typeahead-search/typeahead-custom.js') }}"></script>
+
+<script>
+   $(document).ready(function() {
+      $('#start_date').on('change', function() {
+        var startDate = $(this).val();
+        if (startDate) {
+            var start = new Date(startDate);
+            var daysToAdd = parseInt("<?php echo ($course->no_of_days-1);?>");
+            var endDate = new Date(start);
+            endDate.setDate(start.getDate() + daysToAdd);
+
+            var endDateFormatted = endDate.toISOString().split('T')[0];
+            $('#end_date').val(endDateFormatted);
+        } else {
+            $('#end_date').val('');
+        }
+    });
+});
+</script>
 @endsection
