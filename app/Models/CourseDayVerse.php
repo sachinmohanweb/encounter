@@ -18,7 +18,7 @@ class CourseDayVerse extends Model
         'verse_to',
         'status',
     ];
-    protected $appends = ['testament_name','book_name','chapter_name','verse_from_name','verse_to_name'];
+    protected $appends = ['testament_name','book_name','chapter_name','chapter_no','verse_from_name','verse_to_name'];
 
 
     public function getStatusAttribute($value)
@@ -42,6 +42,12 @@ class CourseDayVerse extends Model
     {
         $chapter = Chapter::where('chapter_id',$this->chapter)->first();
         return $chapter->chapter_name;
+    }
+
+    public function getChapterNoAttribute()
+    {
+        $chapter = Chapter::where('chapter_id',$this->chapter)->first();
+        return $chapter->chapter_no;
     }
 
     public function getVerseFromNameAttribute()

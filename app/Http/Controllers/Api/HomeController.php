@@ -236,7 +236,9 @@ class HomeController extends Controller
                             ->where('course_id',$item->id)
                             ->where('batch_id',$item->batch_id)
                             ->where('status',1)->count();
+                
                 if($user_lms==1){
+
                     $item->user_enrolled = true;
 
                     $course_content = CourseContent::select('id as course_content_id','course_id','day')
@@ -246,14 +248,32 @@ class HomeController extends Controller
                     $item->course_content = $course_content;
 
                     $item->course_content->transform(function ($content,$key1) {
-                        $day_verse =CourseDayVerse::select('book','chapter')
-                                    ->where('course_content_id',$content['course_content_id'])->first();
+
+                        $day_verses =CourseDayVerse::select('book','chapter','verse_from','verse_to')
+                                    ->where('course_content_id',$content['course_content_id'])->get();
                         $content->book = null;
                         $content->chapter = null;
-                        if($day_verse){
-                            $day_verse->makeHidden(['testament_name','verse_from_name','verse_to_name']);
-                            $content->book = $day_verse->book_name;
-                            $content->chapter = $day_verse->chapter_name;
+                        $content->details = null;
+                        if($day_verses->isNotEmpty()) {
+
+                            $day_verses->makeHidden(['testament_name']);
+
+                            $firstDayVerse = $day_verses->first();
+                            $content->book = $firstDayVerse->book_name;
+                            $content->chapter = $firstDayVerse->chapter_name;
+                            
+                            $detailsArray = [];
+
+                            foreach ($day_verses as $day_verse) {
+
+                                $bookName = $day_verse->book_name;
+                                $chapterName = $day_verse->chapter_no;
+                                $verseFromName = $day_verse->verse_from_name;
+                                $verseToName = $day_verse->verse_to_name;
+
+                                $detailsArray[] = $bookName . ' ' . $chapterName . ':' . $verseFromName. '-' .$verseToName;
+                            }
+                            $content->details = $detailsArray;
                         }
                         return $content;
                     });
