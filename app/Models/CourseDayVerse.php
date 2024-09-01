@@ -61,4 +61,29 @@ class CourseDayVerse extends Model
         $statement = HolyStatement::where('statement_id',$this->verse_to)->first();
         return $statement->statement_no;
     }
+
+    public function getFormattedCourseDaySections(): string
+    {
+        $bookName = $this->book_name;
+        $chapterName = $this->chapter_no;
+        $verseFromName = $this->verse_from_name;
+        $verseToName = $this->verse_to_name;
+
+        return $bookName . ' ' . $chapterName . ':' . $verseFromName . '-' . $verseToName;
+    }
+
+    public function isMarkedAsRead(int $userId, int $batchId, string $day): bool
+    {
+        $userLMS = UserLMS::where('user_id', $userId)
+                    ->where('batch_id', $batchId)
+                    ->where('status', 1)
+                    ->first();
+        if (!$userLMS) {
+            return false;
+        }
+        $readingExists = UserDailyReading::where('user_lms_id', $userLMS->id)
+                            ->where('day', $day)
+                            ->exists();
+        return $readingExists;
+    }
 }

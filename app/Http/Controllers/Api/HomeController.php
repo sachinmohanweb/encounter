@@ -19,6 +19,7 @@ use App\Models\CourseContent;
 use App\Models\HolyStatement;
 use App\Models\CourseDayVerse;
 use App\Models\DailyBibleVerse;
+use App\Models\UserDailyReading;
 
 use App\Http\Controllers\Controller;
 class HomeController extends Controller
@@ -70,7 +71,8 @@ class HomeController extends Controller
 
             $courses = Course::from(with(new Course)->getTable(). ' as a')
                         ->join(with(new Batch)->getTable(). ' as b' , 'a.id','b.course_id')
-                        ->select('a.id','a.course_name as data1','a.course_creator as data2','a.thumbnail as image','b.batch_name as data3','b.start_date','a.no_of_days')
+                        ->select('a.id','b.id as batch_id','b.start_date','a.no_of_days','a.thumbnail as image',
+                            'a.course_name as data1','a.course_creator as data2','b.batch_name as data3')
                          ->where('b.end_date', '>', now()->subDay()->format('Y-m-d'))
                         ->where('a.status',1)
                         ->where('b.status',1);
@@ -90,7 +92,7 @@ class HomeController extends Controller
 
                 if($item->start_date >= now()->format('Y-m-d')){
                     $item->data4 = 'New Batch';
-                    $item->data5 = 0;
+                    $item->data5 = '0%';
                 }else{
                     $item->data4 = '';
 
@@ -99,7 +101,7 @@ class HomeController extends Controller
                     $daysDifference = $startDate->diffInDays($currentDate);
                     $percentage = ceil(($daysDifference/$item->no_of_days)*100);
 
-                    $item->data5 = $percentage;
+                    $item->data5 = $percentage.'%' ;
 
                 }
                 if ($item->image !== null) {
@@ -143,7 +145,8 @@ class HomeController extends Controller
 
             $courses = Course::from(with(new Course)->getTable(). ' as a')
                         ->join(with(new Batch)->getTable(). ' as b' , 'a.id','b.course_id')
-                        ->select('a.id','a.course_name as data1','a.course_creator as data2','a.thumbnail as image','b.batch_name as data3','b.start_date','a.no_of_days')
+                        ->select('a.id','a.course_name as data1','a.course_creator as data2','a.thumbnail as image',
+                            'b.id as batch_id','b.batch_name as data3','b.start_date','a.no_of_days')
                          ->where('b.end_date', '>', now()->subDay()->format('Y-m-d'))
                         ->where('a.status',1)
                         ->where('b.status',1);
@@ -199,19 +202,23 @@ class HomeController extends Controller
     public function CourseDetails(Request $request){
         try {
 
+            $userId = Auth::user()->id;
+
+            $type = $request->input('type');
+
             $courses = Course::from(with(new Course)->getTable(). ' as a')
                         ->join(with(new Batch)->getTable(). ' as b' , 'a.id','b.course_id')
                         ->select('a.id','a.course_name','a.no_of_days','a.description','a.thumbnail',
-                            'a.course_creator','a.creator_image','a.creator_designation','a.intro_commentary',
+                            'a.course_creator','a.creator_image','a.creator_designation',
                             'a.intro_video','a.intro_audio','a.intro_video_thumb','b.id as batch_id','b.batch_name','b.start_date','b.end_date','b.last_date',
                             DB::raw('DATE_FORMAT(b.start_date, "%b %d,%Y") as start_date'),
                             DB::raw('DATE_FORMAT(b.end_date, "%b %d,%Y") as end_date'),
                             DB::raw('DATE_FORMAT(b.last_date, "%b %d,%Y") as last_date')
                         )
-                        ->where('a.id',$request['id'])
+                        ->where('b.id',$request['batch_id'])
                         ->get();
 
-            $courses->transform(function ($item, $key) {
+            $courses->transform(function ($item) use ($userId,$type) {
 
                 if ($item->thumbnail !== null) {
                     $item->thumbnail = asset('/') . $item->thumbnail;
@@ -231,56 +238,99 @@ class HomeController extends Controller
                     $item->intro_video_thumb = null;
                 }
                 
+                $today = now()->startOfDay();
+                $courseStartDate = Carbon::parse($item->start_date)->startOfDay();
 
-                $user_lms = UserLMS::where('user_id',Auth::user()->id)
+                
+                if($today->gte($courseStartDate)) {
+                    $item->course_start_status = 'started'; 
+                }else {
+                    $item->course_start_status = 'not_started';
+                }
+
+                $last_course_content = CourseContent::select('day', 'created_at')->where('course_id', $item->id)
+                                    ->whereHas('CourseDayVerse')
+                                    ->orderBy('updated_at', 'desc')
+                                    ->first();
+                if($last_course_content) {
+
+                    $formattedCreatedAt = Carbon::parse($last_course_content['created_at'])->format('M d, Y');
+                    $item->last_updated_data = $last_course_content['day'].' day content at '.$formattedCreatedAt;
+                }
+                
+                $item->last_updated_data = $last_course_content['day'].' day content at '.$formattedCreatedAt;
+
+                $item->completion_percentage = 0; 
+
+                $user_lms = UserLMS::where('user_id',$userId)
                             ->where('course_id',$item->id)
                             ->where('batch_id',$item->batch_id)
-                            ->where('status',1)->count();
+                            ->where('status',1)->first();
                 
-                if($user_lms==1){
+                if($user_lms){
 
                     $item->user_enrolled = true;
+                    $item->user_lms_id = $user_lms['id'];
 
-                    $course_content = CourseContent::select('id as course_content_id','course_id','day')
-                                        ->where('course_id',$item->id)->get();
+                    $total_course_completed_days= UserDailyReading::where('user_lms_id',$user_lms['id'])->count();
+                    $item->completion_percentage = ($total_course_completed_days/$item->no_of_days)*100; 
+
+
+                    $course_content = CourseContent::select('day','id as course_content_id','course_id')
+                                        ->where('course_id',$item->id)
+                                        ->whereHas('CourseDayVerse') 
+                                        ->orderBy('day');
+
+                    if ($type ==1) {
+                        
+                        $largest_day_completed =UserDailyReading::where('user_lms_id',$user_lms['id'])->max('day');
+
+                        if ($largest_day_completed) {
+
+                            $course_content->where('day', '>', $largest_day_completed)->limit(5);
+                        }
+                    }
+
+                    $course_content = $course_content->get();
+
                     $course_content->makeHidden(['course_name', 'bible_name']);
 
                     $item->course_content = $course_content;
 
-                    $item->course_content->transform(function ($content,$key1) {
+                    $item->course_content->transform(function ($content) use ($userId, $user_lms) {
 
                         $day_verses =CourseDayVerse::select('book','chapter','verse_from','verse_to')
                                     ->where('course_content_id',$content['course_content_id'])->get();
-                        $content->book = null;
-                        $content->chapter = null;
+
                         $content->details = null;
                         if($day_verses->isNotEmpty()) {
 
                             $day_verses->makeHidden(['testament_name']);
-
-                            $firstDayVerse = $day_verses->first();
-                            $content->book = $firstDayVerse->book_name;
-                            $content->chapter = $firstDayVerse->chapter_name;
                             
-                            $detailsArray = [];
+                            $batchId = $user_lms['batch_id'];
+                            $day = $content['day'];
 
-                            foreach ($day_verses as $day_verse) {
+                            $detailsArray = $day_verses->map(function ($day_verse) {
+                                return $day_verse->getFormattedCourseDaySections();
+                            })->toArray();
 
-                                $bookName = $day_verse->book_name;
-                                $chapterName = $day_verse->chapter_no;
-                                $verseFromName = $day_verse->verse_from_name;
-                                $verseToName = $day_verse->verse_to_name;
 
-                                $detailsArray[] = $bookName . ' ' . $chapterName . ':' . $verseFromName. '-' .$verseToName;
-                            }
                             $content->details = $detailsArray;
+                            
+                            $content->read_status = $day_verses->first()->isMarkedAsRead($userId, $batchId, $day);
+
                         }
                         return $content;
                     });
 
+
+
+
                 }else{
                     $item->user_enrolled = false;
                     $item->course_content = '';
+                    $item->user_lms_id = '';
+
                 }
 
                 return $item;
@@ -319,11 +369,7 @@ class HomeController extends Controller
             $inputData['user_id'] = $user_id;
             $inputData['course_id'] = $batch['course_id'];
             $inputData['batch_id'] = $batch['id'];
-            $inputData['start_date'] = $batch['start_date'];
-            $inputData['end_date'] = $batch['end_date'];
-            $inputData['progress'] = '0%';
-            $inputData['completed_status'] = 1;
-            $inputData['completed_status'] = 1;
+            $inputData['start_date'] = date('Y-m-d');
 
             $enrollment = UserLMS::create($inputData);
             DB::commit();
@@ -391,6 +437,36 @@ class HomeController extends Controller
 
         }catch (\Exception $e) {
 
+            $return['result']=$e->getMessage();
+            return $this->outputer->code(422)->error($return)->json();
+        }
+    }
+
+    public function MarkAsRead(Request $request){
+        
+        DB::beginTransaction();
+
+        try {
+
+            $a =  $request->validate([
+                    'user_lms_id'       => 'required',
+                    'day'               => 'required',
+                ]);
+
+            $inputData['user_lms_id'] = $request['user_lms_id'];
+            $inputData['day'] = $request['day'];
+            $inputData['date_of_reading'] = date('Y-m-d');
+
+            $marked = UserDailyReading::create($inputData);
+            DB::commit();
+
+            $return['messsage']  =  'Success.Updated.';
+            return $this->outputer->code(200)->success($return)->json();
+
+
+        }catch (\Exception $e) {
+
+            DB::rollBack();
             $return['result']=$e->getMessage();
             return $this->outputer->code(422)->error($return)->json();
         }

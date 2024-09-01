@@ -280,3 +280,24 @@ ALTER TABLE `courses` ADD `intro_video_thumb` VARCHAR(256) NOT NULL DEFAULT 'sto
 
 UPDATE `05_chapter` SET `chapter_id` = '0' WHERE `05_chapter`.`chapter_id` = 1413;
 UPDATE `06_holy_statement` SET `chapter_id` = '0' WHERE `06_holy_statement`.`statement_id` = 1;
+
+-- 29/08/24----
+
+CREATE TABLE `encounter_db`.`user_daily_readings` (
+	`id` INT NOT NULL AUTO_INCREMENT , 
+	`user_lms_id` INT NOT NULL , 
+	`day` INT NOT NULL , 
+	`date_of_reading` DATE NOT NULL , 
+	`status` INT NOT NULL DEFAULT '1' , 
+	`created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , 
+	`updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`id`));
+
+ALTER TABLE `user_l_m_s` CHANGE `end_date` `end_date` DATE NULL DEFAULT NULL;
+
+ALTER TABLE `user_l_m_s` CHANGE `progress` `progress` VARCHAR(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT '0';
+
+ALTER TABLE `user_l_m_s` CHANGE `progress` `progress` INT NULL DEFAULT '0';
+
+ALTER TABLE `user_l_m_s` CHANGE `progress` `progress` INT NOT NULL DEFAULT '0';
+
+
