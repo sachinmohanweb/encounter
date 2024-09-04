@@ -92,9 +92,9 @@
             <li class="nav-item" role="presentation">
                <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#Batches" type="button" role="tab" aria-controls="home" aria-selected="true">Batches</button>
             </li>
-            <li class="nav-item" role="presentation">
+           <!--  <li class="nav-item" role="presentation">
                <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#Essentials" type="button" role="tab" aria-controls="profile" aria-selected="false">Enrollment</button>
-            </li>
+            </li> -->
          </ul>
          <div class="tab-content" id="myTabContent">
             <div class="tab-pane fade show active" id="Batches" role="tabpanel" aria-labelledby="home-tab">
@@ -121,7 +121,7 @@
                               @foreach($batches as $key=>$value)
                               <tr>
                                  <td>{{$value->course_id}}</td>
-                                 <td><a href="{{ asset('batchdetail') }}">{{$value->batch_name}}</a></td>
+                                 <td><a href="{{ route('admin.batch.detail',[$value->id]) }}">{{$value->batch_name}}</a></td>
                                  <td>{{$value->start_date}}</td>
                                  <td>{{$value->end_date}}</td>
                                  <td>{{$value->last_date}}</td>
@@ -154,7 +154,7 @@
                   </div>
                </div>
             </div>
-            <div class="tab-pane fade" id="Essentials" role="tabpanel" aria-labelledby="profile-tab">
+           <!--  <div class="tab-pane fade" id="Essentials" role="tabpanel" aria-labelledby="profile-tab">
                
                <div class="card">
                   <div class="card-body">
@@ -272,7 +272,7 @@
                      </div>
                   </div>
                </div>
-            </div>
+            </div> -->
          </div>
       </div>
       </div>

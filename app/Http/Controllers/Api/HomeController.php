@@ -328,7 +328,7 @@ class HomeController extends Controller
 
                 }else{
                     $item->user_enrolled = false;
-                    $item->course_content = '';
+                    $item->course_content = [];
                     $item->user_lms_id = '';
 
                 }
@@ -459,6 +459,22 @@ class HomeController extends Controller
 
             $marked = UserDailyReading::create($inputData);
             DB::commit();
+
+            $user_lms = UserLMS::find($request['user_lms_id']);
+            $course = Course::find($user_lms['course_id']);
+            $readings_count = UserDailyReading::where('user_lms_id',$request['user_lms_id'])->count();
+            $percentage= ( $readings_count/$course['no_of_days'])*100;
+            if($readings_count==1){
+                $compl_status=2;
+                $user_lms['completed_status'] = $compl_status;
+            }
+            if($readings_count==$course['no_of_days']){
+                $compl_status=3;
+                $user_lms['completed_status'] = $compl_status;
+            }
+
+            $user_lms['progress'] = $percentage;
+            $user_lms->save();
 
             $return['messsage']  =  'Success.Updated.';
             return $this->outputer->code(200)->success($return)->json();

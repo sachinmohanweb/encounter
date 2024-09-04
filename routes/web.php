@@ -126,7 +126,8 @@ Route::middleware('auth:admin')->group(function(){
     Route::post('updatecontentverses', [CourseController::class, 'UpdateContentVerses'])
             ->name('admin.update.content.verses');
 
-    Route::get('batchdetail', [CourseController::class, 'BatchDetail'])->name('admin.batch.detail');
+    Route::get('batchdetail/{id}', [CourseController::class, 'BatchDetail'])->name('admin.batch.detail');
+    Route::post('batchusersDatatable',[CourseController::class,'BatchUsersDatatable'])->name('admin.batch.users.datatable');
     Route::get('newbatch/{id}', [CourseController::class, 'NewBatch'])->name('admin.new.batch');
     Route::post('savebatch', [CourseController::class, 'SaveBatch'])->name('admin.save.batch');
     Route::get('editbatch/{id}', [CourseController::class, 'EditBatch'])->name('admin.edit.batch');

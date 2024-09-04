@@ -8,7 +8,7 @@
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/cascade.css') }}">
 @endsection
 @section('breadcrumb-title')
-<h3>Batch Details</h3>
+<h3>Batch Users</h3>
 @endsection
 
 @section('content')
@@ -18,41 +18,19 @@
          <div class="card">
             <div class="card-body">
                <div class="table-responsive">
-                  <table class="display" id="data-source-1" style="width:100%">
+                  <table class="display" id="batch_users" style="width:100%">
                      <thead>
                         <tr>
-                           <th>Batch Id</th>
+                           <!-- <th>Batch Id</th> -->
                            <th>User Name</th>
-                           <th>Completed Status</th>
                            <th>Start Date</th>
                            <th>Progress</th>
+                           <th>Completed Status</th>
                            <th>Action</th>
-                           <!-- <th>Status</th> -->
+                           <th>Status</th>
                         </tr>
                      </thead>
                      <tbody>
-                        <tr>
-                           <td>52</td>
-                           <td>Tiger Nixon</td>
-                           <td>Ongoing</td>
-                           <td>21-02-2024</td>
-                           <td>Progress Status</td>
-                           <td>
-                              <ul class="action">
-                                 <li class="edit"> <a href="editdailybibleverse"><i class="icon-pencil-alt"></i></a>
-                                 </li>
-                                 <li class="delete"><a href="#"><i class="icon-trash"></i></a></li>
-                              </ul>
-                           </td>
-                           <!--  <td>
-                              <div class="media-body text-end icon-state">
-                                 <label class="switch">
-                                 <input type="checkbox" checked=""><span class="switch-state"></span>
-                                 </label>
-                              </div>
-                           </td> -->
-                        </tr>
-                       
                      </tbody>
                   </table>
                </div>
@@ -76,5 +54,104 @@
 <script src="{{ asset('assets/js/typeahead-search/typeahead-custom.js') }}"></script>
 <script src="{{ asset('assets/js/height-equal.js') }}"></script>
 <script src="{{ asset('assets/js/animation/wow/wow.min.js') }}"></script>
-<script src="{{ asset('assets/js/datatable/datatables/jquery.dataTables.min.js') }}"></script>   <script src="{{ asset('assets/js/datatable/datatables/datatable.custom.js') }}"></script>
+<script src="{{ asset('assets/js/datatable/datatables/jquery.dataTables.min.js') }}"></script>   
+<script src="{{ asset('assets/js/datatable/datatables/datatable.custom.js') }}"></script>
+<script>
+   $(document).ready( function () {
+      var batchId = "{{ $batch_id }}";
+      $('#batch_users').DataTable({
+         processing: true,
+         serverSide: true,
+         ajax: {
+            url: "{{ route('admin.batch.users.datatable') }}",
+            type: 'POST',
+            headers: {
+                  'X-CSRF-TOKEN': "{{ csrf_token() }}"
+            },
+             data: function (d) {
+                d.batch_id = batchId;
+            } 
+         },
+          columns: [
+              { data: 'user_name', name: 'user_name'},     
+              { data: 'start_date', name: 'start_date' },
+              { data: 'progress', name: 'progress' },
+              { data: 'completed_status', name: 'completed_status' },
+              { data: 'action', name: 'action', orderable: false},
+              { data: 'status', name: 'status', orderable: false},
+          ],
+      });
+   });
+         
+   function suspend(id,status){
+
+      if(status==1){
+         msg = 'Are you sure? Deactive this user lms?';
+      }else{
+         msg = 'Are you sure? Activate this user lms?';
+      }
+      if (confirm(msg) == true) {
+          var id = id;
+          $.ajax({
+              type:"POST",
+              url: "{{ route('admin.user.lms.status.change') }}",
+              data: { _token : "<?= csrf_token() ?>",
+                      id     : id
+              },
+              dataType: 'json',
+              success: function(res){
+                  var oTable = $('#user_lms_data').dataTable();
+                  if (res.success== true){
+                     if(res.status==1){
+                        $.notify({
+                           title:'User',
+                           message:'User Lms Successfully Activated'
+                           },
+                           {
+                              type:'primary',
+                              offset:{
+                                x:35,
+                                y:170
+                              },
+                              animate:{
+                                enter:'animated fadeIn',
+                                exit:'animated fadeOut'
+                            }
+                        
+                        });
+                     }else{
+                        $.notify({
+                           title:'User',
+                           message:'User Lms Successfully Suspended'
+                           },
+                           {
+                              type:'primary',
+                              offset:{
+                                x:35,
+                                y:170
+                              },
+                              animate:{
+                                enter:'animated fadeIn',
+                                exit:'animated fadeOut'
+                            }
+                        
+                        });
+                     }
+
+                  }else{
+                     toastr.error(res.msg)
+                  }
+              },
+              error: function(xhr, status, error) {
+                  console.error('AJAX request failed:', status, error);
+                  alert('Failed to delete family. Please try again later.');
+              }
+          });
+      }else{
+         table = $('#user_lms_data').DataTable();
+         table.ajax.reload(null, false);
+      }
+   }
+ 
+</script>
 @endsection

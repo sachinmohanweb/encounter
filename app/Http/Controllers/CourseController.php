@@ -11,10 +11,11 @@ use DB;
 use Session;
 use Exception;
 
+use App\Models\Batch;
 use App\Models\Course;
+use App\Models\UserLMS;
 use App\Models\CourseContent;
 use App\Models\CourseDayVerse;
-use App\Models\Batch;
 
 use App\Models\Bible;
 use App\Models\Book;
@@ -395,9 +396,10 @@ class CourseController extends Controller
         }
     }
 
-    public function BatchDetail() : View
-    {
-        return view('courses.BatchDetail',[]);
+    public function BatchDetail($id) : View
+    {   
+        $batch_id = $id;
+        return view('courses.BatchDetail',compact('batch_id'));
 
     }
 
@@ -523,6 +525,37 @@ class CourseController extends Controller
             return redirect()->route('admin.course.details',['id' => $course_id])
                             ->with('error',$e->getMessage());
         }
+    }
+
+    public function BatchUsersDatatable(Request $request)
+    {
+        if(request()->ajax()) {
+            return datatables()
+            ->of(UserLMS::select('*')->where('batch_id',$request['batch_id']))
+
+            ->addColumn('user_name', function ($user_lms) {
+
+               return $user_lms->user_name;
+            })
+            ->addColumn('start_date', function ($user_lms) {
+
+                return \Carbon\Carbon::createFromFormat('Y-m-d', $user_lms->start_date)->format('d-m-y');       
+            })
+            ->addColumn('progress', function ($user_lms) {
+
+                return $user_lms->progress.'%';       
+            })
+            ->addColumn('completed_status', function ($user_lms) {
+
+                return $user_lms->completed_status_name;       
+            })
+            ->addColumn('action', 'courses.batch-datatable-action')
+            ->addColumn('status', 'courses.batch-datatable-status-action')
+            ->rawColumns(['action','status'])
+            ->addIndexColumn()
+            ->make(true);
+        }
+        return view('courses.BatchDetail');
     }
  
 }
