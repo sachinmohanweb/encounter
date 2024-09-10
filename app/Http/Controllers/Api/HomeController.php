@@ -266,14 +266,14 @@ class HomeController extends Controller
                             ->where('course_id',$item->id)
                             ->where('batch_id',$item->batch_id)
                             ->where('status',1)->first();
-                
                 if($user_lms){
 
                     $item->user_enrolled = true;
                     $item->user_lms_id = $user_lms['id'];
 
-                    $total_course_completed_days= UserDailyReading::where('user_lms_id',$user_lms['id'])->count();
-                    $item->completion_percentage = ($total_course_completed_days/$item->no_of_days)*100; 
+                    //$total_course_completed_days= UserDailyReading::where('user_lms_id',$user_lms['id'])->count();
+                    //$item->completion_percentage = ($total_course_completed_days/$item->no_of_days)*100; 
+                    $item->completion_percentage = $user_lms['progress']; 
 
 
                     $course_content = CourseContent::select('day','id as course_content_id','course_id')
