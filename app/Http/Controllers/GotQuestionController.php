@@ -207,11 +207,6 @@ class GotQuestionController extends Controller
         return view('got_questions.categories');
     }
 
-    public function GQ_Sub_Categories() : View
-    {
-        return view('got_questions.sub_categories',[]);
-    }
-
     public function StoreGQCategory(Request $request): RedirectResponse
     {
 
@@ -242,6 +237,74 @@ class GotQuestionController extends Controller
         DB::beginTransaction();
         try{
             $cat =GQCategory::where('id',$request->id)->first();
+            if($cat){
+                $cat->delete();
+                DB::commit();
+                $return['status'] = "success";
+            }else{
+                $return['status'] = 'failed';
+            }
+
+         }catch (Exception $e) {
+
+            DB::rollBack();
+            $return['status'] = $e->getMessage();
+        }
+        return response()->json($return);
+    }
+
+    public function GQ_Sub_Categories() : View
+    {
+        return view('got_questions.subcategories',[]);
+    }
+
+    public function GQSubCategoriesDatatable()
+    {
+        if(request()->ajax()) {
+            return datatables()
+            ->of(GQSubCategory::select('*'))
+            ->addColumn('category', function ($gq) {
+                return  $gq->Category->name;
+            })
+            ->addColumn('action', 'got_questions.subcategory_datatable-action')
+            ->rawColumns(['category','action'])
+            ->addIndexColumn()
+            ->make(true);
+        }
+        return view('got_questions.subcategories');
+    }
+
+    public function StoreGQSubCategory(Request $request): RedirectResponse
+    {
+
+        DB::beginTransaction();
+        try {
+
+            $data =  $request->validate([
+                'cat_id' => 'required',
+                'name' => 'required',
+            ]);
+
+            $inputData = $request->all();
+
+            $gq_cat = GQSubCategory::create($inputData);
+            DB::commit();
+             
+            return redirect()->route('admin.gq.subcategories')
+                            ->with('success',"Success! Subcategory has been successfully added.");
+        }catch (Exception $e) {
+
+            DB::rollBack();
+            $message = $e->getMessage();
+            return back()->withInput()->withErrors(['message' =>  $e->getMessage()]);;
+        }
+    }
+
+    public function DeleteGQSubCategory(Request $request) : JsonResponse
+    {
+        DB::beginTransaction();
+        try{
+            $cat =GQSubCategory::where('id',$request->id)->first();
             if($cat){
                 $cat->delete();
                 DB::commit();

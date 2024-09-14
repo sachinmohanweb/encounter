@@ -65,7 +65,14 @@ Route::middleware('auth:admin')->group(function(){
             ->name('admin.store.GQCategory');
     Route::post('deletegqcategory', [GotQuestionController::class, 'DeleteGQCategory'])
             ->name('admin.delete.GQCategory');
+
     Route::get('gq_sub_categories', [GotQuestionController::class, 'GQ_Sub_Categories'])->name('admin.gq.subcategories');
+    Route::post('gotsubcategoriesDatatable',[GotQuestionController::class,'GQSubCategoriesDatatable'])
+            ->name('admin.subcategories.datatable');
+    Route::post('store_gqsubcategory', [GotQuestionController::class, 'StoreGQSubCategory'])
+            ->name('admin.store.GQSubCategory');
+    Route::post('deletegqsubcategory', [GotQuestionController::class, 'DeleteGQSubCategory'])
+            ->name('admin.delete.GQSubCategory');
 
     Route::get('user_qna', [UserQNAController::class, 'UserQNAList'])->name('admin.user_qna');
     Route::get('user_qna_details/{id}', [UserQNAController::class,'UserQNADetails'])->name('admin.user_qna.details');

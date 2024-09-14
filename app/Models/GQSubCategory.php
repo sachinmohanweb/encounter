@@ -21,4 +21,9 @@ class GQSubCategory extends Model
     {
         return $value == 1 ? 'Active' : 'Suspended';
     }
+
+    public function category()
+    {
+        return $this->belongsTo(GQCategory::class,'cat_id','id');
+    }
 }
