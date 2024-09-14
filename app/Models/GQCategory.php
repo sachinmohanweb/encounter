@@ -9,7 +9,14 @@ class GQCategory extends Model
 {
     use HasFactory;
 
-    //protected $table = '04_book';
-    //protected $guard = [];
+    protected $fillable = [
+        'name',
+        'status',
+    ];
+    
+    public function getStatusAttribute($value)
+    {
+        return $value == 1 ? 'Active' : 'Suspended';
+    }
 
 }

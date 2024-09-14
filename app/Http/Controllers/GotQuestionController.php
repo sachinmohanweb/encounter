@@ -188,5 +188,74 @@ class GotQuestionController extends Controller
         }
         return response()->json($return);
     }
+
+    public function GQ_Categories() : View
+    {
+        return view('got_questions.categories',[]);
+    }
+
+    public function GQCategoriesDatatable()
+    {
+        if(request()->ajax()) {
+            return datatables()
+            ->of(GQCategory::select('*'))
+            ->addColumn('action', 'got_questions.category_datatable-action')
+            ->rawColumns(['action'])
+            ->addIndexColumn()
+            ->make(true);
+        }
+        return view('got_questions.categories');
+    }
+
+    public function GQ_Sub_Categories() : View
+    {
+        return view('got_questions.sub_categories',[]);
+    }
+
+    public function StoreGQCategory(Request $request): RedirectResponse
+    {
+
+        DB::beginTransaction();
+        try {
+
+            $data =  $request->validate([
+                'name' => 'required',
+            ]);
+
+            $inputData = $request->all();
+
+            $gq_cat = GQCategory::create($inputData);
+            DB::commit();
+             
+            return redirect()->route('admin.gq.categories')
+                            ->with('success',"Success! Category has been successfully added.");
+        }catch (Exception $e) {
+
+            DB::rollBack();
+            $message = $e->getMessage();
+            return back()->withInput()->withErrors(['message' =>  $e->getMessage()]);;
+        }
+    }
+
+    public function DeleteGQCategory(Request $request) : JsonResponse
+    {
+        DB::beginTransaction();
+        try{
+            $cat =GQCategory::where('id',$request->id)->first();
+            if($cat){
+                $cat->delete();
+                DB::commit();
+                $return['status'] = "success";
+            }else{
+                $return['status'] = 'failed';
+            }
+
+         }catch (Exception $e) {
+
+            DB::rollBack();
+            $return['status'] = $e->getMessage();
+        }
+        return response()->json($return);
+    }
  
 }

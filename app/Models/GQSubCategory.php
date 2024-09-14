@@ -10,6 +10,15 @@ class GQSubCategory extends Model
     use HasFactory;
 
     protected $table = 'g_q_subcategories';
-    //protected $guard = [];
-
+    
+    protected $fillable = [
+        'cat_id',
+        'name',
+        'status',
+    ];
+    
+    public function getStatusAttribute($value)
+    {
+        return $value == 1 ? 'Active' : 'Suspended';
+    }
 }

@@ -93,15 +93,21 @@
                     </li>
 
                     <li class="sidebar-list">
-                        <a class="sidebar-link sidebar-title link-nav" href="{{route('admin.got-question')}}">
+                        <a class="sidebar-link sidebar-title"
+                            href="#">
                             <svg class="stroke-icon">
-                                <use href="{{ asset('assets/svg/icon-sprite.svg#stroke-faq') }}"></use>
+                                <use href="{{ asset('assets/svg/icon-sprite.svg#stroke-user') }}"></use>
                             </svg>
                             <svg class="fill-icon">
-                                <use href="{{ asset('assets/svg/icon-sprite.svg#fill-home') }}"></use>
-                            </svg>
-                            <span>Got Question</span>
+                                <use href="{{ asset('assets/svg/icon-sprite.svg#fill-user') }}"></use>
+                            </svg><span class="">Got Questions</span>
                         </a>
+                        <ul class="sidebar-submenu">
+                            <li><a href="{{route('admin.got-question')}}">Questions & Answers</a></li>
+                            <li><a href="{{ route('admin.gq.categories') }}">Categories</a></li>
+                            <li><a href="{{ route('admin.gq.subcategories') }}">Subategories</a></li>
+                        </ul>
+                        
                     </li>
 
                     <li class="sidebar-list">
