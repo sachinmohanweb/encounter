@@ -42,9 +42,9 @@
                   <table class="display" id="got_question_data" style="width:100%">
                      <thead>
                         <tr>
-                           <th>Questions</th>
                            <th>Category</th>
                            <th>Sub Category</th>
+                           <th>Questions</th>
                            <th>Answer</th>
                            <th>Action</th>
                         </tr>
@@ -58,6 +58,27 @@
       </div>
    </div>
 </div>
+
+<!-- Answer Modal -->
+<div class="modal fade" id="answerModal" tabindex="-1" role="dialog" aria-labelledby="answerModalLabel" aria-hidden="true">
+   <div class="modal-dialog" role="document">
+      <div class="modal-content">
+         <div class="modal-header">
+            <h5 class="modal-title" id="answerModalLabel">Read More</h5>
+            
+            </button>
+         </div>
+         <div class="modal-body" style="height: 500px;overflow-y: scroll;">
+            <!-- Full answer will be shown here -->
+         </div>
+         <div class="modal-footer">
+            <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> -->
+         </div>
+      </div>
+   </div>
+</div>
+
+
 
 @endsection
 @section('script')
@@ -89,12 +110,18 @@
             } 
          },
           columns: [
-              { data: 'question', name: 'question'},     
               { data: 'category', name: 'category' , orderable: false},
               { data: 'sub_category', name: 'sub_category' , orderable: false },
+              { data: 'question', name: 'question'},     
               { data: 'answer', name: 'answer' },
               { data: 'action', name: 'action', orderable: false},
           ],
+      });
+
+      $(document).on('click', '.view-more', function() {
+         var fullAnswer = $(this).data('answer');
+         $('#answerModal .modal-body').text(fullAnswer);
+         $('#answerModal').modal('show');
       });
    });
          

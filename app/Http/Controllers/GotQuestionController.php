@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Str;
 
 use DB;
 use Session;
@@ -75,8 +76,16 @@ class GotQuestionController extends Controller
              ->addColumn('sub_category', function ($gq) {
                 return  $gq->sub_category_name;
             })
+            ->addColumn('question', function ($gq) {
+                $truncatedqt = Str::limit($gq->question, 45); // Show only 50 characters
+                return $truncatedqt . ' <a href="javascript:void(0);" class="view-more" data-answer="'.htmlspecialchars($gq->question).'">View More</a>';
+            })
+            ->addColumn('answer', function ($gq) {
+                $truncatedAnswer = Str::limit($gq->answer, 45); // Show only 50 characters
+                return $truncatedAnswer . ' <a href="javascript:void(0);" class="view-more" data-answer="'.htmlspecialchars($gq->answer).'">View More</a>';
+            })
             ->addColumn('action', 'got_questions.datatable-action')
-            ->rawColumns(['category','sub_category','action'])
+            ->rawColumns(['question','category','sub_category','answer','action'])
             ->addIndexColumn()
             ->make(true);
         }
