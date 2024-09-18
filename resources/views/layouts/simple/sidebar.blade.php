@@ -105,7 +105,7 @@
                         <ul class="sidebar-submenu">
                             <li><a href="{{route('admin.got-question')}}">Questions & Answers</a></li>
                             <li><a href="{{ route('admin.gq.categories') }}">Categories</a></li>
-                            <li><a href="{{ route('admin.gq.subcategories') }}">Subategories</a></li>
+                            <li><a href="{{ route('admin.gq.subcategories') }}">Sub categories</a></li>
                         </ul>
                         
                     </li>
