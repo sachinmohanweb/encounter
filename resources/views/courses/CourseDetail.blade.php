@@ -64,7 +64,7 @@
                         
                         @if($course->creator_image && file_exists(public_path($course->creator_image)))
                                <img class="img-fluid for-light" src="{{ asset($course->creator_image) }}" alt="" 
-                               style="width:100px; height: 120px;">
+                               style="width:100px; height: 100px;">
                         @else
                               <img class="img-fluid for-light" src="{{ asset('assets/images/course1.jpg') }}" alt="" style="width:100px; height: 120px;">
                         @endif                  

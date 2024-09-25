@@ -69,13 +69,13 @@
                         </div>
                         <div class="col-lg-4 col-12">
                            <div class="form-group">
-                              <label for=""> Creator Image <span style="color:red">*</span></label>
+                              <label for=""> Creator Image <span style="color:red;font-size: x-small;">* (200px X 200px )</span></label>
                              <input class="form-control" type="file"  name="creator_image" required>
                            </div>
                         </div>
                         <div class="col-lg-4 col-12">
                            <div class="form-group">
-                              <label for=""> Thumbnail <span style="color:red">*</span></label>
+                              <label for=""> Thumbnail <span style="color:red;font-size: x-small;">* (512px X 512px )</span></label>
                              <input class="form-control" type="file"  name="thumbnail" required>
                            </div>
                         </div>

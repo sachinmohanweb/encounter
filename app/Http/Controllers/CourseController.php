@@ -54,14 +54,14 @@ class CourseController extends Controller
 
             if($request['thumbnail']){
 
-                $fileName =str_replace(' ', '_',$request->course_name).'.'.$request['thumbnail']->extension();
+                $fileName =str_replace(' ', '_',$request->course_name).'_' . time() . '.' .$request['thumbnail']->extension();
                 $request->thumbnail->storeAs('courses', $fileName);
                 $inputData['thumbnail'] = 'storage/courses/'.$fileName;
             }
 
             if($request['creator_image']){
 
-                $fileName =str_replace(' ', '_',$request->course_creator).'.'.$request['creator_image']->extension();
+                $fileName =str_replace(' ', '_',$request->course_creator).'_' . time() . '.' .$request['creator_image']->extension();
                 $request->creator_image->storeAs('courses_creator', $fileName);
                 $inputData['creator_image'] = 'storage/courses_creator/'.$fileName;
             }
@@ -143,14 +143,14 @@ class CourseController extends Controller
 
             if($request['thumbnail']){
 
-                $fileName =str_replace(' ', '_',$request->course_name).'.'.$request['thumbnail']->extension();
+                $fileName =str_replace(' ', '_',$request->course_name).'_' . time() . '.' .$request['thumbnail']->extension();
                 $request->thumbnail->storeAs('courses', $fileName);
                 $inputData['thumbnail'] = 'storage/courses/'.$fileName;
             }
 
             if($request['creator_image']){
 
-                $fileName =str_replace(' ', '_',$request->course_creator).'.'.$request['creator_image']->extension();
+                $fileName =str_replace(' ', '_',$request->course_creator).'_' . time() . '.' .$request['creator_image']->extension();
                 $request->creator_image->storeAs('courses_creator', $fileName);
                 $inputData['creator_image'] = 'storage/courses_creator/'.$fileName;
             }

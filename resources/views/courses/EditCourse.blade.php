@@ -85,8 +85,8 @@
                         </div>
                         <div class="col-lg-4 col-12">
                            <div class="form-group">
-                              <label for=""> Creator Image <span style="color:red">*</span></label>
-                             <input class="form-control" type="file"  name="creator_image" required>
+                              <label for=""> Creator Image <span style="color:red;font-size: x-small;">(200px X 200px )</span></label>
+                             <input class="form-control" type="file"  name="creator_image">
                            </div>
                         </div>
                         @if($course->creator_image && file_exists(public_path($course->creator_image)))
@@ -100,7 +100,7 @@
                         
                          <div class="col-lg-3 col-12">
                            <div class="form-group">
-                              <label for=""> Thumbnail</label>
+                              <label for=""> Thumbnail<span style="color:red;font-size: x-small;"> (512px X 512px )</span></label>
                              <input class="form-control" type="file" id="formFile"  name="thumbnail">
                            </div>
                         </div>
