@@ -68,8 +68,34 @@ class UserController extends Controller
             ->addColumn('user_full_name', function ($user) {
                     return $user->first_name . ' ' . $user->last_name;
             })
+             ->addColumn('image', function ($user) {
+
+                if ($user->image) {
+                    return '<img  class="img-70 rounded-circle" src="' . asset($user->image) . '"  alt="User Image" style="height: 70px;">';
+                } else {
+                    $nameWords = explode(' ', $user->first_name);
+                    $nameLetters = '';
+
+                    foreach ($nameWords as $word) {
+                        $nameLetters .= substr($word, 0, 1);
+                        if(strlen($nameLetters) >= 2) {
+                            break;
+                        }
+                    }
+
+                    if(strlen($nameLetters) == 1) {
+                        //$nameLetters = substr($this->name, 0, 2);
+                        $nameLetters = $nameLetters;
+                    }
+
+                    $backgroundColors = ['#3c95e5'];
+                    $backgroundColor = $backgroundColors[array_rand($backgroundColors)];
+
+                    return '<div class="img-70 rounded-circle text-center" style="height: 60px; width: 70px; background-color: ' . $backgroundColor . '; color: white; line-height: 60px; font-size: 24px;">' . $nameLetters . '</div>';
+                }
+            })
             ->addColumn('action', 'users.datatable-action')
-            ->rawColumns(['action'])
+            ->rawColumns(['image','action'])
             ->addIndexColumn()
             ->make(true);
         }

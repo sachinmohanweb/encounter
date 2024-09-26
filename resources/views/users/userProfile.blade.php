@@ -22,6 +22,7 @@
                      <thead>
                         <tr>
                            <th>User ID</th>
+                           <th>Image</th>
                            <th>User Name</th>
                            <th>Email ID</th>
                            <th>Gender</th>
@@ -76,6 +77,7 @@
          },
           columns: [
               { data: 'id', name: 'id'},     
+              { data: 'image', name: 'image'},     
               { data: 'user_full_name', name: 'user_full_name' , orderable: true},
               { data: 'email', name: 'email' },
               { data: 'gender', name: 'gender' },
