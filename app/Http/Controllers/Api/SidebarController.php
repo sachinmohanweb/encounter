@@ -289,25 +289,37 @@ class SidebarController extends Controller
 
     public function AddNote(Request $request){
         
-        dd("add note");
-
         DB::beginTransaction();
 
         try {
 
-            $a =  $request->validate([
-                    'question'      => 'required',
-                ]);
-
             $user_id = Auth::user()->id;
 
-            $inputData['user_id'] = $user_id;
-            $inputData['question'] = $request['question'];
+            $a =  $request->validate([
+                    'bible_id'      => 'required',
+                    'testament_id'  => 'required',
+                    'book_id'       => 'required',
+                    'chapter_id'    => 'required',
+                    'verse_id'      => 'required',
+                    'category'      => 'required',
+                    'sub_category'  => 'required',
+                    'note'      => 'required',
+                ]);
 
-            $question = UserQNA::create($inputData);
+            $inputData['user_id'] = $user_id;
+            $inputData['bible_id'] = $request['bible_id'];
+            $inputData['testament_id'] = $request['testament_id'];
+            $inputData['book_id'] = $request['book_id'];
+            $inputData['chapter_id'] = $request['chapter_id'];
+            $inputData['verse_id'] =$request['verse_id'];
+            $inputData['category'] =$request['category'];
+            $inputData['sub_category'] =$request['sub_category'];
+            $inputData['note'] =$request['note'];
+
+            $note = UserNote::create($inputData);
             DB::commit();
 
-            $return['messsage']  =  'Success.Your question submitted';
+            $return['messsage']  =  'Success.Your Note added';
             return $this->outputer->code(200)->success($return)->json();
 
 
