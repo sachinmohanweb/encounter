@@ -16,6 +16,7 @@ use App\Http\Repositories\UserRepository;
 
 use App\Helpers\Outputer;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Crypt;
 
@@ -34,20 +35,18 @@ class UserController extends Controller
         try {
 
             $a =  $request->validate([
-                    'first_name'      => 'required',
-                    'gender'    => 'required',
-                    'email'   => 'required|email|unique:users,email',
+                    'first_name'    => 'required',
+                    'email'         => 'required|email|unique:users,email',
                 ]);
 
             $inputData['first_name'] = $request['first_name'];
-            $inputData['gender'] = $request['gender'];
             $inputData['email'] = $request['email'];
 
             $user = User::create($inputData);
             DB::commit();
 
             $return['messsage']  =  'success';
-            $return['family']  =  $user;
+            $return['user']  =  $user;
             return $this->outputer->code(200)->success($return)->json();
 
 
@@ -154,8 +153,77 @@ class UserController extends Controller
             return $this->outputer->code(422)->error($return)->json();
         }
     }
+    
+    public function myProfile(){
+
+        DB::beginTransaction();
+
+        try {
+
+            $user=Auth::user();
+            $profile = User::find($user['id']);
+
+            return $this->outputer->code(200)->success($profile)->json();
+
+        }catch (\Exception $e) {
+
+            $return['result']=$e->getMessage();
+            return $this->outputer->code(422)->error($return)->json();
+        }
+    }
+
+    public function editProfile(Request $request){
+        
+        DB::beginTransaction();
+
+        try {
+
+            
+            $logged_user=Auth::user();
+            $user = User::find($logged_user['id']);
+
+            $a =$request->validate([
+                'first_name'    => 'required',
+                'email' => ['required','email',Rule::unique('users', 'email')->ignore($user->id)],
+            ]);
+
+            $inputData = $request->all();
+
+            if($request['last_name']){
+                $inputData['last_name'] = $request['last_name'];
+            }
+            if($request['gender']){
+                $inputData['gender'] = $request['gender'];
+            }
+            if($request['location']){
+                $inputData['location'] = $request['location'];
+            }
+            if($request['age']){
+                $inputData['age'] = $request['age'];
+            }
+            if($request['image']){
+
+                $fileName = str_replace(' ', '_', $request->first_name).'_' . time() . '.' .$request['image']->extension();
+
+                $request->image->storeAs('users', $fileName);
+                $inputData['image'] = 'storage/users/'.$fileName;
+            }
+
+            $user->update($inputData);
+            DB::commit();
+
+            $return['messsage']  =  'success';
+            $return['user']  =  $user;
+            return $this->outputer->code(200)->success($return)->json();
 
 
+        }catch (\Exception $e) {
+
+            DB::rollBack();
+            $return['result']=$e->getMessage();
+            return $this->outputer->code(422)->error($return)->json();
+        }
+    }
     public function logoutuser(){
 
         DB::beginTransaction();

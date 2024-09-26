@@ -15,7 +15,10 @@ Route::post('signup',[UserController::class, 'Signup']);
 
 Route::middleware('auth:sanctum')->group(function(){
 
+    Route::get('myprofile',[UserController::class, 'myProfile']);
+    Route::post('edit_profile',[UserController::class, 'editProfile']);
     Route::get('logout',[UserController::class, 'logoutuser']);
+    
     Route::get('got_questions',[SidebarController::class, 'GotQuestions']);
     Route::get('got_question_categories',[SidebarController::class, 'GotQuestionCategories']);
     Route::get('got_question_sub_categories',[SidebarController::class, 'GotQuestionSubCategories']);

@@ -301,3 +301,15 @@ ALTER TABLE `user_l_m_s` CHANGE `progress` `progress` INT NULL DEFAULT '0';
 ALTER TABLE `user_l_m_s` CHANGE `progress` `progress` INT NOT NULL DEFAULT '0';
 
 
+-- 25/09/24----
+
+ALTER TABLE `users` ADD `image` VARCHAR(256) NULL DEFAULT NULL AFTER `location`;
+
+ALTER TABLE `users` CHANGE `gender` `gender` VARCHAR(100)  NULL DEFAULT NULL;
+ALTER TABLE `users` CHANGE `location` `location` VARCHAR(256)  NULL DEFAULT NULL;
+ALTER TABLE `users` CHANGE `device_type` `device_type` VARCHAR(256)  NULL DEFAULT NULL;
+ALTER TABLE `users` CHANGE `ip` `ip` VARCHAR(256)  NULL DEFAULT NULL;
+ALTER TABLE `users` CHANGE `app_usage` `app_usage` VARCHAR(256)  NULL DEFAULT NULL;
+ALTER TABLE `users` CHANGE `browser` `browser` VARCHAR(256)  NULL DEFAULT NULL;
+
+UPDATE `users` SET `last_name` = NULL, `gender` = NULL, `age` = NULL, `location`=NULL, `device_type`=NULL, `ip`=NULL, `device_id`=NULL, `refresh_token`=NULL, `app_usage`=NULL, `browser`=NULL;
