@@ -6,8 +6,8 @@ use DB;
 use Mail;
 use Auth;
 use Carbon\Carbon;
-
 use App\Models\User;
+
 use App\Models\EmailVerification;
 
 
@@ -17,6 +17,7 @@ use App\Http\Repositories\UserRepository;
 use App\Helpers\Outputer;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Crypt;
 
@@ -134,6 +135,8 @@ class UserController extends Controller
                     $return['messsage']  =  'OTP verified successfully';
                     $return['token']  = $token;
                     $return['user']  =  $user;
+                    
+                    Log::info($return);
 
                     return $this->outputer->code(200)->success($return)->json();
                 }else{
@@ -147,8 +150,9 @@ class UserController extends Controller
             }
 
         }catch (\Exception $e) {
-
             DB::rollBack();
+            Log::info($e->getMessage());
+
             $return['result']=$e->getMessage();
             return $this->outputer->code(422)->error($return)->json();
         }
