@@ -18,6 +18,7 @@ use App\Models\Book;
 use App\Models\Bible;
 use App\Models\Chapter;
 use App\Models\Testament;
+use App\Models\BookImage;
 use App\Models\HolyStatement;
 
 class BibleDbController extends Controller
@@ -71,6 +72,11 @@ class BibleDbController extends Controller
 
             if($request['testament_id']){
                     $books = $books->where('testament_id',$request['testament_id']);
+            }
+            if($request['type'] && $request['type']=='book_image'){
+
+                    $bookIds = BookImage::pluck('book_id')->toArray();
+                    $books = Book::whereNotIn('book_id', $bookIds);
             }
             $books = $books ->get(['book_id', 'book_name']);
                            
@@ -222,6 +228,111 @@ class BibleDbController extends Controller
             DB::rollBack();
             $message = $e->getMessage();
             return back()->withInput()->withErrors(['message' =>  $e->getMessage()]);;
+        }
+    }
+
+    public function bookImageView() : View
+    {
+        return view('bible_view.bookImageView',[]);
+    }
+
+    public function bookImageDatatable(Request $request)
+    {
+        if(request()->ajax()) {
+
+            $query = BookImage::with(['bible', 'testament', 'book'])
+                    ->select('id','bible_id', 'testament_id', 'book_id','image');
+            if($request['bible_id']){
+                    $query->where('bible_id',$request['bible_id']);
+            }
+            if($request['testament_id']){
+                    $query->where('testament_id',$request['testament_id']);
+            }
+            if($request['book_id']){
+                    $query->where('book_id',$request['book_id']);
+            }
+
+            return datatables()
+                ->of($query)
+                ->addColumn('bible', function ($image) {
+                    return $image->bible->bible_name;
+                })
+                ->addColumn('testament', function ($image) {
+                    return $image->testament->testament_name;
+                })
+                ->addColumn('book', function ($image) {
+                    return $image->book->book_name;
+                })
+               
+                ->addColumn('image', function ($image) {
+                    $imageUrl = asset($image->image);
+                    return '<img src="' . $imageUrl . '" alt="Image" height="100" width="100">';
+                })
+                ->addColumn('action', 'bible_view.book_view_datatable-action')
+                ->rawColumns(['bible', 'testament', 'book', 'image', 'action'])
+                ->addIndexColumn()
+                ->make(true);
+        }
+        return view('bible_view.bookImageView');
+    }
+
+    public function SaveBookImage(Request $request): RedirectResponse
+    {
+        DB::beginTransaction();
+        try {
+
+
+            $a =  $request->validate([
+                'bible_id' => 'required',
+                'testament_id' => 'required',
+                'book_id' => 'required',
+                'image' => 'required',
+            ]);
+
+            $inputData['bible_id'] = $request['bible_id'];
+            $inputData['testament_id'] = $request['testament_id'];
+            $inputData['book_id'] = $request['book_id'];
+
+            if($request['image']){
+
+                $fileName = 'book_thumb_'.$request['book_id'].'_' . time() . '.' .$request['image']->extension();
+
+                $request->image->storeAs('book_thumb', $fileName);
+                $inputData['image'] = 'storage/book_thumb/'.$fileName;
+            }
+            $bookimage = BookImage::create($inputData);
+            DB::commit();
+
+            return redirect()->route('admin.book.image.view')
+                            ->with('success',"Success! Thumb image has been successfully inserted.");
+        }catch (Exception $e) {
+
+            DB::rollBack();
+            $message = $e->getMessage();
+            return back()->withInput()->withErrors(['message' =>  $e->getMessage()]);;
+        }
+    }
+
+    public function DeleteBookImage(Request $request): RedirectResponse
+    {
+        DB::beginTransaction();
+        try{
+
+            $image =BookImage::where('id',$request->id)->first();
+            if($image){
+                $image->delete();
+                DB::commit();
+                return redirect()->route('admin.book.image.view')
+                                ->with('success',"Success! Thumb image has been successfully deleted.");
+            }else{
+                $return['status'] = 'failed';
+            }
+
+         }catch (Exception $e) {
+
+            DB::rollBack();
+            $message = $e->getMessage();
+            return back()->withErrors(['message' =>  $e->getMessage()]);
         }
     }
 }

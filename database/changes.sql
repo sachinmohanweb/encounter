@@ -313,3 +313,15 @@ ALTER TABLE `users` CHANGE `app_usage` `app_usage` VARCHAR(256)  NULL DEFAULT NU
 ALTER TABLE `users` CHANGE `browser` `browser` VARCHAR(256)  NULL DEFAULT NULL;
 
 UPDATE `users` SET `last_name` = NULL, `gender` = NULL, `age` = NULL, `location`=NULL, `device_type`=NULL, `ip`=NULL, `device_id`=NULL, `refresh_token`=NULL, `app_usage`=NULL, `browser`=NULL;
+
+
+-- 26/09/24----
+
+CREATE TABLE `book_images` (
+	`id` INT NOT NULL AUTO_INCREMENT , 
+	`book_id` INT NOT NULL , `image` VARCHAR(256) NOT NULL , 
+	`status` INT NOT NULL DEFAULT '1' , `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , 
+	`updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`id`));
+
+ALTER TABLE `book_images` ADD `bible_id` INT NOT NULL AFTER `id`;
+ALTER TABLE `book_images` ADD `testament_id` INT NOT NULL AFTER `bible_id`;

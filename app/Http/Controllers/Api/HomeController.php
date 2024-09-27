@@ -15,6 +15,7 @@ use App\Models\Course;
 use App\Models\Chapter;
 use App\Models\UserLMS;
 use App\Models\Testament;
+use App\Models\BookImage;
 use App\Models\CourseContent;
 use App\Models\HolyStatement;
 use App\Models\CourseDayVerse;
@@ -497,9 +498,19 @@ class HomeController extends Controller
             $testament = Testament::with('books.chapters')->where('testament_id',$testament_id)->first();
 
             $books = $testament->books->map(function ($book) {
+
+                $bookImg = BookImage::where('book_id',$book->book_id)->first();
+                
+                if($bookImg !== null) {
+                    $book_image= asset('/') . $bookImg['image'];
+                }else{
+                    $book_image= asset('/').'assets/images/logo.png';
+                }
+
                 return [
                     'book_id' => $book->book_id,
                     'book_name' => $book->book_name,
+                    'book_image' => $book_image,
                     'total_chapters' => $book->chapters->count()-1
                 ];
             });

@@ -110,8 +110,8 @@ Route::middleware('auth:admin')->group(function(){
     Route::post('updatecourse', [CourseController::class, 'UpdateCourse'])
             ->name('admin.update.course');
     
-    Route::post('/get_testament_list', [BibleDbController::class, 'testament_list'])->name('testament.list');
     Route::post('/get_bible_list', [BibleDbController::class, 'bible_list'])->name('bible.list');
+    Route::post('/get_testament_list', [BibleDbController::class, 'testament_list'])->name('testament.list');
     Route::post('/get_book_list', [BibleDbController::class, 'book_list'])->name('book.list');
     Route::post('/get_chapter_list',[BibleDbController::class, 'chapter_list'])->name('chapter.list');
     Route::post('/get_verse_no_list',[BibleDbController::class, 'verse_list'])->name('verse.list');
@@ -120,6 +120,13 @@ Route::middleware('auth:admin')->group(function(){
     Route::get('bibleviewread/{chapter_id}', [BibleDbController::class, 'BibleViewRead'])->name('admin.read.bible.view.verse');
     Route::post('/getholystatement', [BibleDbController::class, 'get_holy_statement'])->name('admin.get.holy_statement');
     Route::post('updateholystatement/{id}', [BibleDbController::class, 'UpdateHolyStatement'])->name('admin.update.HolyStatement');
+
+    Route::get('bookimageview', [BibleDbController::class, 'bookImageView'])->name('admin.book.image.view');
+    Route::post('bookimageDatatable',[BibleDbController::class,'bookImageDatatable'])
+                ->name('admin.bookimage_view.datatable');
+    Route::post('savebookimage', [BibleDbController::class, 'SaveBookImage'])->name('admin.save.book.image');
+    Route::delete('/admin/book-thumb/{id}', [BibleDbController::class, 'DeleteBookImage'])->name('admin.delete.book.thumb');
+
 
     Route::get('coursecontent/{id}', [CourseController::class, 'CourseContent'])->name('admin.course.content');
     Route::get('addcoursecontent/{course_id}/{day}', [CourseController::class, 'AddCourseContent'])
