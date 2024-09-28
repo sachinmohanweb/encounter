@@ -371,6 +371,7 @@ class CourseController extends Controller
         try {
 
             $content = CourseDayVerse::find($request->id);
+            $course_content = CourseContent::where('id',$content['course_content_id'])->first();
 
             $a =  $request->validate([
                 'testament' => 'required',
@@ -385,8 +386,7 @@ class CourseController extends Controller
 
             $content->update($inputData);
             DB::commit();
-             
-            return redirect()->route('admin.course.content',['id' => $content['course_content_id']])
+            return redirect()->route('admin.course.content',['id' => $course_content['course_id']])
                             ->with('success',"Success! Verse details has been updated.");
         }catch (Exception $e) {
 

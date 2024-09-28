@@ -167,6 +167,11 @@ class UserController extends Controller
             $user=Auth::user();
             $profile = User::find($user['id']);
 
+            if($profile->image !== 'null') {
+                $profile->image = asset('/') . $profile->image;
+            }else{
+                $profile->image = asset('/').'assets/images/user/user-dp.png';
+            }
             return $this->outputer->code(200)->success($profile)->json();
 
         }catch (\Exception $e) {

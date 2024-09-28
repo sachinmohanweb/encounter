@@ -38,7 +38,7 @@ class HomeController extends Controller
 
             /*--------Authenticated User---------*/
 
-            $login_user = User::select('id',DB::raw('"null" as image'))->where('id',Auth::user()->id)->first();
+            $login_user = User::select('id','image')->where('id',Auth::user()->id)->first();
 
             if($login_user->image !== 'null') {
                 $login_user->image = asset('/') . $login_user->image;
@@ -64,7 +64,7 @@ class HomeController extends Controller
             if($bible_verse) {
                 $statement = HolyStatement::where('statement_id',$bible_verse->verse_id)->first();
                 $bible_verse->data1 = $statement->statement_text;
-                $bible_verse->data2 = $statement->book->book_name.'--'.$statement->chapter->chapter_name;
+                $bible_verse->data2 = $statement->book->book_name.'  '.$statement->chapter->chapter_no.' : '.$statement->statement_no;
             }
             $bible_verse->makeHidden(['bible_name','testament_name','book_name','chapter_name','verse_no','theme_name']);
             
@@ -259,7 +259,7 @@ class HomeController extends Controller
                     $item->last_updated_data = $last_course_content['day'].' day content at '.$formattedCreatedAt;
                 }
                 
-                $item->last_updated_data = $last_course_content['day'].' day content at '.$formattedCreatedAt;
+                $item->last_updated_data = '';
 
                 $item->completion_percentage = 0; 
 
@@ -530,7 +530,7 @@ class HomeController extends Controller
 
             $book_id = $request['book_id'];
 
-            $chapters = Chapter::where('book_id',$book_id)->get();
+            $chapters = Chapter::where('book_id',$book_id)->where('chapter_name', 'NOT LIKE', 'ആമുഖം')->get();
 
             $chapters->transform(function ($item, $key) {
 
