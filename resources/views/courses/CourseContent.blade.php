@@ -26,23 +26,27 @@
 <h3>Course Content</h3>
 @endsection
 @section('content')
+
+@php 
+   $activeTab = request()->query('active_tab', 1); 
+@endphp
+
 <div class="container-fluid">
    <div class="card course-content">
       <div class="d-flex align-items-start">
          <div class="nav d-block nav-pills me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
 
             @for($i=1;$i<$course->no_of_days+1;$i++)
-               <button class="nav-link " id="v-pills-{{$i}}-tab" data-bs-toggle="pill" data-bs-target="#v-pills-{{$i}}" type="button" role="tab" aria-controls="v-pills-{{$i}}" aria-selected="false">Day {{$i}}</button>
+               <button class="nav-link {{ $i == $activeTab ? 'active' : '' }} " id="v-pills-{{$i}}-tab" data-bs-toggle="pill" data-bs-target="#v-pills-{{$i}}" type="button" role="tab" aria-controls="v-pills-{{$i}}" aria-selected="false">Day {{$i}}</button>
             @endfor
 
          </div>
          <div class="tab-content" id="v-pills-tabContent">
+
             @for($i=1;$i<$course->no_of_days+1;$i++)
-               @if($i==1)
-                     <div class="tab-pane fade show active " id="v-pills-{{$i}}" role="tabpanel" aria-labelledby="v-pills-{{$i}}-tab">
-               @else
-                     <div class="tab-pane fade show " id="v-pills-{{$i}}" role="tabpanel" aria-labelledby="v-pills-{{$i}}-tab">
-               @endif
+               
+                     <div class="tab-pane fade {{ $i == $activeTab ? 'show active' : '' }}"  id="v-pills-{{$i}}" role="tabpanel" aria-labelledby="v-pills-{{$i}}-tab">
+              
 
                      @if($course->contentExistsForDay($i))
 
@@ -50,7 +54,7 @@
                            $content = $course->getContentForDay($i);
                      @endphp
 
-                        <h6>Day details</h6>
+                        <h6>Day details-Day {{$i}}</h6>
                         <table>
                            <tr>
                               <td>Course Name</td>

@@ -172,7 +172,9 @@ class CourseController extends Controller
     public function CourseContent($id) : View
     {
         $course = Course::where('id',$id)->first();
-        return view('courses.CourseContent',compact('course'));
+        $activeTab = request()->query('active_tab', 1);
+
+        return view('courses.CourseContent',compact('course','activeTab'));
 
     }
 
@@ -253,7 +255,7 @@ class CourseController extends Controller
 
             DB::commit();
              
-            return redirect()->route('admin.course.details',['id' => $request['course_id']])
+            return redirect()->route('admin.course.content',['id' => $request['course_id']])
                             ->with('success',"Success! New Course Content has been successfully added.");
         }catch (Exception $e) {
 
@@ -265,7 +267,7 @@ class CourseController extends Controller
 
     public function EditCourseContent($content_id) : View
     {      
-        $content = CourseContent::where('id',$content_id)->first();
+        $content = CourseContent::where('id',$content_id)->with('CourseContentVideoLink')->first();
         $course = Course::where('id',$content->course_id)->first();
 
         return view('courses.EditCourseContent',compact('content','course'));
@@ -283,7 +285,11 @@ class CourseController extends Controller
                 'day' => 'required',                
             ]);
 
+            $video_links   = array_filter($request['video_link']);
+            $spotify_links = array_filter($request['spotify_link']);
+
             $inputData = $request->all();
+            unset($inputData['video_link'], $inputData['spotify_link']);
 
             if($request['image']){
 
@@ -317,9 +323,32 @@ class CourseController extends Controller
             }
 
             $content->update($inputData);
+
+            CourseContentLink::where('course_content_id', $request->id)->delete();
+
+            if(count($video_links) > 0) {
+                foreach($video_links as $key=>$value){
+                    $video_data['course_content_id'] = $content->id;
+                    $video_data['type'] = '1';
+                    $video_data['video_spotify_link'] = $value;
+                    
+                    $course_content_video = CourseContentLink::create($video_data);
+                }
+            }
+
+            if(count($video_links) > 0) {
+                foreach($spotify_links as $key1=>$value1){
+                    $spotify_data['course_content_id'] = $content->id;
+                    $spotify_data['type'] = '2';
+                    $spotify_data['video_spotify_link'] = $value1;
+                    
+                    $course_content_spotify = CourseContentLink::create($spotify_data);
+                }
+            }
+
             DB::commit();
              
-            return redirect()->route('admin.course.details',['id' => $request['course_id']])
+            return redirect()->route('admin.course.content',['id' => $request['course_id'], 'active_tab' => $request['day']])
                             ->with('success',"Success! Course Content has been updated added.");
         }catch (Exception $e) {
 
@@ -342,7 +371,7 @@ class CourseController extends Controller
     {
         $content = CourseContent::find($content_id);
         $course = Course::find($content['course_id']);
-        return view('courses.AddContentVerse',compact('content_id','content','course'));
+        return view('courses.AddContentVerse',compact('content','course','content_id'));
     }
 
     public function SaveContentVerses(Request $request): RedirectResponse
@@ -366,7 +395,7 @@ class CourseController extends Controller
 
             $course_content=CourseContent::find($request['course_content_id']);
              
-            return redirect()->route('admin.course.content',['id' => $course_content['course_id']])
+            return redirect()->route('admin.view.course.content.verse',['content_id' => $course_content['id']])
                             ->with('success',"Success! New verse details has been successfully added.");
         }catch (Exception $e) {
 

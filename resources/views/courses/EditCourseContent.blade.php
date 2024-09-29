@@ -41,7 +41,7 @@
                      <input type="hidden" name="course_id" value="{{$content->course_id}}">
                      <input type="hidden" name="day" value="{{$content->day}}">
 
-                     <div class="book-from d-flex flex-wrap position-relative">
+                     <div class="verse d-flex flex-wrap">
                         <div class="col-lg-1 col-md-1 col-12">
                            <div class="form-group">
                               <label for="">Day No</label>
@@ -56,10 +56,7 @@
 
                            </div>
                         </div>
-                        
-                     </div>
-                     <div class="verse d-flex flex-wrap">
-                        <div class="col-lg-6 col-md-3 col-12">
+                        <div class="col-lg-8 col-md-3 col-12">
                            <div class="form-group">
                               <label for="">Text Description*</label>
                               <textarea name="text_description" id="" rows="2" class="form-control">{{$content->text_description}}</textarea>
@@ -68,36 +65,70 @@
                         <div class="col-lg-6 col-12">
                            <div class="form-group">
                               <label for=""> Video Links</label>
-                              <div class="add-link d-flex align-items-center">
-                                 <input type="text"  class="form-control" name="video_link"
-                                 value="{{$content->video_link}}">
-                              </div>
-                           </div>
-                        </div>
-                        <div class="col-lg-6 col-12">
-                           <div class="form-group">
-                              <label for="">  Audio File</label>
-                              <div class="add-link d-flex align-items-center">
-                                 <input class="form-control" type="file" id="formFile" name="audio_file" value="{{$content->audio_file}}">
-                                 <!-- <ul class="action">
-                                    <li class="add"><i class="fa fa-plus-square-o"></i>
-                                    </li>
-                                    <li class="delete"><i class="icon-trash"></i></li>
-                                 </ul> -->
+                              <div id="video-links-container">
+                                 @if(count($content->CourseContentVideoLink) === 0)
+                                    <div class="add-link d-flex align-items-center video-link pb-1">
+                                       <input type="text" class="form-control" name="video_link[]" placeholder="Enter video link">
+                                       <ul class="action">
+                                          <li class="add pe-2">
+                                             <i class="fa fa-plus-square-o" onclick="addVideoLink(this)"></i>
+                                          </li>
+                                          <li class="delete">
+                                             <i class="fa fa-trash" onclick="removeVideoLink(this)"></i>
+                                          </li>
+                                       </ul>
+                                    </div>
+                                 @else
+                                    @foreach($content->CourseContentVideoLink as $key => $link)
+                                       <div class="add-link d-flex align-items-center video-link pb-1">
+                                          <input type="text" class="form-control" name="video_link[]" 
+                                          value="{{ $link->video_spotify_link }}" placeholder="Enter video link">
+                                          <ul class="action">
+                                             <li class="add pe-2">
+                                                <i class="fa fa-plus-square-o" onclick="addVideoLink(this)"></i>
+                                             </li>
+                                             <li class="delete">
+                                                <i class="fa fa-trash" onclick="removeVideoLink(this)"></i>
+                                             </li>
+                                          </ul>
+                                       </div>
+                                    @endforeach
+                                 @endif
                               </div>
                            </div>
                         </div>
                         <div class="col-lg-6 col-12">
                            <div class="form-group">
                               <label for=""> Spotify Link</label>
-                              <div class="add-link d-flex align-items-center">
-                                 <input type="text"  class="form-control" name="spotify_link"
-                                 value="{{$content->spotify_link}}">
-                                 <!-- <ul class="action">
-                                    <li class="add"><i class="fa fa-plus-square-o"></i>
-                                    </li>
-                                    <li class="delete"><i class="icon-trash"></i></li>
-                                 </ul> -->
+                              <div id="spotify-links-container">
+                                 @if(count($content->CourseContentSpotifyLink) === 0)
+                                    <div class="add-link d-flex align-items-center spotify-link pb-1">
+                                       <input type="text" class="form-control" name="spotify_link[]" placeholder="Enter spotify link">
+                                       <ul class="action">
+                                          <li class="add pe-2">
+                                             <i class="fa fa-plus-square-o" onclick="addSpotifyLink(this)"></i>
+                                          </li>
+                                          <li class="delete">
+                                             <i class="fa fa-trash" onclick="removeSpotifyLink(this)"></i>
+                                          </li>
+                                       </ul>
+                                    </div>
+                                 @else
+                                    @foreach($content->CourseContentSpotifyLink as $key => $link)
+                                       <div class="add-link d-flex align-items-center spotify-link pb-1">
+                                          <input type="text" class="form-control" name="spotify_link[]" 
+                                          value="{{ $link->video_spotify_link }}" placeholder="Enter spotify link">
+                                          <ul class="action">
+                                             <li class="add pe-2">
+                                                <i class="fa fa-plus-square-o" onclick="addSpotifyLink(this)"></i>
+                                             </li>
+                                             <li class="delete">
+                                                <i class="fa fa-trash" onclick="removeSpotifyLink(this)"></i>
+                                             </li>
+                                          </ul>
+                                       </div>
+                                    @endforeach
+                                 @endif
                               </div>
                            </div>
                         </div>
@@ -107,11 +138,14 @@
                               <div class="add-link d-flex align-items-center">
                                  <input type="text"  class="form-control" name="website_link"
                                  value="{{$content->website_link}}">
-                                 <!-- <ul class="action">
-                                    <li class="add"><i class="fa fa-plus-square-o"></i>
-                                    </li>
-                                    <li class="delete"><i class="icon-trash"></i></li>
-                                 </ul> -->
+                              </div>
+                           </div>
+                        </div>
+                        <div class="col-lg-6 col-12">
+                           <div class="form-group">
+                              <label for="">  Audio File</label>
+                              <div class="add-link d-flex align-items-center">
+                                 <input class="form-control" type="file" id="formFile" name="audio_file" value="{{$content->audio_file}}">
                               </div>
                            </div>
                         </div>
@@ -169,4 +203,35 @@
 <script src="{{ asset('assets/js/typeahead/typeahead.custom.js') }}"></script>
 <script src="{{ asset('assets/js/typeahead-search/handlebars.js') }}"></script>
 <script src="{{ asset('assets/js/typeahead-search/typeahead-custom.js') }}"></script>
+
+<script type="text/javascript">
+   function addVideoLink(element) {
+      let videoLink = document.querySelector('.video-link').cloneNode(true);
+      videoLink.querySelector('input').value = '';
+      document.getElementById('video-links-container').appendChild(videoLink);
+   }
+
+   function removeVideoLink(element) {
+      let videoLink = element.closest('.video-link');
+      if (document.querySelectorAll('.video-link').length > 1) {
+         videoLink.remove();
+      } else {
+         alert("At least one video link is required.");
+      }
+   }
+   function addSpotifyLink(element) {
+      let SpotifyLink = document.querySelector('.spotify-link').cloneNode(true);
+      SpotifyLink.querySelector('input').value = '';
+      document.getElementById('spotify-links-container').appendChild(SpotifyLink);
+   }
+
+   function removeSpotifyLink(element) {
+      let SpotifyLink = element.closest('.spotify-link');
+      if (document.querySelectorAll('.spotify-link').length > 1) {
+         SpotifyLink.remove();
+      } else {
+         alert("At least one Spotify link is required.");
+      }
+   }
+</script>
 @endsection
