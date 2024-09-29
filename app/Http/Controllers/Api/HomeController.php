@@ -392,14 +392,15 @@ class HomeController extends Controller
         try {
             $course_content_id = $request['course_content_id'];
 
-           $course_day_content = CourseContent::select('id','course_id','day','text_description','video_link',
-                'audio_file','spotify_link','website_link','image','documents')
+           $course_day_content = CourseContent::select('id','course_id','day','text_description',
+                'audio_file','website_link','image','documents')
                 ->where('id', $course_content_id)
                 ->where('status', 1)
                 ->with(['CourseDayVerse' => function($query) {
                     $query->select('id', 'course_content_id', 'testament', 'book', 'chapter',
                             'verse_from', 'verse_to');
                 }])
+                ->with('CourseContentVideoLink','CourseContentSpotifyLink')
                 ->first();
 
             if ($course_day_content) {
