@@ -67,52 +67,71 @@
                            <tr>
                               <td>Video Links</td>
                               <td> 
-                                 @if($content->video_link)
-                                 <a href="{{$content->video_link}}"
-                                 target="_blank">
+                                 @if(count($content->CourseContentVideoLink)>0)
+                                       @foreach($content->CourseContentVideoLink as $key=>$value)
+                                          <a href="{{ $value['video_spotify_link'] }}" target="_blank">
+                                             Click here<br>
+                                          </a>
+                                       @endforeach
+                                 @else
+                                    Not Available
                                  @endif
-                              Click here </td>
-                           </tr>
-                           <tr>
-                              <td>Audio File</td>
-                              <td>
-                                 @if($content->audio_file)
-                                 <a href="{{$content->audio_file}}"
-                                 target="_blank">
-                                 @endif
-                              Click here</td>
+                              </td>
                            </tr>
                            <tr>
                               <td>Spotify Link</td>
                               <td>
-                                 @if($content->spotify_link)
-                                 <a href="{{$content->spotify_link}}"
-                                 target="_blank">
+                                 @if(count($content->CourseContentspotifyLink)>0)
+                                       @foreach($content->CourseContentspotifyLink as $key=>$value)
+                                          <a href="{{ $value['video_spotify_link'] }}" target="_blank">
+                                             Click here<br>
+                                          </a>
+                                       @endforeach
+                                 @else
+                                    Not Available
                                  @endif
-                              Click here</td>
+                              </td>
                            </tr>
                            <tr>
                               <td>Website Link</td>
                               <td>
                                  @if($content->website_link)
-                                 <a href="{{$content->website_link}}"
-                                 target="_blank">
+                                       <a href="{{$content->website_link}}"target="_blank">
+                                 @else
+                                    Not Available
                                  @endif
-                              Click here</td>
+                              </td>
+                           </tr>
+                           <tr>
+                              <td>Audio File</td>
+                              <td>
+                                 @if($content->audio_file)
+                                       <audio controls><source src="{{asset($content->audio_file)}}" type="audio/mpeg">
+                                       Play</audio>
+                                 @else
+                                    Not Available
+                                 @endif
+                              </td>
                            </tr>
                            <tr>
                               <td> Image</td>
-                              <td class="image_td"><img class="img-fluid for-light"
-                           src="{{ asset($content->image) }}" alt="image.jpg"></td>
+                              <td class="image_td">
+                                 @if($content->image)
+                                 <img class="img-fluid for-light" src="{{ asset($content->image) }}" alt="image.jpg">
+                                  @else
+                                    Not Available
+                                 @endif
+                              </td>
                            </tr>
                            <tr>
                               <td>Documents</td>
                               <td>
                                  @if($content->documents)
-                                 <a href="{{$content->documents}}"
-                                 target="_blank">
+                                       <a href="{{asset($content->documents)}}" target="_blank">click here
+                                 @else
+                                    Not Available
                                  @endif
-                              Click here</td>
+                              </td>
                            </tr>
                            <tr>
                               <td  colspan="2" style="text-align: center;">

@@ -325,3 +325,18 @@ CREATE TABLE `book_images` (
 
 ALTER TABLE `book_images` ADD `bible_id` INT NOT NULL AFTER `id`;
 ALTER TABLE `book_images` ADD `testament_id` INT NOT NULL AFTER `bible_id`;
+
+
+-- 28/09/24----
+
+ALTER TABLE `course_contents` DROP `video_link`;
+ALTER TABLE `course_contents` DROP `spotify_link`;
+
+CREATE TABLE `course_content_links` (
+	`id` INT NOT NULL AUTO_INCREMENT , 
+	`course_content_id` INT NOT NULL , 
+	`type` INT NOT NULL COMMENT '1-video link,2-spotify link' , 
+	`video_spotify_link` VARCHAR(256) NOT NULL , 
+	`status` INT NOT NULL DEFAULT '1' , 
+	`created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , 
+	`updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`id`));

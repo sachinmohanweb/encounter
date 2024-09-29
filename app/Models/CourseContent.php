@@ -13,9 +13,7 @@ class CourseContent extends Model
         'course_id',
         'day',
         'text_description',
-        'video_link',
         'audio_file',
-        'spotify_link',
         'website_link',
         'image',
         'documents',
@@ -45,6 +43,14 @@ class CourseContent extends Model
     public function CourseDayVerse(){
 
         return $this->hasMany(CourseDayVerse::class,'course_content_id', 'id');
+    }
+    public function CourseContentVideoLink(){
+
+        return $this->hasMany(CourseContentLink::class,'course_content_id', 'id')->where('type', 1);
+    }
+    public function CourseContentSpotifyLink(){
+
+        return $this->hasMany(CourseContentLink::class,'course_content_id', 'id')->where('type', 2);
     }
 
 }

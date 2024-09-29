@@ -16,6 +16,7 @@ use App\Models\Course;
 use App\Models\UserLMS;
 use App\Models\CourseContent;
 use App\Models\CourseDayVerse;
+use App\Models\CourseContentLink;
 
 use App\Models\Bible;
 use App\Models\Book;
@@ -170,7 +171,7 @@ class CourseController extends Controller
 
     public function CourseContent($id) : View
     {
-        $course = Course::where('id',$id)->with('CourseContents')->first();
+        $course = Course::where('id',$id)->first();
         return view('courses.CourseContent',compact('course'));
 
     }
@@ -191,8 +192,12 @@ class CourseController extends Controller
                 'day' => 'required',
             ]);
 
+            $video_links   = array_filter($request['video_link']);
+            $spotify_links = array_filter($request['spotify_link']);
+
             $inputData = $request->all();
-            
+            unset($inputData['video_link'], $inputData['spotify_link']);
+
             if($request['image']){
 
                 $time = microtime(true);
@@ -225,6 +230,27 @@ class CourseController extends Controller
             }
 
             $course_content = CourseContent::create($inputData);
+            
+            if(count($video_links) > 0) {
+                foreach($video_links as $key=>$value){
+                    $video_data['course_content_id'] = $course_content->id;
+                    $video_data['type'] = '1';
+                    $video_data['video_spotify_link'] = $value;
+                    
+                    $course_content_video = CourseContentLink::create($video_data);
+                }
+            }
+
+            if(count($video_links) > 0) {
+                foreach($spotify_links as $key1=>$value1){
+                    $spotify_data['course_content_id'] = $course_content->id;
+                    $spotify_data['type'] = '2';
+                    $spotify_data['video_spotify_link'] = $value1;
+                    
+                    $course_content_spotify = CourseContentLink::create($spotify_data);
+                }
+            }
+
             DB::commit();
              
             return redirect()->route('admin.course.details',['id' => $request['course_id']])
