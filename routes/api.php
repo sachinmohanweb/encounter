@@ -19,6 +19,8 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::post('edit_profile',[UserController::class, 'editProfile']);
     Route::get('logout',[UserController::class, 'logoutuser']);
     
+    Route::get('completed_courses', [HomeController::class, 'CompletedCourses']);
+
     Route::get('got_questions',[SidebarController::class, 'GotQuestions']);
     Route::get('got_question_categories',[SidebarController::class, 'GotQuestionCategories']);
     Route::get('got_question_sub_categories',[SidebarController::class, 'GotQuestionSubCategories']);
