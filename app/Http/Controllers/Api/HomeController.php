@@ -304,83 +304,39 @@ class HomeController extends Controller
 
             $loggeed_user = Auth::user();
 
-            // $courses = Course::from(with(new Course)->getTable(). ' as a')
-            //             ->join(with(new Batch)->getTable(). ' as b' , 'a.id','b.course_id')
-            //             ->select('a.id','a.course_name as data1','a.course_creator as data2','a.thumbnail as image',
-            //                 'b.id as batch_id','b.batch_name as data3','b.start_date','a.no_of_days')
-            //              ->where('b.end_date', '>', now()->subDay()->format('Y-m-d'))
-            //             ->where('a.status',1)
-            //             ->where('b.status',1);
-
             $courses = Course::from(with(new Course)->getTable(). ' as a')
                 ->join(with(new Batch)->getTable(). ' as b', 'a.id', 'b.course_id')
-                ->leftJoin('user_l_m_s as ul', function($join) use ($loggeed_user){
-                    $join->on('a.id', '=', 'ul.course_id')
-                         ->where('ul.user_id', '=', $loggeed_user['id']);
-                })
+                ->join(with(new UserLMS)->getTable(). ' as c', 'a.id', 'c.course_id')
                 ->select(
-                    'a.id', 
-                    'a.course_name as data1', 
-                    'a.course_creator as data2', 
-                    'a.thumbnail as image',
-                    'b.id as batch_id', 
-                    'b.batch_name as data3', 
-                    'b.start_date', 
-                    'a.no_of_days'
+                    'a.id', 'a.course_name as data1', 'a.course_creator as data2', 'a.thumbnail as image',
+                    'b.id as batch_id', 'b.batch_name as data3', 'b.start_date', 'a.no_of_days',
+                    'c.id as user_lms_id'
                 )
-                ->where(function($query) use ($loggeed_user) {
-                    $query->whereNull('ul.id')
-                          ->where('b.end_date', '>', now()->subDay()->format('Y-m-d'))
-                          ->orWhereNotNull('ul.id');
-                })
                 ->where('a.status', 1)
-                ->where('b.status', 1);
+                ->where('b.status', 1)
+                ->where('c.completed_status', 3)
+                ->where('c.user_id', $loggeed_user['id']);
 
             if($request['search_word']){
                 $courses->where('a.course_name','like',$request['search_word'].'%')
                         ->orwhere('a.course_creator','like',$request['search_word'].'%');
             }
 
-            //$courses=$courses->orderBy('b.end_date','asc')->get();
-             $courses=$courses->orderByRaw('CASE WHEN ul.id IS NULL THEN 0 ELSE 1 END')
-                            //->orderBy('b.end_date','asc')
-                            ->orderBy('ul.completed_status', 'asc') 
-                            ->get();
-
+            $courses=$courses->orderBy('b.end_date','asc')->get();
+            
             $courses->transform(function ($item, $key) use($loggeed_user) {
 
-                if($item->start_date >= now()->format('Y-m-d')){
-                    $item->data4 = 'New Batch';
-                    $item->data5 = 0 .' %';
-                }else{
-                    $item->data4 = '';
-                    $item->data5 = '';
+                $readings_count = UserDailyReading::where('user_lms_id',$item['user_lms_id'])->count();
+                $percentage= ( $readings_count/$item['no_of_days'])*100;
 
-                    // $startDate = Carbon::parse($item->start_date);
-                    // $currentDate = now();
-                    // $daysDifference = $startDate->diffInDays($currentDate);
-                    // $percentage = ceil(($daysDifference/$item->no_of_days)*100);
+                $item->data4 = '';
+                $item->data5 = '';
 
-                    $user_lms = UserLMS::where('user_id',$loggeed_user['id'])->where('course_id',$item->id)->first();
-                    if($user_lms){
-                        $readings_count = UserDailyReading::where('user_lms_id',$user_lms['id'])->count();
-                        $percentage= ( $readings_count/$item['no_of_days'])*100;
-
-                        if($readings_count>0 && $readings_count<$item->no_of_days){
-                            $item->data4 = 'Ongoing';
-                            $item->data5 = $percentage.' %';
-                        }elseif($readings_count>0 && $readings_count==$item->no_of_days){
-                            $item->data4 = 'Completed';
-                            $item->data5 = $percentage.' %';
-                        }
-                    }else{
-                        $item->data4 = 'Non-enrolled';
-                        $item->data5 = '0 %';
-                    }
-
+                if($readings_count>0 && $readings_count==$item->no_of_days){
+                    $item->data4 = 'Completed';
+                    $item->data5 = $percentage.' %';
                 }
-
-
+                   
                 if ($item->image !== null) {
                     $item->image = asset('/') . $item->image;
                 } else {
