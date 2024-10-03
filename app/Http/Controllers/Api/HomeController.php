@@ -433,62 +433,63 @@ class HomeController extends Controller
 
                     $item->user_enrolled = true;
                     $item->user_lms_id = $user_lms['id'];
-
-                    if(Carbon::parse($item->start_date)->format('Y-m-d') >= now()->format('Y-m-d')){
+                    if(Carbon::parse($item->start_date)->format('Y-m-d') > now()->format('Y-m-d')){
                         $item->allow_day_verse_read = false;
+                        $item->course_content = [];
+
                     }else{
                         $item->allow_day_verse_read = true;
-                    }
-                    //$total_course_completed_days= UserDailyReading::where('user_lms_id',$user_lms['id'])->count();
-                    //$item->completion_percentage = ($total_course_completed_days/$item->no_of_days)*100; 
-                    $item->completion_percentage = $user_lms['progress']; 
+                        //$total_course_completed_days= UserDailyReading::where('user_lms_id',$user_lms['id'])->count();
+                        //$item->completion_percentage = ($total_course_completed_days/$item->no_of_days)*100; 
+                        $item->completion_percentage = $user_lms['progress']; 
 
-                    $course_content = CourseContent::select('day','id as course_content_id','course_id')
-                                        ->where('course_id',$item->id)
-                                        ->whereHas('CourseDayVerse') 
-                                        ->orderBy('day');
-                    if ($type ==1) {
-                        
-                        $largest_day_completed =UserDailyReading::where('user_lms_id',$user_lms['id'])->max('day');
-
-                        if($largest_day_completed) {
-                            if($user_lms['completed_status']!=3){
-                                $course_content->where('day', '>', $largest_day_completed)->limit(5);
-                            }    
-                        }
-                    }
-
-                    $course_content = $course_content->get();
-
-                    $course_content->makeHidden(['course_name', 'bible_name']);
-
-                    $item->course_content = $course_content;
-
-                    $item->course_content->transform(function ($content) use ($userId, $user_lms) {
-
-                        $day_verses =CourseDayVerse::select('book','chapter','verse_from','verse_to')
-                                    ->where('course_content_id',$content['course_content_id'])->get();
-
-                        $content->details = null;
-                        if($day_verses->isNotEmpty()) {
-
-                            $day_verses->makeHidden(['testament_name']);
+                        $course_content = CourseContent::select('day','id as course_content_id','course_id')
+                                            ->where('course_id',$item->id)
+                                            ->whereHas('CourseDayVerse') 
+                                            ->orderBy('day');
+                        if ($type ==1) {
                             
-                            $batchId = $user_lms['batch_id'];
-                            $day = $content['day'];
+                            $largest_day_completed =UserDailyReading::where('user_lms_id',$user_lms['id'])->max('day');
 
-                            $detailsArray = $day_verses->map(function ($day_verse) {
-                                return $day_verse->getFormattedCourseDaySections();
-                            })->toArray();
-
-
-                            $content->details = $detailsArray;
-                            
-                            $content->read_status = $day_verses->first()->isMarkedAsRead($userId, $batchId, $day);
-
+                            if($largest_day_completed) {
+                                if($user_lms['completed_status']!=3){
+                                    $course_content->where('day', '>', $largest_day_completed)->limit(5);
+                                }    
+                            }
                         }
-                        return $content;
-                    });
+
+                        $course_content = $course_content->get();
+
+                        $course_content->makeHidden(['course_name', 'bible_name']);
+
+                        $item->course_content = $course_content;
+
+                        $item->course_content->transform(function ($content) use ($userId, $user_lms) {
+
+                            $day_verses =CourseDayVerse::select('book','chapter','verse_from','verse_to')
+                                        ->where('course_content_id',$content['course_content_id'])->get();
+
+                            $content->details = null;
+                            if($day_verses->isNotEmpty()) {
+
+                                $day_verses->makeHidden(['testament_name']);
+                                
+                                $batchId = $user_lms['batch_id'];
+                                $day = $content['day'];
+
+                                $detailsArray = $day_verses->map(function ($day_verse) {
+                                    return $day_verse->getFormattedCourseDaySections();
+                                })->toArray();
+
+
+                                $content->details = $detailsArray;
+                                
+                                $content->read_status = $day_verses->first()->isMarkedAsRead($userId, $batchId, $day);
+
+                            }
+                            return $content;
+                        });
+                    }
 
                 }else{
                     $item->user_enrolled = false;
@@ -595,7 +596,7 @@ class HomeController extends Controller
                         ->get()
                         ->map(function($statement) {
                         return [
-                                'statement_no' => 'Verse '.$statement->statement_no,
+                                'statement_no' => ''.$statement->statement_no.'',
                                 'statement_text' => $statement->statement_text,
                             ];
                         });
