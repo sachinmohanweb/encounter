@@ -301,8 +301,8 @@ class SidebarController extends Controller
                     'book_id'       => 'required',
                     'chapter_id'    => 'required',
                     'verse_id'      => 'required',
-                    'category'      => 'required',
-                    'sub_category'  => 'required',
+                    // 'category'      => 'required',
+                    // 'sub_category'  => 'required',
                     'note'      => 'required',
                 ]);
 
@@ -312,8 +312,8 @@ class SidebarController extends Controller
             $inputData['book_id'] = $request['book_id'];
             $inputData['chapter_id'] = $request['chapter_id'];
             $inputData['verse_id'] =$request['verse_id'];
-            $inputData['category'] =$request['category'];
-            $inputData['sub_category'] =$request['sub_category'];
+            // $inputData['category'] =$request['category'];
+            // $inputData['sub_category'] =$request['sub_category'];
             $inputData['note'] =$request['note'];
 
             $note = UserNote::create($inputData);

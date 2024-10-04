@@ -340,3 +340,11 @@ CREATE TABLE `course_content_links` (
 	`status` INT NOT NULL DEFAULT '1' , 
 	`created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , 
 	`updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`id`));
+
+
+-- 03/10/24----
+
+ALTER TABLE `user_l_m_s` CHANGE `id` `id` INT(11) NOT NULL AUTO_INCREMENT, add PRIMARY KEY (`id`);
+
+ALTER TABLE `user_notes` CHANGE `category` `category` TEXT NULL DEFAULT NULL;
+ALTER TABLE `user_notes` CHANGE `sub_category` `sub_category` TEXT NULL DEFAULT NULL;

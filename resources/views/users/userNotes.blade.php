@@ -27,8 +27,8 @@
                            <th>Book</th>
                            <th>Chapter</th>
                            <th>Verse</th>
-                           <th>Catgeory</th>
-                           <th>Sub Category</th>
+                           <!-- <th>Catgeory</th>
+                           <th>Sub Category</th>-->
                            <th>Note</th>
                            <th>Status</th>
                         </tr>
@@ -79,8 +79,8 @@
               { data: 'book', name: 'book' },
               { data: 'chapter', name: 'chapter' },
               { data: 'verse', name: 'verse' },
-              { data: 'category', name: 'category' },
-              { data: 'sub_category', name: 'sub_category' },
+              // { data: 'category', name: 'category' },
+              // { data: 'sub_category', name: 'sub_category' },
               { data: 'note', name: 'note' },
               { data: 'action', name: 'action', orderable: false},
           ],

@@ -19,8 +19,8 @@ class UserNote extends Model
         'chapter_id',
         'verse_id',
         'note',
-        'category',
-        'sub_category',
+        // 'category',
+        // 'sub_category',
         'status',
     ];
 
