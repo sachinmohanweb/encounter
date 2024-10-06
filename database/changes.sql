@@ -344,7 +344,47 @@ CREATE TABLE `course_content_links` (
 
 -- 03/10/24----
 
+ALTER TABLE `courses` CHANGE `id` `id` INT(11) NOT NULL AUTO_INCREMENT, add PRIMARY KEY (`id`);
+ALTER TABLE `course_contents` CHANGE `id` `id` INT(11) NOT NULL AUTO_INCREMENT, add PRIMARY KEY (`id`);
+ALTER TABLE `course_content_links` CHANGE `id` `id` INT(11) NOT NULL AUTO_INCREMENT, add PRIMARY KEY (`id`);
+ALTER TABLE `course_day_verses` CHANGE `id` `id` INT(11) NOT NULL AUTO_INCREMENT, add PRIMARY KEY (`id`);
+ALTER TABLE `daily_bible_verses` CHANGE `id` `id` INT(11) NOT NULL AUTO_INCREMENT, add PRIMARY KEY (`id`);
+ALTER TABLE `got_questions` CHANGE `id` `id` INT(11) NOT NULL AUTO_INCREMENT, add PRIMARY KEY (`id`);
+ALTER TABLE `g_q_categories` CHANGE `id` `id` INT(11) NOT NULL AUTO_INCREMENT, add PRIMARY KEY (`id`);
+ALTER TABLE `g_q_subcategories` CHANGE `id` `id` INT(11) NOT NULL AUTO_INCREMENT, add PRIMARY KEY (`id`);
+ALTER TABLE `notifications` CHANGE `id` `id` INT(11) NOT NULL AUTO_INCREMENT, add PRIMARY KEY (`id`);
+ALTER TABLE `user_daily_readings` CHANGE `id` `id` INT(11) NOT NULL AUTO_INCREMENT, add PRIMARY KEY (`id`);
 ALTER TABLE `user_l_m_s` CHANGE `id` `id` INT(11) NOT NULL AUTO_INCREMENT, add PRIMARY KEY (`id`);
+ALTER TABLE `user_notes` CHANGE `id` `id` INT(11) NOT NULL AUTO_INCREMENT, add PRIMARY KEY (`id`);
 
 ALTER TABLE `user_notes` CHANGE `category` `category` TEXT NULL DEFAULT NULL;
 ALTER TABLE `user_notes` CHANGE `sub_category` `sub_category` TEXT NULL DEFAULT NULL;
+
+-- 05/10/24----
+
+CREATE TABLE `tags` (
+	`id` INT NOT NULL AUTO_INCREMENT , 
+	`tag_name` VARCHAR(256) NOT NULL , 
+	`status` INT NOT NULL DEFAULT '1' , 
+	`created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , 
+	`updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`id`));
+
+ALTER TABLE `tags` ADD `user_id` INT NOT NULL AFTER `id`;
+
+
+CREATE TABLE `user_bible_markings` (
+	`id` INT NOT NULL , `user_id` INT NOT NULL , `statement_id` INT NOT NULL , 
+	`data` INT NOT NULL , `status` INT NOT NULL , `created_at` INT NOT NULL , 
+	`updated_at` INT NOT NULL );
+
+ALTER TABLE `user_bible_markings` ADD `type` INT NOT NULL COMMENT '1-note,2-bookmark,3-color' AFTER `user_id`;
+
+ALTER TABLE `user_bible_markings` CHANGE `id` `id` INT NOT NULL AUTO_INCREMENT, add PRIMARY KEY (`id`);
+
+ALTER TABLE `user_bible_markings` CHANGE `data` `data` LONGTEXT NOT NULL;
+
+ALTER TABLE `user_bible_markings` CHANGE `created_at` `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP;
+
+ALTER TABLE `user_bible_markings` CHANGE `updated_at` `updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP;
+
+ALTER TABLE `user_bible_markings` CHANGE `status` `status` INT NOT NULL DEFAULT '1';

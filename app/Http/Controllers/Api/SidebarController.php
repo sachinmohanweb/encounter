@@ -8,13 +8,15 @@ use Auth;
 use Artisan;
 use Carbon\Carbon;
 
-use App\Models\GotQuestion;
-use App\Models\GQCategory;
-use App\Models\GQSubCategory;
+use App\Models\Tag;
 use App\Models\UserQNA;
+use App\Models\UserNote;
+use App\Models\GQCategory;
+use App\Models\GotQuestion;
+use App\Models\GQSubCategory;
+use App\Models\UserBibleMarking;
 
 use App\Models\Bible;
-use App\Models\UserNote;
 use App\Models\Testament;
 use App\Models\Book;
 use App\Models\Chapter;
@@ -328,6 +330,186 @@ class SidebarController extends Controller
             DB::rollBack();
             $return['result']=$e->getMessage();
             return $this->outputer->code(422)->error($return)->json();
+        }
+    }
+
+    public function MyTags(Request $request){
+
+        try {
+
+            $user_id = Auth::user()->id;
+
+            $user_tags = Tag::select('id','tag_name')
+                        ->where('user_id',$user_id)
+                        ->where('status',1)
+                        ->get();
+
+            if(empty($user_tags)) {
+                $return['result']=  "Empty user tags ";
+                return $this->outputer->code(422)->error($return)->json();
+            }
+
+            return $this->outputer->code(200)
+                        ->success($user_tags)->json();
+
+        }catch (\Exception $e) {
+
+            $return['result']=$e->getMessage();
+            return $this->outputer->code(422)->error($return)->json();
+        }
+    }
+
+    public function AddTag(Request $request){
+        
+        DB::beginTransaction();
+
+        try {
+
+            $user_id = Auth::user()->id;
+
+            $a =  $request->validate([
+                    'tag_name'  => 'required',
+                ]);
+
+            $inputData['user_id'] = $user_id;
+            $inputData['tag_name'] = $request['tag_name'];
+
+            $tag = Tag::create($inputData);
+            DB::commit();
+
+            $return['messsage']  =  'Success.Your Tag Saved';
+            return $this->outputer->code(200)->success($return)->json();
+
+
+        }catch (\Exception $e) {
+
+            DB::rollBack();
+            $return['result']=$e->getMessage();
+            return $this->outputer->code(422)->error($return)->json();
+        }
+    }
+
+    public function DeleteTag(Request $request){
+        
+        DB::beginTransaction();
+
+        try {
+
+            $tag =Tag::where('id',$request->id)->first();
+            if($tag){
+                $tag->delete();
+                DB::commit();
+                $return['messsage']  =  'Success.Your Tag Removed';
+            }else{
+                $return['messsage']  =  'Failed.Your Tag Not Removed';
+            }
+            return $this->outputer->code(200)->success($return)->json();
+
+         }catch (Exception $e) {
+
+            DB::rollBack();
+            $return['status'] = $e->getMessage();
+            return $this->outputer->code(422)->error($return)->json();
+
+        }
+    }
+
+    public function MyBibleMarkings(Request $request){
+
+        try {
+
+            $user_id = Auth::user()->id;
+
+            $user_markings = UserBibleMarking::select('id','user_id','type','statement_id','data')
+                        ->where('user_id',$user_id)
+                        ->where('status',1)
+                        ->orderBy('type')
+                        ->get();
+
+            if(empty($user_markings)) {
+                $return['result']=  "Empty user markings ";
+                return $this->outputer->code(422)->error($return)->json();
+            }
+
+            return $this->outputer->code(200)
+                        ->success($user_markings)->json();
+
+        }catch (\Exception $e) {
+
+            $return['result']=$e->getMessage();
+            return $this->outputer->code(422)->error($return)->json();
+        }
+    }
+
+    public function AddBibleMarking(Request $request){
+        
+        DB::beginTransaction();
+
+        try {
+
+            $user_id = Auth::user()->id;
+
+            $a =  $request->validate([
+                    'type'          => 'required',
+                    'statement_ids' => 'required',
+                    'data'          => 'required',
+                ]);
+            
+            $statementIdsArray = explode(',', $request['statement_ids']);
+
+            foreach($statementIdsArray as $key=>$value){
+
+                $user_prev_marking = UserBibleMarking::where('user_id',$user_id)
+                                ->where('type',$request['type'])->where('statement_id',$value)->first();
+                if($user_prev_marking){
+                    $return['messsage']  =  'FAILED.Some of the stament is already marked';
+                    return $this->outputer->code(200)->success($return)->json();
+                }else{
+                    $inputData['user_id'] = $user_id;
+                    $inputData['type'] = $request['type'];
+                    $inputData['statement_id'] = $value;
+                    $inputData['data'] = $request['data'];
+
+                    $marking = UserBibleMarking::create($inputData);
+                    
+                }
+
+                DB::commit();
+            }
+
+            $return['messsage']  =  'Success.Your Marking Saved';
+            return $this->outputer->code(200)->success($return)->json();
+
+
+        }catch (\Exception $e) {
+
+            DB::rollBack();
+            $return['result']=$e->getMessage();
+            return $this->outputer->code(422)->error($return)->json();
+        }
+    }
+
+    public function DeleteBibleMarking(Request $request){
+        
+        DB::beginTransaction();
+
+        try {
+            $marking =UserBibleMarking::where('id',$request->id)->first();
+            if($marking){
+                $marking->delete();
+                DB::commit();
+                $return['messsage']  =  'Success.Your marking Removed';
+            }else{
+                $return['messsage']  =  'Failed.Your marking Not Removed';
+            }
+            return $this->outputer->code(200)->success($return)->json();
+
+         }catch (Exception $e) {
+
+            DB::rollBack();
+            $return['status'] = $e->getMessage();
+            return $this->outputer->code(422)->error($return)->json();
+
         }
     }
 

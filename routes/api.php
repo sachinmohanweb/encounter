@@ -31,6 +31,14 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('my_notes',[SidebarController::class, 'MyNotes']);
     Route::post('add_note',[SidebarController::class, 'AddNote']);
 
+    Route::get('my_tags',[SidebarController::class, 'MyTags']);
+    Route::post('add_tag',[SidebarController::class, 'AddTag']);
+    Route::delete('delete_tag',[SidebarController::class, 'DeleteTag']);
+
+    Route::get('my_bible_markings',[SidebarController::class, 'MyBibleMarkings']);
+    Route::post('add_bible_marking',[SidebarController::class, 'AddBibleMarking']);
+    Route::delete('delete_bible_marking',[SidebarController::class, 'DeleteBibleMarking']);
+
     Route::get('home', [HomeController::class, 'Home']);
     Route::get('all_courses', [HomeController::class, 'AllCourses']);
     Route::get('course_details', [HomeController::class, 'CourseDetails']);
