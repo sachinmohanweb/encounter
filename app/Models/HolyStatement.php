@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+use Auth;
+
 class HolyStatement extends Model
 {
     use HasFactory;
@@ -14,6 +16,8 @@ class HolyStatement extends Model
     protected $primaryKey = 'statement_id';
     public $timestamps = false;
     protected $fillable = ['statement_text','statement_heading'];
+
+    protected $appends = ['note_marking','bookmark_marking','color_marking'];
 
     public function chapter()
     {
@@ -31,5 +35,52 @@ class HolyStatement extends Model
     public function Book()
     {
         return $this->belongsTo(Book::class,'book_id','book_id');
+    }
+
+    public function getNoteMarkingAttribute()
+    {
+        $color_data = UserBibleMarking::where('statement_id',$this->statement_id)
+                        ->where('user_id',Auth::id())
+                        ->where('type',1)
+                        ->first();
+        if($color_data){
+
+            return $color_data['data'];
+        }else{
+            return Null;
+        }
+    }
+
+    public function getBookmarkMarkingAttribute()
+    {
+        $color_data = UserBibleMarking::where('statement_id',$this->statement_id)
+                        ->where('user_id',Auth::id())
+                        ->where('type',2)
+                        ->first();
+        if($color_data){
+
+            $tagIds = explode(',', $color_data['data']);
+
+            $tags = Tag::whereIn('id', $tagIds)
+                    ->select('id', 'tag_name')
+                    ->get();
+            return $tags;
+        }else{
+            return Null;
+        }
+    }
+
+    public function getColorMarkingAttribute()
+    {
+        $color_data = UserBibleMarking::where('statement_id',$this->statement_id)
+                        ->where('user_id',Auth::id())
+                        ->where('type',3)
+                        ->first();
+        if($color_data){
+
+            return $color_data['data'];
+        }else{
+            return Null;
+        }
     }
 }
