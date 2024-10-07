@@ -119,7 +119,7 @@ class HomeController extends Controller
             $courses->transform(function ($item, $key) use($login_user) {
 
                 if($item->start_date >= now()->format('Y-m-d')){
-                    $item->data4 = 'New Batch';
+                    $item->data4 = 'Upcoming';
                     $item->data5 = '0%';
                 }else{
                     // $item->data4 = '';
@@ -131,8 +131,8 @@ class HomeController extends Controller
 
                     // $item->data5 = $percentage.'%' ;
 
-                    $item->data4 = '';
-                    $item->data5 = '';
+                    $item->data4 = 'Pending';
+                    $item->data5 = '0%';
 
                     $user_lms = UserLMS::where('user_id',$login_user['id'])->where('course_id',$item->id)->first();
                     if($user_lms){
