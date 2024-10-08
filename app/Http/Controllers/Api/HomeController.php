@@ -131,24 +131,32 @@ class HomeController extends Controller
 
                     // $item->data5 = $percentage.'%' ;
 
-                    $item->data4 = 'Pending';
-                    $item->data5 = '0%';
+                    $course_cont_verse = CourseContent::from(with(new CourseContent)->getTable(). ' as a')
+                                ->join(with(new CourseDayVerse)->getTable(). ' as b', 'a.id', 'b.course_content_id')
+                                ->where('a.course_id',$item->id)->count();
+                    if($course_cont_verse<1){
+                        $item->data4 = 'Pending';
+                        $item->data5 = '0%';
 
-                    $user_lms = UserLMS::where('user_id',$login_user['id'])->where('course_id',$item->id)->first();
-                    if($user_lms){
-                        $readings_count = UserDailyReading::where('user_lms_id',$user_lms['id'])->count();
-                        $percentage= ( $readings_count/$item['no_of_days'])*100;
-
-                        if($readings_count>0 && $readings_count<$item->no_of_days){
-                            $item->data4 = 'Ongoing';
-                            $item->data5 = $percentage.' %';
-                        }elseif($readings_count>0 && $readings_count==$item->no_of_days){
-                            $item->data4 = 'Completed';
-                            $item->data5 = $percentage.' %';
-                        }
                     }else{
-                        $item->data4 = 'Non-enrolled';
-                        $item->data5 = '0 %';
+                        $item->data4 = 'Inactive';
+                        $item->data5 = '0%';
+                        $user_lms = UserLMS::where('user_id',$login_user['id'])->where('course_id',$item->id)->first();
+                        if($user_lms){
+                            $readings_count = UserDailyReading::where('user_lms_id',$user_lms['id'])->count();
+                            $percentage= ( $readings_count/$item['no_of_days'])*100;
+
+                            if($readings_count>0 && $readings_count<$item->no_of_days){
+                                $item->data4 = 'Ongoing';
+                                $item->data5 = $percentage.' %';
+                            }elseif($readings_count>0 && $readings_count==$item->no_of_days){
+                                $item->data4 = 'Completed';
+                                $item->data5 = $percentage.' %';
+                            }
+                        }else{
+                            $item->data4 = 'Non-enrolled';
+                            $item->data5 = '0 %';
+                        }
                     }
 
                 }
