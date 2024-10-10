@@ -604,6 +604,7 @@ class HomeController extends Controller
                         ->get()
                         ->map(function($statement) {
                         return [
+                                'statement_id'      => $statement->statement_id,
                                 'statement_no'      => ''.$statement->statement_no.'',
                                 'statement_text'    => $statement->statement_text,
                                 'note_marking'      => $statement->note_marking,
@@ -719,7 +720,7 @@ class HomeController extends Controller
                 $book = Book::where('book_id',$item->book_id)->first();
                 $item->book_name = $book->book_name;
                 
-                $statements = $item->statements()->get(['statement_id','statement_text']);
+                $statements = $item->statements()->get(['statement_id','statement_no','statement_text']);
                 $item->statements = $statements;
 
                 return $item;
