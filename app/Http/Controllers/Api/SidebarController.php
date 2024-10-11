@@ -420,19 +420,79 @@ class SidebarController extends Controller
 
             $user_id = Auth::user()->id;
 
-            $user_markings = UserBibleMarking::select('id','user_id','type','statement_id','data')
+            $user_notes = UserBibleMarking::select('id','user_id','type','statement_id','data')
                         ->where('user_id',$user_id)
+                        ->where('type',1)
                         ->where('status',1)
-                        ->orderBy('type')
-                        ->get();
-
-            if(empty($user_markings)) {
-                $return['result']=  "Empty user markings ";
+                        ->orderBy('statement_id')
+                        ->get()->makeHidden(['type_name','user_name']);
+            if(empty($user_notes)) {
+                $return['result']=  "Empty notes ";
                 return $this->outputer->code(422)->error($return)->json();
             }
+            $user_notes->transform(function ($item, $key) {
+
+                $verse = HolyStatement::where('statement_id',$item->statement_id)->first();
+                $item->verse_statement = $verse['statement_text'];
+                $item->marked_data = [$item->data];
+
+                return $item;
+            });
+
+
+            $user_bookmarks = UserBibleMarking::select('id','user_id','type','statement_id','data')
+                        ->where('user_id',$user_id)
+                        ->where('type',2)
+                        ->where('status',1)
+                        ->orderBy('statement_id')
+                        ->get()->makeHidden(['type_name','user_name']);
+            if(empty($user_bookmarks)) {
+                $return['result']=  "Empty bookmarks ";
+                return $this->outputer->code(422)->error($return)->json();
+            }
+            $user_bookmarks->transform(function ($item, $key) {
+
+                $verse = HolyStatement::where('statement_id',$item->statement_id)->first();
+                $item->verse_statement = $verse['statement_text'];
+
+                $tagIds = explode(',', $item->data);
+                $tagNames = Tag::whereIn('id', $tagIds)->pluck('tag_name')->toArray();
+                $item->marked_data = $tagNames;
+
+                return $item;
+            });
+
+
+            $user_colors = UserBibleMarking::select('id','user_id','type','statement_id','data')
+                        ->where('user_id',$user_id)
+                        ->where('type',3)
+                        ->where('status',1)
+                        ->orderBy('statement_id')
+                        ->get()->makeHidden(['type_name','user_name']);
+            if(empty($user_colors)) {
+                $return['result']=  "Empty color markings ";
+                return $this->outputer->code(422)->error($return)->json();
+            }
+            $user_colors->transform(function ($item, $key) {
+
+                $verse = HolyStatement::where('statement_id',$item->statement_id)->first();
+                $item->verse_statement = $verse['statement_text'];
+                $item->marked_data = [$item->data];
+                return $item;
+            });
+
+
+            $mergedData = [
+                [ 'category' => 'Notes', 'list' => $user_notes ],
+
+                [ 'category' => "Bookmarks", 'list' => $user_bookmarks ],
+
+                [ 'category' => 'Highlghts', 'list' => $user_colors ] 
+            ];
 
             return $this->outputer->code(200)
-                        ->success($user_markings)->json();
+                        ->success($mergedData )
+                        ->json();
 
         }catch (\Exception $e) {
 
