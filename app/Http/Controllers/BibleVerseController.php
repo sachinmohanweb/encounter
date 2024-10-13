@@ -230,7 +230,7 @@ class BibleVerseController extends Controller
         return view('bible_verse.DailyBibleVerse');
     }
 
-    public function StoreBibleVerseTheme(Request $request): RedirectResponse
+    public function StoreBibleVerseTheme(Request $request): JsonResponse
     {
         DB::beginTransaction();
         try {
@@ -243,13 +243,33 @@ class BibleVerseController extends Controller
             DB::commit();
 
             $return['messsage']  =  'success';
-            $return['theme']     =  $theme;
-            return $this->outputer->code(200)->success($return)->json(); 
+            $return['theme']     =  $theme; 
+            return response()->json($return);
         }catch (Exception $e) {
             DB::rollBack();
-            $message = $e->getMessage();
-            return back()->withInput()->withErrors(['message' =>  $e->getMessage()]);;
+            $return['result']=$e->getMessage();
+            return response()->json(['success' => false,'msg' => $e->getMessage()]);
         }
     }
- 
+
+    public function DeleteBibleVerseTheme(Request $request) : JsonResponse
+    {
+        DB::beginTransaction();
+        try{
+            $theme =BibleVerseTheme::where('id',$request->id)->first();
+            if($theme){
+                $theme->delete();
+                DB::commit();
+                $return['status'] = "success";
+            }else{
+                $return['status'] = 'failed';
+            }
+
+         }catch (Exception $e) {
+
+            DB::rollBack();
+            $return['status'] = $e->getMessage();
+        }
+        return response()->json($return);
+    }
 }

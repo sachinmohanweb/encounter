@@ -120,18 +120,16 @@
         e.preventDefault();
         var name = $('#new_theme_name').val();
         $.ajax({
-            url: "<?= url('storebibleversetheme') ?>",
+            url: "{{ route('admin.store.BibleVerseTheme') }}",
             method: 'POST',
             data: {
                 _token: "<?= csrf_token() ?>",
                 name  : name
             },
             success: function(response) {
-                if (response.success) {
-                    var newOption = new Option(response.theme_name, response.theme_id, true, true);
-                    $('#theme').append(newOption).trigger('change');
+                if (response.message='success') {
                     $('#addThemeModal').modal('hide');
-                    $('#new_theme_name').val('');
+                     location.reload();
                 } else {
                     alert(response.message);
                 }
@@ -147,7 +145,7 @@
           var id = id;
           $.ajax({
               type:"POST",
-              url: "{{ route('admin.delete.DailyBibleVerse') }}",
+              url: "{{ route('admin.delete.BibleVerseTheme') }}",
               data: { _token : "<?= csrf_token() ?>",
                   id     : id
               },
