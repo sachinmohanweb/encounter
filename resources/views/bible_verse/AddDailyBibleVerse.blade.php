@@ -8,6 +8,7 @@
 @endsection
 @section('breadcrumb-title')
 <h3>Add Daily Bible Verse</h3>
+ <a href="{{ route('admin.bible.verse.theme') }}" >Bible Verse Themes </a>
 @endsection
 
 @section('content')
@@ -98,6 +99,28 @@
       </div>
    </div>
 </div>
+
+<div class="modal fade" id="addThemeModal" tabindex="-1" role="dialog" aria-labelledby="addThemeModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document" style="top:150px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addThemeModalLabel">Add New Theme</h5>
+                <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close">
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="addThemeForm">
+                    <div class="form-group">
+                        <label for="new_theme_name">Theme</label>
+                        <input type="text" class="form-control" id="new_theme_name" name="name" required>
+                    </div><br>
+                    <button type="submit" class="btn btn-primary">Save Theme</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 @endsection
 @section('script')
 <script src="{{asset('assets/js/datepicker/date-picker/datepicker.js')}}"></script>
@@ -222,7 +245,7 @@
          }
      });
 
-     $('#theme').select2({
+    $('#theme').select2({
          placeholder: "Select Theme",
          ajax: {
 
@@ -239,13 +262,55 @@
              },
              processResults: function(data, params) {
                  params.page = params.page || 1;
-                 return {
-                     results: data.results,
-                     pagination: { more: (params.page * 30) < data.total_count }
-                 };
+                 let results = data.results;
+
+                results.push({
+                    id: 'add_new_theme',
+                    text: 'Add New Theme',
+                    disabled: false 
+                });
+
+                return {
+                    results: results,
+                    pagination: {
+                        more: (params.page * 30) < data.total_count
+                    }
+                };
              },
              cache: true
          }
-     });
+    });
+
+    $('#theme').on('select2:select', function(e) {
+        var selectedValue = e.params.data.id;
+        if (selectedValue === 'add_new_theme') {
+            $('#addThemeModal').modal('show');
+            $('#theme').val(null).trigger('change');
+        }
+    });
+
+    $('#addThemeForm').on('submit', function(e) {
+        e.preventDefault();
+        var name = $('#new_theme_name').val();
+        $.ajax({
+            url: "<?= url('storebibleversetheme') ?>",
+            method: 'POST',
+            data: {
+                _token: "<?= csrf_token() ?>",
+                name  : name
+            },
+            success: function(response) {
+                console.log(response)
+                if (response.messsage) {
+                    var newOption = new Option(response.theme.name, response.theme.id, true, true);
+                    $('#theme').append(newOption).trigger('change');
+                    $('#addThemeModal').modal('hide');
+                    $('#new_theme_name').val('');
+                } else {
+                    alert(response.message);
+                }
+            }
+        });
+    });
 </script>
 @endsection

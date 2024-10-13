@@ -204,5 +204,52 @@ class BibleVerseController extends Controller
             return response()->json(['success' => false,'msg' => $e->getMessage()]);
         }
     }
+
+    public function BibleVerseThemeList() : View
+    {
+        return view('bible_verse.BibleVerseTheme',[]);
+    }
+
+    public function BibleVerseThemeDatatable()
+    {
+        if(request()->ajax()) {
+            return datatables()
+            ->of(BibleVerseTheme::select('*'))
+            ->addColumn('id', function ($bibleverse) {
+                return $bibleverse->id;
+            })
+            ->addColumn('name', function ($bibleverse) {
+                return $bibleverse->name;
+            })
+        
+            ->addColumn('action', 'bible_verse.theme_datatable-action')
+            ->rawColumns(['action'])
+            ->addIndexColumn()
+            ->make(true);
+        }
+        return view('bible_verse.DailyBibleVerse');
+    }
+
+    public function StoreBibleVerseTheme(Request $request): RedirectResponse
+    {
+        DB::beginTransaction();
+        try {
+            $a =  $request->validate([
+                'name' => 'required',   
+            ]);
+            $inputData = $request->all();
+            
+            $theme = BibleVerseTheme::create($inputData);
+            DB::commit();
+
+            $return['messsage']  =  'success';
+            $return['theme']     =  $theme;
+            return $this->outputer->code(200)->success($return)->json(); 
+        }catch (Exception $e) {
+            DB::rollBack();
+            $message = $e->getMessage();
+            return back()->withInput()->withErrors(['message' =>  $e->getMessage()]);;
+        }
+    }
  
 }

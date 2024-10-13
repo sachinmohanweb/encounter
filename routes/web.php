@@ -99,6 +99,15 @@ Route::middleware('auth:admin')->group(function(){
             ->name('admin.bible.verse.status.change');
     Route::post('/get_bible_verse_theme_list', [BibleVerseController::class, 'BibleVerseTheme'])
             ->name('bible.verse.theme.list');
+    
+    Route::get('bibleversetheme', [BibleVerseController::class, 'BibleVerseThemeList'])
+            ->name('admin.bible.verse.theme');
+    Route::post('bibleversethemeDatatable',[BibleVerseController::class,'BibleVerseThemeDatatable'])
+            ->name('admin.bible_verse.theme.datatable');
+    Route::post('storebibleversetheme', [BibleVerseController::class, 'StoreBibleVerseTheme'])
+            ->name('admin.store.BibleVerseTheme');
+    Route::post('deletebibleversetheme', [BibleVerseController::class, 'DeleteBibleVerseTheme'])
+            ->name('admin.delete.BibleVerseTheme');
 
     Route::get('courselist', [CourseController::class, 'CourseList'])->name('admin.course.list');
     Route::get('addcourse', [CourseController::class, 'AddCourse'])->name('admin.add.course');
