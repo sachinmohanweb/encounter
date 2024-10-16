@@ -193,8 +193,9 @@ class SidebarController extends Controller
             $user_id = Auth::user()->id;
 
             $user_asked_qna = UserQNA::select('*',DB::raw('DATE_FORMAT(created_at, "%b %d,%Y") as date_of_question'))
-                    //->where('user_id',$user_id)
-                    ->where('status',1);
+                    ->where('user_id',$user_id)
+                    //->where('status',1)
+                    ;
 
             if($request['search_word']){
                 $user_asked_qna->where('question','like','%'.$request['search_word'].'%');

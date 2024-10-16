@@ -101,7 +101,7 @@
                               <label for="">Verse<span style="color:red">*</span></label>
                               <select class="js-data-example-ajax form-select" id="verse" name="verse_id" required>
                                   @foreach($verses as $verse_data)
-                                     @if($verse->verse_from == $verse_data->statement_id)
+                                     @if($verse->verse_id == $verse_data->statement_id)
                                            <option value="{{ $verse_data->statement_id }}" selected>
                                              {{ $verse_data->statement_no }}</option>
                                      @else

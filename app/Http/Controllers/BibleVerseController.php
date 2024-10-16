@@ -128,6 +128,10 @@ class BibleVerseController extends Controller
                 'verse_id' => 'required',   
             ]);
             $inputData = $request->all();
+
+            if (isset($inputData['date'])) {
+                $inputData['date'] = \Carbon\Carbon::createFromFormat('m/d/Y', $inputData['date'])->format('Y-m-d');
+            }
             
             $verse->update($inputData);
             DB::commit();

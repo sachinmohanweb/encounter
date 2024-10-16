@@ -34,7 +34,9 @@ class HomeController extends Controller
         try {
 
             $today= now();
-            $today_string = now()->toDateString();
+            //$today_string = now()->toDateString();
+            $today_string = $today->format('Y-m-d');
+
 
             /*--------Authenticated User---------*/
 
@@ -49,11 +51,11 @@ class HomeController extends Controller
 
             /*---------Daily Bible verse----------*/
             
-            $bible_verse =  DailyBibleVerse::from(with(new DailyBibleVerse)->getTable(). ' as a')
-                            ->select('a.id','a.verse_id')
-                            ->whereRaw("DATE_FORMAT(date, '%m-%d') = DATE_FORMAT('$today_string', '%m-%d')")
-                            ->where('status', 1)
-                            ->first();
+            $bible_verse = DailyBibleVerse::from(with(new DailyBibleVerse)->getTable(). ' as a')
+                        ->select('a.id', 'a.verse_id')
+                        ->whereRaw("DATE_FORMAT(a.date, '%Y-%m-%d') = ?", [$today_string])
+                        ->where('status', 1)
+                        ->first();
             if (!$bible_verse) {
                 $bible_verse = DailyBibleVerse::from(with(new DailyBibleVerse)->getTable(). ' as a')
                             ->select('a.id','a.verse_id')
@@ -65,8 +67,9 @@ class HomeController extends Controller
                 $statement = HolyStatement::where('statement_id',$bible_verse->verse_id)->first();
                 $bible_verse->data1 = $statement->statement_text;
                 $bible_verse->data2 = $statement->book->book_name.'  '.$statement->chapter->chapter_no.' : '.$statement->statement_no;
+                
+                $bible_verse->makeHidden(['bible_name','testament_name','book_name','chapter_name','verse_no','theme_name']);
             }
-            $bible_verse->makeHidden(['bible_name','testament_name','book_name','chapter_name','verse_no','theme_name']);
             
             /*---------Courses----------*/
 
