@@ -6,9 +6,9 @@
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/cascade.css') }}">
 @endsection
 @section('breadcrumb-title')
-<h3>Courses Content Sections</h3>
-      <a href="{{ route('admin.course.details',['id'=>$course->id]) }}" ><button class="btn btn-primary">View Course</button> </a>
-      <a href="{{ route('admin.course.content',['id'=>$course->id,'active_tab' => $content->day]) }}" ><button class="btn btn-primary">View Course Content </button></a>
+<h3 style="margin-bottom: 10px !important;">Courses Content Sections</h3>
+      <a href="{{ route('admin.course.details',['id'=>$course->id]) }}" ><button class="btn btn-pill btn-info-gradien pt-2 pb-2">View Course</button> </a>
+      <a href="{{ route('admin.course.content',['id'=>$course->id,'active_tab' => $content->day]) }}" ><button class="btn btn-pill btn-info-gradien pt-2 pb-2">View Course Content </button></a>
 @endsection
 @section('content')
 <div class="container-fluid">
