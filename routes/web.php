@@ -20,6 +20,8 @@ Route::post('/login', [UserController::class, 'admin_login'])->name('admin.login
 Route::middleware('auth:admin')->group(function(){
 
     Route::get('logout', [UserController::class, 'admin_logout'])->name('admin.logout');
+    Route::get('change_password',[UserController::class, 'password_change'])->name('password.change');
+    Route::post('update_password', [UserController::class, 'password_update'])->name('password.update');
     Route::get('dashboard', [HomeController::class, 'admin_dashboard'])->name('admin.dashboard');
 
     Route::get('userprofile', [UserController::class, 'UsersList'])->name('admin.user-profile');

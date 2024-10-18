@@ -6,6 +6,7 @@ use Illuminate\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Hash;
 
 use DB;
 use Auth;
@@ -44,6 +45,46 @@ class UserController extends Controller
         }
     }
 
+    public function password_change() : View
+    {
+        return view('users.admin_password_change',[]);
+    } 
+
+    public function password_update(Request $request): RedirectResponse
+    {
+        DB::beginTransaction();
+        try {
+            
+            $request->validate([
+                'old_password' => ['required'],
+                'new_password' => ['required', 'confirmed'],
+            ]);
+
+            $admin = Auth::guard('admin')->user();
+
+            if (!Hash::check($request->old_password, $admin->password)) {
+                return back()->withErrors(['old_password' => 'Old password is incorrect']);
+            }
+
+            $admin->password = Hash::make($request->new_password);
+            $admin->save();
+            DB::commit();
+
+            Auth::guard('admin')->logout();
+            
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect()->route('index')
+                ->with('success', 'Password changed successfully. Please log in with your new password.');
+        }catch (Exception $e) {
+
+            DB::rollBack();
+            $message = $e->getMessage();
+            return back()->withInput()->withErrors(['message' =>  $e->getMessage()]);;
+        }
+    }
+
     public function admin_logout(Request $request): RedirectResponse
     {
         Auth::guard('admin')->logout();
@@ -52,13 +93,15 @@ class UserController extends Controller
      
         $request->session()->regenerateToken();
      
-        return redirect()->route('admin.dashboard')->with('success', 'You have been successfully logged out.');
+        return redirect()->route('admin.dashboard')
+                    ->with('success', 'You have been successfully logged out.');
     }
 
     public function UsersList() : View
     {
         return view('users.userProfile',[]);
     } 
+
 
     public function admin_users_Datatable()
     {
