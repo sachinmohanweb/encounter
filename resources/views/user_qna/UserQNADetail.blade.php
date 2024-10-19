@@ -4,6 +4,11 @@
 @endsection
 @section('style')
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/cascade.css') }}">
+<style type="text/css">
+   .pd_setup{
+      padding: 8px 0px 1px 15px;
+   }
+</style>
 @endsection
 @section('breadcrumb-title')
 <h3>User QNA</h3>
@@ -36,17 +41,30 @@
             <div class="card-body">
                <div class="info d-flex justify-content-between flex-wrap">
                   <div class="days d-flex align-items-center">
-                        Status : <h5> {{$User_QNA->status}}</h5>
-                     </div>
-                     <div class="days d-flex align-items-center">
-                        User : <h5> {{$User_QNA->user_name}}</h5>
+                        Status : <h5 class="pd_setup"> {{$User_QNA->status}}</h5>
                      </div>
                      <div class="course-action d-flex flex-wrap align-items-center">
                      <button class="btn btn-pill btn-info-gradien pt-2 pb-2" type="button" data-bs-toggle="modal" data-bs-target="#UpdateAnswer" id="updateActionButton" question_id="{{$User_QNA->id}}" >Update Answer </button>
                   </div>
                </div>
-               <br><br>
+               <br>
+               <div class="info d-flex justify-content-between flex-wrap">
+                     <div class="days d-flex align-items-center">
+                        User : <h5 class="pd_setup"> {{$User_QNA->user_name}}</h5>
+                     </div>
+                     <div class="days d-flex align-items-center">
+                        Phone : <h5 class="pd_setup">
+                           {{$User_QNA->UserDetails()->country_code}} 
+                           {{$User_QNA->UserDetails()->phone}}
+                        </h5>
+                     </div>
+                     <div class="days d-flex align-items-center">
+                        Email : <h5 class="pd_setup"> {{$User_QNA->UserDetails()->email}}</h5>
+                     </div>
 
+                     
+               </div>
+               <br><br>
                <h5> "{{$User_QNA->question}}?"</h5><br>
                <div  class="row">
                   <div class="col-md-1"></div>

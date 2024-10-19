@@ -20,6 +20,12 @@
     display: block;
     margin: auto;
 }
+@media (max-width: 770px) {
+    .course-content .nav {
+      height: 300px;
+      margin-bottom: 30px;
+    }
+}
 </style>
 @endsection
 @section('breadcrumb-title')
@@ -33,15 +39,15 @@
 
 <div class="container-fluid">
    <div class="card course-content">
-      <div class="d-flex align-items-start">
-         <div class="nav d-block nav-pills me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+      <div class="d-flex align-items-start flex-column flex-md-row">
+         <div class="nav d-block nav-pills me-3 mb-md-0" id="v-pills-tab" role="tablist" aria-orientation="vertical">
 
             @for($i=1;$i<$course->no_of_days+1;$i++)
                <button class="nav-link {{ $i == $activeTab ? 'active' : '' }} " id="v-pills-{{$i}}-tab" data-bs-toggle="pill" data-bs-target="#v-pills-{{$i}}" type="button" role="tab" aria-controls="v-pills-{{$i}}" aria-selected="false">Day {{$i}}</button>
             @endfor
 
          </div>
-         <div class="tab-content" id="v-pills-tabContent">
+         <div class="tab-content flex-grow-1" id="v-pills-tabContent">
 
             @for($i=1;$i<$course->no_of_days+1;$i++)
                
@@ -55,10 +61,11 @@
                      @endphp
 
                         <h6>Day details-Day {{$i}}</h6>
-                        <table>
+                     <div class="table-responsive">
+                     <table class="table table-bordered table-striped w-100">
                            <tr>
-                              <td>Course Name</td>
-                              <td>{{$content->course_name}}</td>
+                              <td class="col-3">Course Name</td>
+                              <td class="col">{{$content->course_name}}</td>
                            </tr>
                            <tr>
                               <td>Bible</td>
@@ -144,7 +151,9 @@
                                  <a href="{{ route('admin.view.course.content.verse',['content_id'=>$content->id]) }}"><button class="btn btn-pill btn-info-gradien pt-2 pb-2">View Sections</button></a>
                               </td>
                            </tr>
-                        </table>
+                     </table>
+                     </div>
+
                      @else
                         <a href="{{ route('admin.add.course.content',['course_id'=>$course->id,'day'=>$i]) }}"><button class="btn btn-pill btn-info-gradien pt-2 pb-2">Add Course Content</button></a>
                      @endif

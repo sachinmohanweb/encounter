@@ -210,6 +210,12 @@ class UserController extends Controller
             if($request['age']){
                 $inputData['age'] = $request['age'];
             }
+            if($request['country_code']){
+                $inputData['country_code'] = $request['country_code'];
+            }
+            if($request['phone']){
+                $inputData['phone'] = $request['phone'];
+            }
             if($request['image']){
 
                 $fileName = str_replace(' ', '_', $request->first_name).'_' . time() . '.' .$request['image']->extension();

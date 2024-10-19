@@ -32,10 +32,16 @@ class UserQNA extends Model
         }
     }
 
+    public function UserDetails()
+    {
+        $user = User::where('id',$this->user_id)->first();
+        return $user;
+    }
+
     public function getUserNameAttribute()
     {
         $user = User::where('id',$this->user_id)->first();
-        return $user->first_name;
+        return $user->first_name.' '.$user->last_name;
     }
 
 

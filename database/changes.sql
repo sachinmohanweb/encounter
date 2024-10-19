@@ -388,3 +388,8 @@ ALTER TABLE `user_bible_markings` CHANGE `created_at` `created_at` TIMESTAMP NUL
 ALTER TABLE `user_bible_markings` CHANGE `updated_at` `updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP;
 
 ALTER TABLE `user_bible_markings` CHANGE `status` `status` INT NOT NULL DEFAULT '1';
+
+
+-- 19/10/24----
+
+ALTER TABLE `users` ADD `country_code` VARCHAR(5) NULL DEFAULT NULL AFTER `password`, ADD `phone` VARCHAR(25) NULL DEFAULT NULL AFTER `country_code`;
