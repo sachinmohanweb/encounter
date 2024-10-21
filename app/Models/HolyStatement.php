@@ -5,11 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+use Laravel\Scout\Searchable;
+
 use Auth;
 
 class HolyStatement extends Model
 {
-    use HasFactory;
+    use HasFactory,Searchable;
 
     protected $connection = 'mysql_bible';
     protected $table = '06_holy_statement';
@@ -18,6 +20,13 @@ class HolyStatement extends Model
     protected $fillable = ['statement_text','statement_heading'];
 
     protected $appends = ['note_marking','bookmark_marking','color_marking'];
+
+    public function toSearchableArray() {
+        return [
+            'statement_id' => $this->statement_id,
+            'statement_text' => $this->statement_text,
+        ];
+    }
 
     public function chapter()
     {

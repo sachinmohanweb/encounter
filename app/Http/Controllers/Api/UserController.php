@@ -8,6 +8,10 @@ use Auth;
 use Carbon\Carbon;
 use App\Models\User;
 
+use App\Models\UserNote;
+use App\Models\HolyStatement;
+use App\Models\GotQuestion;
+
 use App\Models\EmailVerification;
 
 
@@ -30,6 +34,24 @@ class UserController extends Controller
         $this->userRepo = $userRepo;
     }
     
+    public function SearchResults(Request $request)
+    {
+        $searchTerm = $request->input('text');
+
+        $results  = HolyStatement::search($searchTerm)->orderby('statement_id')->get();
+
+        $highlightedResults = $results->filter(function ($item) use ($searchTerm) {
+            return stripos($item->statement_text, $searchTerm) !== false;
+        })->map(function ($item) use ($searchTerm) {
+            $item->statement_text = preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $item->statement_text);
+            return $item;
+        });
+
+        $total = $highlightedResults->count();
+
+        return $this->outputer->code(200)->success(['total' => $total, 'data' => $highlightedResults])->json();
+    }
+
     public function Signup(Request $request){
         DB::beginTransaction();
 

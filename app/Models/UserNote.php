@@ -5,9 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+use Laravel\Scout\Searchable;
+
 class UserNote extends Model
 {
-    use HasFactory;
+    use HasFactory,Searchable;
 
     protected $appends = ['user_name','bible_name','testament_name','book_name','chapter_name','verse_no'];
 
@@ -23,6 +25,13 @@ class UserNote extends Model
         // 'sub_category',
         'status',
     ];
+
+    public function toSearchableArray() {
+        return [
+            'id' => $this->id,
+            'note' => $this->note,
+        ];
+    }
 
     public function getUserNameAttribute()
     {

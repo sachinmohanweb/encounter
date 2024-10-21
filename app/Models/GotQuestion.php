@@ -5,9 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+use Laravel\Scout\Searchable;
+
 class GotQuestion extends Model
 {
-    use HasFactory;
+    use HasFactory,Searchable;
 
     protected $fillable = [
         'question',
@@ -18,6 +20,13 @@ class GotQuestion extends Model
     ];
     protected $appends = ['category_name','sub_category_name'];
 
+    public function toSearchableArray() {
+        return [
+            'id' => $this->id,
+            'question' => $this->question,
+            'answer' => $this->answer,
+        ];
+    }
 
     public function getStatusAttribute($value)
     {

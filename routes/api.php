@@ -15,6 +15,8 @@ Route::post('signup',[UserController::class, 'Signup']);
 
 Route::middleware('auth:sanctum')->group(function(){
 
+    Route::get('search',[UserController::class, 'SearchResults']);
+
     Route::get('myprofile',[UserController::class, 'myProfile']);
     Route::post('edit_profile',[UserController::class, 'editProfile']);
     Route::get('logout',[UserController::class, 'logoutuser']);
