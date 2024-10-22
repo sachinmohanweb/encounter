@@ -17,6 +17,7 @@ Route::middleware('auth:sanctum')->group(function(){
 
     Route::get('search',[UserController::class, 'SearchResults']);
 
+    Route::post('update_token',[UserController::class, 'updateToken']);
     Route::get('myprofile',[UserController::class, 'myProfile']);
     Route::post('edit_profile',[UserController::class, 'editProfile']);
     Route::get('logout',[UserController::class, 'logoutuser']);
