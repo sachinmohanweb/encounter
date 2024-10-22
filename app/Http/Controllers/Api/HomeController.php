@@ -685,6 +685,10 @@ class HomeController extends Controller
                         $verse->statements = $statements;
                     return $verse;
                 });
+                $course_day_content->CourseContentSpotifyLink->transform(function ($link) {
+                    $link->video_spotify_link = 'spotify:track:' . $link->video_spotify_link;
+                    return $link;
+                });
             }
 
             return $this->outputer->code(200)->success($course_day_content)->json();
