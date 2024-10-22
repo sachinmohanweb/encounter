@@ -11,8 +11,10 @@ use DB;
 use Session;
 use Exception;
 
+use App\Models\User;
 use App\Models\UserQNA;
 
+use App\Notifications\NotificationPusher; 
 
 class UserQNAController extends Controller
 {
@@ -59,6 +61,30 @@ class UserQNAController extends Controller
             $inputData['answer'] = $request->user_qna_answer;
             $inputData['status'] = 2;
             $User_QNA->update($inputData);
+
+            $push_data = [];
+
+            $push_data['tokens']    =  User::where('id',$User_QNA->user_id)
+                                            ->whereNotNull('refresh_token')
+                                            ->pluck('refresh_token')->toArray();
+
+            $push_data['title']         =   'User QNA Anser Updated';
+            $push_data['body']          =   'Question :  '.$User_QNA->question ;
+
+            $push_data['route']         =   'UserQNA';
+            $push_data['id']            =   $User_QNA['id'];
+            $push_data['category']      =   'UserQNA';
+
+            $push_data['data1']         =   $User_QNA->user_name;
+            $push_data['data2']         =   $User_QNA->question;
+            $push_data['data3']         =   $User_QNA->answer;
+            $push_data['data4']         =   null;
+            $push_data['data5']         =   null;
+            $push_data['image1']        =   null;
+
+            $pusher = new NotificationPusher();
+            $pusher->push($push_data);
+
             DB::commit();
 
             return redirect()->route('admin.user_qna.details',['id' => $request->user_qna_id])
