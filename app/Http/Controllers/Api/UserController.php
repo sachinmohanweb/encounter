@@ -148,7 +148,7 @@ class UserController extends Controller
                     
                     Auth::guard('users')->login($user);
 
-                    if($request->device_id && $request->refresh_token){
+                    if($request->refresh_token){
 
                         $userAgent = request()->header('User-Agent');
 
@@ -160,7 +160,7 @@ class UserController extends Controller
                             $device_type = 'Other';
                         }
 
-                        $user->device_id = $request->device_id;
+                        $user->device_id = 'device_id';
                         $user->refresh_token = $request->refresh_token;
                         $user->ip = request()->ip();
                         $user->device_type = $device_type;

@@ -104,19 +104,19 @@ class NotificationPusher
             ->withData(['image' => $imageUrl]);
 
 
-        // $response = Firebase::messaging()->sendMulticast($message,$deviceToken);
+        $response = Firebase::messaging()->sendMulticast($message,$deviceToken);
 
-        // Log::info('FCM Multicast Response', [
-        //     'type' => $route,
-        //     'successCount' => $response->successes()->count(),
-        //     'failureCount' => $response->failures()->count(),
-        //     'failedTokens' => $response->failures()->map(function ($failure) {
-        //         return [
-        //             'token' => $failure->target()->value(),
-        //             'error' => $failure->error()->getMessage(),
-        //         ];
-        //     }),
-        // ]);
+        Log::info('FCM Multicast Response', [
+            'type' => $route,
+            'successCount' => $response->successes()->count(),
+            'failureCount' => $response->failures()->count(),
+            'failedTokens' => $response->failures()->map(function ($failure) {
+                return [
+                    'token' => $failure->target()->value(),
+                    'error' => $failure->error()->getMessage(),
+                ];
+            }),
+        ]);
 
         return true;
         
