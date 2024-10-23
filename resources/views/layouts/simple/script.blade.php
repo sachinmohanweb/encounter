@@ -21,6 +21,23 @@
 <script src="{{ asset('assets/js/notify/bootstrap-notify.min.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
+<script src="{{ asset('tinymce/js/tinymce/tinymce.min.js')}}" referrerpolicy="origin"></script>
+<script>
+    tinymce.init({
+      	selector: '.tinyeditor',
+      	license_key: 'gpl|<your-license-key>',
+
+      	plugins: "advcode advlist advtable anchor autocorrect autolink autosave casechange charmap checklist codesample directionality  emoticons export footnotes formatpainter help image insertdatetime link linkchecker lists media mediaembed mergetags nonbreaking pagebreak permanentpen powerpaste searchreplace table tableofcontents tinymcespellchecker typography visualblocks visualchars wordcount",
+
+      	toolbar: "undo redo spellcheckdialog  | blocks fontsize | bold italic underline forecolor backcolor | link image | align lineheight checklist bullist numlist | indent outdent | removeformat typography",
+      
+      	height: '300px',
+      
+      	font_size_formats: '8pt 10pt 12pt 13pt 14pt 15pt 16pt 17pt 18pt 20pt 22pt 24pt 27pt 30pt 36pt 48pt',promotion: false
+
+    });
+</script>
+
 @yield('script')
 
 @if(Route::current()->getName() != 'popover') 

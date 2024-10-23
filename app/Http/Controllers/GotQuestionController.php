@@ -121,7 +121,7 @@ class GotQuestionController extends Controller
 
             DB::rollBack();
             $message = $e->getMessage();
-            return back()->withInput()->withErrors(['message' =>  $e->getMessage()]);;
+            return back()->withInput()->withErrors(['message' =>  $e->getMessage()]);
         }
     }
 
@@ -163,7 +163,7 @@ class GotQuestionController extends Controller
 
             DB::rollBack();
             $message = $e->getMessage();
-            return back()->with('error',$e->getMessage());
+            return back()->withInput()->withErrors(['message' =>  $e->getMessage()]);
         }
     }
 

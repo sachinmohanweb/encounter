@@ -18,12 +18,25 @@
          
          <div class="card">
             <div class="card-body">
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
                 <form action="{{route('admin.store.GotQuestion')}}" method="Post" enctype="multipart/form-data" 
                   class="got-question-answer">
                      @csrf
                     <div class="form-froup mb-3">
                        <label for="">Question <span style="color:red">*</span> </label>
-                       <input type="text" class="form-control" name="question" required>
+                       <!-- <input type="text" class="form-control" name="question" required> -->
+                       <textarea class="form-control tinyeditor" id="question_cnt" name="question" 
+                       rows="10" placeholder="{{ __('Question..') }}" required>
+                       {{ old('question') }}
+                       </textarea>
                     </div>
                     <div class="form-group mb-3">
                        <label for="">Category <span style="color:red">*</span> </label>
@@ -35,7 +48,11 @@
                     </div>
                      <div class="form-froup mb-3">
                        <label for="">Answer <span style="color:red">*</span> </label>
-                       <textarea rows="5" class="form-control" name="answer" required></textarea>
+                       <!-- <textarea rows="5" class="form-control" name="answer" required></textarea> -->
+                       <textarea class="form-control tinyeditor" id="answer_cnt" name="answer" 
+                       rows="10" placeholder="{{ __('Answer..') }}" >
+                           {{ old('answer') }}
+                       </textarea>
                     </div>
                     <div class="form-group d-flex justify-content-end">
                        <button class="btn btn-primary active" type="submit" data-bs-original-title="" title="">Submit</button>

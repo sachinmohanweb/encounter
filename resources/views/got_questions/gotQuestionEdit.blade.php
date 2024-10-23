@@ -18,13 +18,26 @@
          
          <div class="card">
             <div class="card-body">
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
                 <form action="{{route('admin.update.GotQuestion')}}" method="Post" enctype="multipart/form-data" 
                   class="got-question-answer">
                      @csrf
                     <input type="hidden" name="id" value="{{$Got_Question->id}}">
                     <div class="form-froup mb-3">
                        <label for="">Question <span style="color:red">*</span> </label>
-                       <input type="text" class="form-control" name="question" value="{{$Got_Question->question}}" required>
+                       <!-- <input type="text" class="form-control" name="question" value="{{$Got_Question->question}}" required> -->
+                       <textarea class="form-control tinyeditor" id="question_cnt" name="question" 
+                       rows="10" placeholder="{{ __('Question..') }}" required>
+                       {{$Got_Question->question }}
+                    </textarea>
                     </div>
                     <div class="form-group mb-3">
                        <label for="">Category <span style="color:red">*</span> </label>
@@ -56,7 +69,11 @@
                     </div>
                      <div class="form-froup mb-3">
                        <label for="">Answer <span style="color:red">*</span> </label>
-                       <textarea rows="5" class="form-control" name="answer" required>{{$Got_Question->answer}}</textarea>
+                       <!-- <textarea rows="5" class="form-control" name="answer" required>{{$Got_Question->answer}}</textarea> -->
+                       <textarea class="form-control tinyeditor" id="answer_cnt" name="answer" 
+                       rows="10" placeholder="{{ __('Answer..') }}" >
+                           {{ $Got_Question->answer }}
+                       </textarea>
                     </div>
                     <div class="form-group d-flex justify-content-end">
                        <button class="btn btn-primary" type="submit">Submit</button>

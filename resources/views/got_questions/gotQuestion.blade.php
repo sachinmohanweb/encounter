@@ -6,6 +6,19 @@
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/animate.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/datatables.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/cascade.css') }}">
+<style type="text/css">
+   @media (min-width: 700px) {
+    .modal-dialog {
+        max-width: 600px;
+        margin: 1.75rem auto;
+    }
+    @media (min-width: 900px) {
+    .modal-dialog {
+        max-width: 800px;
+        margin: 1.75rem auto;
+    }
+}
+</style>
 @endsection
 @section('breadcrumb-title')
 <h3>Got Questions</h3>
@@ -120,7 +133,7 @@
 
       $(document).on('click', '.view-more', function() {
          var fullAnswer = $(this).data('answer');
-         $('#answerModal .modal-body').text(fullAnswer);
+         $('#answerModal .modal-body').html(fullAnswer);
          $('#answerModal').modal('show');
       });
    });
