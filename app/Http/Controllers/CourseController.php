@@ -11,6 +11,7 @@ use DB;
 use Session;
 use Exception;
 
+use App\Models\User;
 use App\Models\Batch;
 use App\Models\Course;
 use App\Models\UserLMS;
@@ -23,6 +24,8 @@ use App\Models\Book;
 use App\Models\Chapter;
 use App\Models\Testament;
 use App\Models\HolyStatement;
+
+use App\Notifications\NotificationPusher; 
 
 class CourseController extends Controller
 {
@@ -483,6 +486,28 @@ class CourseController extends Controller
 
             $batch = Batch::create($inputData);
             DB::commit();
+
+            $push_data = [];
+
+            $push_data['tokens']    =  User::whereNotNull('refresh_token')
+                                            ->pluck('refresh_token')->toArray();
+
+            $push_data['title']         =   'New Batch Date Alert: Dont Miss Out!';
+            $push_data['body']          =   'Enroll now in our next batch of '.$batch->course->course_name                             .' starting '.$batch->start_date.'.'.PHP_EOL.'Last date for enrollment: '.$batch->last_date.'. Don’t miss out';
+
+            $push_data['route']         =   'NewBatch';
+            $push_data['id']            =   $batch['id'];
+            $push_data['category']      =   'NewBatch';
+
+            $push_data['data1']         =   $batch->course->course_name;
+            $push_data['data2']         =   $batch->start_date;
+            $push_data['data3']         =   $batch->last_date;
+            $push_data['data4']         =   null;
+            $push_data['data5']         =   null;
+            $push_data['image1']        =   null;
+
+            $pusher = new NotificationPusher();
+            $pusher->push($push_data);
              
             return redirect()->route('admin.course.details',['id' => $request['course_id']])
                             ->with('success',"Success! New Batch has been successfully added.");

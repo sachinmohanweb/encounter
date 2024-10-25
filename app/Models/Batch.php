@@ -22,4 +22,9 @@ class Batch extends Model
     {
         return $value == 1 ? 'Active' : 'Suspended';
     }
+
+    public function course()
+    {
+        return $this->belongsTo(Course::class,'course_id','id');
+    }
 }

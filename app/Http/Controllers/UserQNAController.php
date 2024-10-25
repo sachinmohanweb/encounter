@@ -62,6 +62,8 @@ class UserQNAController extends Controller
             $inputData['status'] = 2;
             $User_QNA->update($inputData);
 
+            DB::commit();
+            
             $push_data = [];
 
             $push_data['tokens']    =  User::where('id',$User_QNA->user_id)
@@ -85,7 +87,6 @@ class UserQNAController extends Controller
             $pusher = new NotificationPusher();
             $pusher->push($push_data);
 
-            DB::commit();
 
             return redirect()->route('admin.user_qna.details',['id' => $request->user_qna_id])
                             ->with('success',"Success! Answer for this question has been successfully updated.");
