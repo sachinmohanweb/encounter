@@ -18,4 +18,6 @@ return [
             ],
         ],
     ],
+    'queue' => env('SCOUT_QUEUE', true),
+
 ];

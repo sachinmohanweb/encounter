@@ -141,7 +141,6 @@ class GotQuestionController extends Controller
         DB::beginTransaction();
         try {
             
-            $Got_Question = GotQuestion::find($request->id);
 
             $data =  $request->validate([
                 'question' => 'required',
@@ -150,12 +149,16 @@ class GotQuestionController extends Controller
                 'answer' => 'required',
             ]);
 
-            $inputData = $request->all();
+            //$Got_Question = GotQuestion::find($request->id);
+            // $inputData = $request->all();
+            // $Got_Question->update($inputData);
+            // DB::commit();
 
-            $Got_Question->update($inputData);
-
-
+            $Got_Question = GotQuestion::findOrFail($request->id);
+            $Got_Question->update($data);
             DB::commit();
+
+            $Got_Question->searchable();
 
            return redirect()->route('admin.got-question')
                             ->with('success',"Success! Your Question and answer has been successfully Updated.");

@@ -38,18 +38,48 @@ class UserController extends Controller
     {
         $searchTerm = $request->input('text');
 
-        $results  = HolyStatement::search($searchTerm)->orderby('statement_id')->get();
+        $bible_verse_results  = HolyStatement::search($searchTerm)->orderby('statement_id')->get();
 
-        $highlightedResults = $results->filter(function ($item) use ($searchTerm) {
+        $color_bible_verse_results = $bible_verse_results->filter(function ($item) use ($searchTerm) {
             return stripos($item->statement_text, $searchTerm) !== false;
         })->map(function ($item) use ($searchTerm) {
-            $item->statement_text = preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $item->statement_text);
+            $item->statement_text = preg_replace("/($searchTerm)/i", '<mark>$1</mark>', 
+                $item->statement_text);
+            $item->type = 'Bible Verse';
             return $item;
         });
 
-        $total = $highlightedResults->count();
 
-        return $this->outputer->code(200)->success(['total' => $total, 'data' => $highlightedResults])->json();
+        $user_note_results  = UserNote::search($searchTerm)->where('status', 1)->orderby('id')->get();
+        $color_user_note_results = $user_note_results->filter(function ($item) use ($searchTerm) {
+            return stripos($item->note, $searchTerm) !== false;
+        })->map(function ($item) use ($searchTerm) {
+            $item->note = preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $item->note);
+            $item->type = 'User Notes';
+
+            return $item;
+        });
+
+
+        $gq_results  = GotQuestion::search($searchTerm)->where('status', 1)->orderby('id')->get();
+        $color_qg_results = $gq_results->filter(function ($item) use ($searchTerm) {
+            return stripos($item->question, $searchTerm) !== false || stripos($item->answer, $searchTerm) !== false;
+        })->map(function ($item) use ($searchTerm) {
+            $item->question = preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $item->question);
+            $item->answer = preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $item->answer);
+            $item->type = 'Got Questions';
+
+            return $item;
+        });
+
+        $merged_results = $color_bible_verse_results
+                            ->merge($color_user_note_results)
+                            ->merge($color_qg_results);
+
+        $total_results = $merged_results->count();
+
+        return $this->outputer->code(200)
+                ->success(['total' => $total_results, 'data' => $merged_results])->json();
     }
 
     public function Signup(Request $request){

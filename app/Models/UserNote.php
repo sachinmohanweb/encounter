@@ -11,6 +11,8 @@ class UserNote extends Model
 {
     use HasFactory,Searchable;
 
+    protected $connection = 'mysql';
+
     protected $appends = ['user_name','bible_name','testament_name','book_name','chapter_name','verse_no'];
 
     protected $fillable = [

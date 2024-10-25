@@ -10,6 +10,8 @@ use Laravel\Scout\Searchable;
 class GotQuestion extends Model
 {
     use HasFactory,Searchable;
+    
+    protected $connection = 'mysql';
 
     protected $fillable = [
         'question',

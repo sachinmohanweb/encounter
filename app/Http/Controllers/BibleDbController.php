@@ -207,19 +207,25 @@ class BibleDbController extends Controller
         DB::beginTransaction();
         try {
 
-            $statement = HolyStatement::where('statement_id',$request->id)->first();
 
             $a =  $request->validate([
                 'statement_text' => 'required',
             ]);
+
+            // $statement = HolyStatement::where('statement_id',$request->id)->first();
+            // $statement->update($inputData);
+            // DB::commit();
 
             $inputData['statement_text'] = $request['statement_text'];
             if($request['statement_heading']){
                 $inputData['statement_heading'] = $request['statement_heading'];
             }
 
+            $statement = HolyStatement::findOrFail($request->id);
             $statement->update($inputData);
             DB::commit();
+
+            $statement->searchable();
 
             return redirect()->route('admin.read.bible.view.verse', ['chapter_id' => $statement['chapter_id']])
                             ->with('success',"Success! Verse has been successfully updated.");
