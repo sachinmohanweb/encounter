@@ -34,52 +34,184 @@ class UserController extends Controller
         $this->userRepo = $userRepo;
     }
     
+    // public function SearchResults(Request $request)
+    // {
+    //     $searchTerm = $request->input('text');
+
+    //     $bible_verse_results  = HolyStatement::search($searchTerm)->orderby('statement_id')->get();
+
+    //     $color_bible_verse_results = $bible_verse_results->filter(function ($item) use ($searchTerm) {
+    //         return stripos($item->statement_text, $searchTerm) !== false;
+    //     })->map(function ($item) use ($searchTerm) {
+            
+    //         $contextWords = 5;
+            
+    //         preg_match('/(?:\S+\s+){0,' . $contextWords . '}\S*' . preg_quote($searchTerm, '/') . '\S*(?:\s+\S+){0,' . $contextWords . '}/i', $item->statement_text, $matches);
+
+    //         $item->statement_text = isset($matches[0]) ? preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $matches[0]) . '.....' : $item->statement_text;
+
+    //         return [
+    //             'type' => 'Bible Verse',
+    //             'id' => $item->statement_id,
+    //             'result' => $item->statement_text
+    //         ];
+    //     });
+
+
+    //     $user_note_results  = UserNote::search($searchTerm)->where('status', 1)->orderby('id')->get();
+    //     $color_user_note_results = $user_note_results->filter(function ($item) use ($searchTerm) {
+    //         return stripos($item->note, $searchTerm) !== false;
+    //     })->map(function ($item) use ($searchTerm) {
+            
+    //         // $item->note = preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $item->note);
+    //         // $item->type = 'User Notes';
+    //         // return $item;
+
+    //         $contextWords = 5;
+            
+    //         preg_match('/(?:\S+\s+){0,' . $contextWords . '}\S*' . preg_quote($searchTerm, '/') . '\S*(?:\s+\S+){0,' . $contextWords . '}/i', $item->note, $matches);
+
+    //         $item->note = isset($matches[0]) ? preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $matches[0]) . '.....' : $item->note;
+
+    //         return [
+    //             'type' => 'User Notes',
+    //             'id' => $item->id,
+    //             'result' => $item->note
+    //         ];
+    //     });
+
+
+    //     $gq_results  = GotQuestion::search($searchTerm)->where('status', 1)->orderby('id')->get();
+    //     $color_qg_results = $gq_results->filter(function ($item) use ($searchTerm) {
+    //         return stripos($item->question, $searchTerm) !== false || stripos($item->answer, $searchTerm) !== false;
+    //     })->map(function ($item) use ($searchTerm) {
+    //         // $item->question = preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $item->question);
+    //         // $item->answer = preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $item->answer);
+    //         // $item->type = 'Got Questions';
+    //         // return $item;
+
+
+    //         $contextWords = 5;
+
+    //         if (stripos($item->question, $searchTerm) !== false) {
+    //             preg_match('/(?:\S+\s+){0,' . $contextWords . '}\S*' . preg_quote($searchTerm, '/') . '\S*(?:\s+\S+){0,' . $contextWords . '}/i', $item->question, $matches);
+    //             $highlighted_text = isset($matches[0]) ? preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $matches[0]) . '.....' : $item->question;
+    //         } else {
+    //             preg_match('/(?:\S+\s+){0,' . $contextWords . '}\S*' . preg_quote($searchTerm, '/') . '\S*(?:\s+\S+){0,' . $contextWords . '}/i', $item->answer, $matches);
+    //             $highlighted_text = isset($matches[0]) ? preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $matches[0]) . '.....' : $item->answer;
+    //         }
+
+    //         return [
+    //             'type' => 'Got Questions',
+    //             'id' => $item->id,
+    //             'result' => $highlighted_text,
+    //         ];
+    //     });
+
+    //     $merged_results = $color_bible_verse_results
+    //                         ->merge($color_user_note_results)
+    //                         ->merge($color_qg_results);
+
+    //     $total_results = $merged_results->count();
+
+    //     return $this->outputer->code(200)
+    //             ->success(['total' => $total_results, 'data' => $merged_results])->json();
+    // }
+
+
     public function SearchResults(Request $request)
     {
-        $searchTerm = $request->input('text');
+        try {
 
-        $bible_verse_results  = HolyStatement::search($searchTerm)->orderby('statement_id')->get();
+            $searchTerm = $request->input('text');
+            
+            //-----------Bible Verse--------------//
 
-        $color_bible_verse_results = $bible_verse_results->filter(function ($item) use ($searchTerm) {
-            return stripos($item->statement_text, $searchTerm) !== false;
-        })->map(function ($item) use ($searchTerm) {
-            $item->statement_text = preg_replace("/($searchTerm)/i", '<mark>$1</mark>', 
-                $item->statement_text);
-            $item->type = 'Bible Verse';
-            return $item;
-        });
+            $bible_verse_results = collect(HolyStatement::search($searchTerm)
+                                ->orderBy('statement_id')->get());
+
+            $color_bible_verse_results = $bible_verse_results->filter(function ($item) use ($searchTerm) {
+                return stripos($item->statement_text, $searchTerm) !== false;
+            })->map(function ($item) use ($searchTerm) {
+
+                $contextWords = 8;
+                preg_match('/(?:\S+\s+){0,' . $contextWords . '}\S*' . preg_quote($searchTerm, '/') . '\S*(?:\s+\S+){0,' . $contextWords . '}/i', $item->statement_text, $matches);
+                $highlighted_text = isset($matches[0]) ? preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $matches[0]) . '.....' : $item->statement_text;
+                return [
+                    'type' => 'Bible Verse',
+                    'id' => $item->statement_id,
+                    'result' => $highlighted_text
+                ];
+            });
+        
+            //-----------User Notes--------------//
+
+            $user_note_results = collect(UserNote::search($searchTerm)
+                                ->where('status', 1)->orderBy('id')->get());
+
+            $color_user_note_results = $user_note_results->filter(function ($item) use ($searchTerm) {
+                return stripos($item->note, $searchTerm) !== false;
+            })->map(function ($item) use ($searchTerm) {
+
+                $contextWords = 8;
+
+                preg_match('/(?:\S+\s+){0,' . $contextWords . '}\S*' . preg_quote($searchTerm, '/') . '\S*(?:\s+\S+){0,' . $contextWords . '}/i', $item->note, $matches);
+                $highlighted_text = isset($matches[0]) ? preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $matches[0]) . '.....' : $item->note;
+                return [
+                    'type' => 'User Notes',
+                    'id' => $item->id,
+                    'result' => $highlighted_text
+                ];
+            });
+            
+            //-----------Got Questions--------------//
+
+            $gq_results = collect(GotQuestion::search($searchTerm)
+                                ->where('status', 1)->orderBy('id')->get());
+            $color_qg_results = $gq_results->filter(function ($item) use ($searchTerm) {
+                return stripos($item->question, $searchTerm) !== false || stripos($item->answer, $searchTerm) !== false;
+            })->map(function ($item) use ($searchTerm) {
+                
+                $contextWords = 8;
+
+                if (stripos($item->question, $searchTerm) !== false) {
+                    preg_match('/(?:\S+\s+){0,' . $contextWords . '}\S*' . preg_quote($searchTerm, '/') . '\S*(?:\s+\S+){0,' . $contextWords . '}/i', $item->question, $matches);
+                    $highlighted_text = isset($matches[0]) ? preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $matches[0]) . '.....' : $item->question;
+                } else {
+                    preg_match('/(?:\S+\s+){0,' . $contextWords . '}\S*' . preg_quote($searchTerm, '/') . '\S*(?:\s+\S+){0,' . $contextWords . '}/i', $item->answer, $matches);
+                    $highlighted_text = isset($matches[0]) ? preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $matches[0]) . '.....' : $item->answer;
+                }
+                return [
+                    'type' => 'Got Questions',
+                    'id' => $item->id,
+                    'result' => $highlighted_text
+                ];
+            });
+            
+            //-----------Merge Results--------------//
+
+            $merged_results = $color_bible_verse_results
+                                ->merge($color_user_note_results)
+                                ->merge($color_qg_results);
+            $total_results = $merged_results->count();
+            
+            // return response()->json([
+            //     'code' => 200,
+            //     'success' => true,
+            //     'total' => $total_results,
+            //     'data' => $merged_results
+            // ]);
+
+            return $this->outputer->code(200)->metadata($total_results)
+                                    ->success($merged_results)->json();
 
 
-        $user_note_results  = UserNote::search($searchTerm)->where('status', 1)->orderby('id')->get();
-        $color_user_note_results = $user_note_results->filter(function ($item) use ($searchTerm) {
-            return stripos($item->note, $searchTerm) !== false;
-        })->map(function ($item) use ($searchTerm) {
-            $item->note = preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $item->note);
-            $item->type = 'User Notes';
+        }catch (\Exception $e) {
 
-            return $item;
-        });
-
-
-        $gq_results  = GotQuestion::search($searchTerm)->where('status', 1)->orderby('id')->get();
-        $color_qg_results = $gq_results->filter(function ($item) use ($searchTerm) {
-            return stripos($item->question, $searchTerm) !== false || stripos($item->answer, $searchTerm) !== false;
-        })->map(function ($item) use ($searchTerm) {
-            $item->question = preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $item->question);
-            $item->answer = preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $item->answer);
-            $item->type = 'Got Questions';
-
-            return $item;
-        });
-
-        $merged_results = $color_bible_verse_results
-                            ->merge($color_user_note_results)
-                            ->merge($color_qg_results);
-
-        $total_results = $merged_results->count();
-
-        return $this->outputer->code(200)
-                ->success(['total' => $total_results, 'data' => $merged_results])->json();
+            DB::rollBack();
+            $return['result']=$e->getMessage();
+            return $this->outputer->code(422)->error($return)->json();
+        }
     }
 
     public function Signup(Request $request){
