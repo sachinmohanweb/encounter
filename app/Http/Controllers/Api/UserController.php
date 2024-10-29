@@ -125,12 +125,21 @@ class UserController extends Controller
 
             $searchTerm = $request->input('text');
             
+            // batches---batch name,
+            // courses---course name,createor,description,
+            // course content---descriptiopn,
+            // Notifications---title, content,
+            // user bible markings---data,
+            // batches---batch name,
+            // user notes---note, category,subcategory,
+            // user qna---question answer,
+
             //-----------Bible Verse--------------//
 
             $bible_verse_results = collect(HolyStatement::search($searchTerm)
                                 ->orderBy('statement_id')->get());
 
-            $color_bible_verse_results = $bible_verse_results->filter(function ($item) use ($searchTerm) {
+            $color_bible_verse_results = $bible_verse_results->filter(function ($item) use ($searchTerm){
                 return stripos($item->statement_text, $searchTerm) !== false;
             })->map(function ($item) use ($searchTerm) {
 
@@ -139,8 +148,10 @@ class UserController extends Controller
                 $highlighted_text = isset($matches[0]) ? preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $matches[0]) . '.....' : $item->statement_text;
                 return [
                     'type' => 'Bible Verse',
+                    'result' => $highlighted_text,
                     'id' => $item->statement_id,
-                    'result' => $highlighted_text
+                    'book_id' => $item->book_id,
+                    'chapter_id' => $item->chapter_id
                 ];
             });
         

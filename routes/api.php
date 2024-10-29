@@ -16,6 +16,8 @@ Route::post('signup',[UserController::class, 'Signup']);
 Route::middleware('auth:sanctum')->group(function(){
 
     Route::get('search',[UserController::class, 'SearchResults']);
+    // Route::get('bible_search',[SidebarController::class, 'BibleSearchResults']);
+    // Route::get('gq_search',[SidebarController::class, 'GQSearchResults']);
 
     Route::post('update_token',[UserController::class, 'updateToken']);
     Route::get('myprofile',[UserController::class, 'myProfile']);
