@@ -151,7 +151,11 @@ class UserController extends Controller
                     'result' => $highlighted_text,
                     'id' => $item->statement_id,
                     'book_id' => $item->book_id,
-                    'chapter_id' => $item->chapter_id
+                    'chapter_id' => $item->chapter_id,
+                    //'bible' => $item->bible->bible_name,
+                    // 'book' => $item->book->book_name,
+                    // 'chapter' => $item->chapter->chapter_name,
+                    'reference' => $item->book->book_name.' '.$item->chapter->chapter_no.':'.$item->statement_id
                 ];
             });
         
