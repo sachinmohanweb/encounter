@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Laravel\Scout\Searchable;
 
 class Batch extends Model
 {
-    use HasFactory;
+    use HasFactory,Searchable;
 
     protected $fillable = [
         'course_id',
@@ -17,6 +18,13 @@ class Batch extends Model
         'last_date',
         'status'
     ];
+
+    public function toSearchableArray() {
+        return [
+            'id' => $this->id,
+            'batch_name' => $this->batch_name,
+        ];
+    }
 
     public function getStatusAttribute($value)
     {

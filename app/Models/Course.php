@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Laravel\Scout\Searchable;
 
 class Course extends Model
 {
-    use HasFactory;
+    use HasFactory,Searchable;
 
     protected $fillable = [
         'course_name',
@@ -26,6 +27,14 @@ class Course extends Model
 
     protected $appends = ['bible_name'];
 
+    public function toSearchableArray() {
+        return [
+            'id' => $this->id,
+            'course_name' => $this->course_name,
+            'course_creator' => $this->course_creator,
+            'description' => $this->description,
+        ];
+    }
 
     public function getStatusAttribute($value)
     {
