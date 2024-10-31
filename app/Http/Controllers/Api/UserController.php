@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Models\Batch;
 use App\Models\Course;
 use App\Models\Chapter;
+use App\Models\UserLMS;
 use App\Models\UserNote;
 use App\Models\GotQuestion;
 use App\Models\HolyStatement;
@@ -212,11 +213,9 @@ class UserController extends Controller
     {
         try {
 
-            // courses---course name,createor,description,
+            // courses---description,
             // course content---descriptiopn,
             // Notifications---title, content,
-            // user bible markings---data,
-            // batches---batch name,
             // user notes---note, category,subcategory,
             // user qna---question answer,
             
@@ -252,7 +251,7 @@ class UserController extends Controller
                             'book_id' => $item->book_id,
                             'chapter_id' => $item->chapter_id,
                             'chapter_no' => $item->chapter->chapter_no,
-                            'reference' => $item->book->book_name.' '.$item->chapter->chapter_no.':'.$item->statement_id
+                            'reference' => $item->book->book_name.' '.$item->chapter->chapter_no.':'.$item->statement_no
                         ];
                     });
                 }else{
@@ -274,7 +273,7 @@ class UserController extends Controller
                             'book_id' => $item->book_id,
                             'chapter_id' => $item->chapter_id,
                             'chapter_no' => $item->chapter->chapter_no,
-                            'reference' => $item->book->book_name.' '.$item->chapter->chapter_no.':'.$item->statement_id
+                            'reference' => $item->book->book_name.' '.$item->chapter->chapter_no.':'.$item->statement_no
                         ];
                     });
                 }
@@ -316,7 +315,7 @@ class UserController extends Controller
                                     'book_id' => $item->book_id,
                                     'chapter_id' => $item->chapter_id,
                                     'chapter_no' => $item->chapter->chapter_no,
-                                    'reference' => $item->book->book_name . ' ' . $item->chapter->chapter_no . ':' . $item->statement_id
+                                    'reference' => $item->book->book_name . ' ' . $item->chapter->chapter_no . ':' . $item->statement_no
                                 ];
                             });
                         }else{
@@ -337,7 +336,7 @@ class UserController extends Controller
                                     'book_id' => $item->book_id,
                                     'chapter_id' => $item->chapter_id,
                                     'chapter_no' => $item->chapter->chapter_no,
-                                    'reference' => $item->book->book_name.' '.$item->chapter->chapter_no.':'.$item->statement_id
+                                    'reference' => $item->book->book_name.' '.$item->chapter->chapter_no.':'.$item->statement_no
                                 ];
                             });
                         }
@@ -360,7 +359,7 @@ class UserController extends Controller
                                 'book_id' => $item->book_id,
                                 'chapter_id' => $item->chapter_id,
                                 'chapter_no' => $item->chapter->chapter_no,
-                                'reference' => $item->book->book_name.' '.$item->chapter->chapter_no.':'.$item->statement_id
+                                'reference' => $item->book->book_name.' '.$item->chapter->chapter_no.':'.$item->statement_no
                             ];
                         });
                     }    
@@ -383,7 +382,7 @@ class UserController extends Controller
                             'book_id' => $item->book_id,
                             'chapter_id' => $item->chapter_id,
                             'chapter_no' => $item->chapter->chapter_no,
-                            'reference' => $item->book->book_name.' '.$item->chapter->chapter_no.':'.$item->statement_id
+                            'reference' => $item->book->book_name.' '.$item->chapter->chapter_no.':'.$item->statement_no
                         ];
                     });
                 }
@@ -406,7 +405,7 @@ class UserController extends Controller
                         'book_id' => $item->book_id,
                         'chapter_id' => $item->chapter_id,
                         'chapter_no' => $item->chapter->chapter_no,
-                        'reference' => $item->book->book_name.' '.$item->chapter->chapter_no.':'.$item->statement_id
+                        'reference' => $item->book->book_name.' '.$item->chapter->chapter_no.':'.$item->statement_no
                     ];
                 });
             }
@@ -455,40 +454,86 @@ class UserController extends Controller
                 ];
             });
 
-
-            //-----------Batch --------------//
-
-            $batch_results = collect(Batch::search($searchTerm)
-                                ->orderBy('id')->get());
-
-            $batch_results = $batch_results->filter(function ($item) use ($searchTerm){
-                return stripos($item->batch_name, $searchTerm) !== false;
-            });
-
-            $batch_results = $batch_results->map(function ($item) {
-                
-                return [
-                    'type' => 'Course Batch',
-                    'result' => $item->batch_name,
-                    'id' => $item->id
-                ];
-            });
-
             //-----------Course --------------//
 
-            $course_results = collect(Course::search($searchTerm)
-                                ->orderBy('id')->get());
+            // $course_results = collect(Course::search($searchTerm)
+            //                     ->orderBy('id')->get());
 
-            $course_results = $course_results->filter(function ($item) use ($searchTerm){
-                return stripos($item->course_name, $searchTerm) !== false || stripos($item->course_creator, $searchTerm) !== false || stripos($item->description, $searchTerm) !== false;
-            });
+            // $course_results = $course_results->filter(function ($item) use ($searchTerm){
+            //     return stripos($item->course_name, $searchTerm) !== false || stripos($item->course_creator, $searchTerm) !== false || stripos($item->description, $searchTerm) !== false;
+            // });
+
+
+            $user_id = Auth::user()->id;
+
+            $course_results = Course::from(with(new Course)->getTable() . ' as a')
+                ->join(with(new Batch)->getTable() . ' as b', 'a.id', '=', 'b.course_id') // Join with Batch table
+                ->leftJoin(with(new UserLMS)->getTable() . ' as c', function ($join) use ($user_id) {
+                    $join->on('b.id', '=', 'c.batch_id')
+                        ->where('c.user_id', '=', $user_id)
+                        ->where('c.status', 1);
+
+                })
+                ->select('a.course_name', 'b.id as batch_id') // Include last_date in the select
+                ->where(function ($query) use ($searchTerm) {
+                    $query->where('a.course_name', 'LIKE', '%' . $searchTerm . '%')
+                          ->orWhere('a.course_creator', 'LIKE', '%' . $searchTerm . '%');
+                })
+                ->where(function ($query) {
+                                $query->whereNotNull('c.id')
+                                      ->orWhere(function ($subQuery) {
+                                          $subQuery->where('b.last_date', '>=', now()->format('Y-m-d'));
+                                      });
+                            })
+                ->groupBy('a.id', 'b.id','a.course_name')
+                ->get();
 
             $course_results = $course_results->map(function ($item) {
                 
                 return [
                     'type' => 'Courses',
                     'result' => $item->course_name,
-                    'id' => $item->id
+                    'id' => $item->batch_id,
+                ];
+            });
+
+            //-----------Batch --------------//
+
+            // $batch_results = collect(Batch::search($searchTerm)
+            //                     ->orderBy('id')->get());
+
+            // $batch_results = $batch_results->filter(function ($item) use ($searchTerm){
+            //     return stripos($item->batch_name, $searchTerm) !== false;
+            // });
+
+
+            $batch_results = Batch::from(with(new Batch)->getTable() . ' as a')
+                ->leftJoin(with(new UserLMS)->getTable() . ' as b', function ($join) use ($user_id) {
+                    $join->on('a.id', '=', 'b.batch_id')
+                        ->where('b.user_id', '=', $user_id)
+                        ->where('b.status', 1);
+
+                })
+
+                ->select('a.batch_name', 'a.id as batch_id') 
+                ->where(function ($query) use ($searchTerm) {
+                    $query->where('a.batch_name', 'LIKE', '%' . $searchTerm . '%');
+                })
+                ->where(function ($query) {
+                                $query->whereNotNull('b.id')
+                                      ->orWhere(function ($subQuery) {
+                                          $subQuery->where('a.last_date', '>=', now()->format('Y-m-d'));
+                                      });
+                            })
+                ->groupBy('a.id','a.batch_name')
+                ->get();
+
+            $batch_results = $batch_results->map(function ($item) {
+                
+                return [
+                    'type' => 'Batch',
+                    'result' => $item->batch_name,
+                    'id' => $item->batch_id
                 ];
             });
             
