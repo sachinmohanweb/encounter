@@ -384,7 +384,7 @@ class HomeController extends Controller
 
             $courses = Course::from(with(new Course)->getTable(). ' as a')
                 ->join(with(new Batch)->getTable(). ' as b', 'a.id', 'b.course_id')
-                ->join(with(new UserLMS)->getTable(). ' as c', 'a.id', 'c.course_id')
+                ->join(with(new UserLMS)->getTable(). ' as c', 'b.id', 'c.batch_id')
                 ->select(
                     'a.id', 'a.course_name as data1', 'a.course_creator as data2', 'a.thumbnail as image',
                     'b.id as batch_id', 'b.batch_name as data3', 'b.start_date', 'a.no_of_days',
