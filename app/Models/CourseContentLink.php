@@ -12,6 +12,8 @@ class CourseContentLink extends Model
     protected $fillable = [
         'course_content_id',
         'type',
+        'title',
+        'description',
         'video_spotify_link',
         'status',
     ];

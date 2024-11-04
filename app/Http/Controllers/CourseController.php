@@ -197,8 +197,6 @@ class CourseController extends Controller
                 'day' => 'required',
             ]);
 
-            $video_links   = array_filter($request['video_link']);
-            $spotify_links = array_filter($request['spotify_link']);
 
             $inputData = $request->all();
             unset($inputData['video_link'], $inputData['spotify_link']);
@@ -236,22 +234,36 @@ class CourseController extends Controller
 
             $course_content = CourseContent::create($inputData);
             
+            $video_links   = array_filter($request['video_link']);
+            $video_titles = $request->input('video_title');
+            $video_descriptions = $request->input('video_description');
+
+            $spotify_links = array_filter($request['spotify_link']);
+            $spotify_titles = $request->input('spotify_title');
+            $spotify_descriptions = $request->input('spotify_description');
+
             if(count($video_links) > 0) {
                 foreach($video_links as $key=>$value){
                     $video_data['course_content_id'] = $course_content->id;
                     $video_data['type'] = '1';
+
+                    $video_data['title'] = $video_titles[$key];
+                    $video_data['description'] = $video_descriptions[$key];
                     $video_data['video_spotify_link'] = $value;
                     
                     $course_content_video = CourseContentLink::create($video_data);
                 }
             }
 
-            if(count($video_links) > 0) {
+            if(count($spotify_links) > 0) {
                 foreach($spotify_links as $key1=>$value1){
                     $spotify_data['course_content_id'] = $course_content->id;
                     $spotify_data['type'] = '2';
-                    $spotify_data['video_spotify_link'] = $value1;
                     
+                    $spotify_data['title'] = $spotify_titles[$key1];
+                    $spotify_data['description'] = $spotify_descriptions[$key1];
+                    $spotify_data['video_spotify_link'] = $value1;   
+
                     $course_content_spotify = CourseContentLink::create($spotify_data);
                 }
             }
@@ -288,8 +300,8 @@ class CourseController extends Controller
                 'day' => 'required',                
             ]);
 
-            $video_links   = array_filter($request['video_link']);
-            $spotify_links = array_filter($request['spotify_link']);
+            // $video_links   = array_filter($request['video_link']);
+            // $spotify_links = array_filter($request['spotify_link']);
 
             $inputData = $request->all();
             unset($inputData['video_link'], $inputData['spotify_link']);
@@ -329,21 +341,35 @@ class CourseController extends Controller
 
             CourseContentLink::where('course_content_id', $request->id)->delete();
 
+            $video_links   = array_filter($request['video_link']);
+            $video_titles = $request->input('video_title');
+            $video_descriptions = $request->input('video_description');
+
+            $spotify_links = array_filter($request['spotify_link']);
+            $spotify_titles = $request->input('spotify_title');
+            $spotify_descriptions = $request->input('spotify_description');
+
             if(count($video_links) > 0) {
                 foreach($video_links as $key=>$value){
                     $video_data['course_content_id'] = $content->id;
                     $video_data['type'] = '1';
+
+                    $video_data['title'] = $video_titles[$key];
+                    $video_data['description'] = $video_descriptions[$key];
                     $video_data['video_spotify_link'] = $value;
                     
                     $course_content_video = CourseContentLink::create($video_data);
                 }
             }
 
-            if(count($video_links) > 0) {
+            if(count($spotify_links) > 0) {
                 foreach($spotify_links as $key1=>$value1){
                     $spotify_data['course_content_id'] = $content->id;
                     $spotify_data['type'] = '2';
-                    $spotify_data['video_spotify_link'] = $value1;
+
+                    $spotify_data['title'] = $spotify_titles[$key1];
+                    $spotify_data['description'] = $spotify_descriptions[$key1];
+                    $spotify_data['video_spotify_link'] = $value1; 
                     
                     $course_content_spotify = CourseContentLink::create($spotify_data);
                 }

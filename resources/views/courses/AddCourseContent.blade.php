@@ -64,12 +64,14 @@
                               <textarea name="text_description" id="" rows="2" class="form-control" ></textarea>
                            </div>
                         </div>
-                        <div class="col-lg-6 col-12">
+                        <div class="col-lg-12 col-12">
                            <div class="form-group">
                               <label for=""> Video Links</label>
                               <div id="video-links-container">
                                  <div class="add-link d-flex align-items-center video-link pb-1">
-                                    <input type="text"  class="form-control" name="video_link[]">
+                                    <input type="text" class="form-control" name="video_title[]" placeholder="Title">
+                                    <input type="text" class="form-control" name="video_description[]" placeholder="Description">
+                                    <input type="text"  class="form-control" name="video_link[]" placeholder="Link">
                                     <ul class="action">
                                        <li class="add pe-2"><i class="fa fa-plus-square-o" onclick="addVideoLink(this)"></i>
                                        </li>
@@ -79,12 +81,14 @@
                               </div>
                            </div>
                         </div>
-                        <div class="col-lg-6 col-12">
+                        <div class="col-lg-12 col-12">
                            <div class="form-group">
                               <label for=""> Spotify Link</label>
                               <div id="spotify-links-container">
                                  <div class="add-link d-flex align-items-center spotify-link pb-1">
-                                    <input type="text"  class="form-control" name="spotify_link[]">
+                                    <input type="text" class="form-control" name="spotify_title[]" placeholder="Title">
+                                    <input type="text" class="form-control" name="spotify_description[]" placeholder="Description">
+                                    <input type="text"  class="form-control" name="spotify_link[]" placeholder="Link">
                                      <ul class="action">
                                        <li class="add pe-2"><i class="fa fa-plus-square-o" onclick="addSpotifyLink(this)"></i>
                                        </li>
@@ -157,6 +161,8 @@
    function addVideoLink(element) {
       let videoLink = document.querySelector('.video-link').cloneNode(true);
       videoLink.querySelector('input').value = '';
+      let inputs = videoLink.querySelectorAll('input');
+      inputs.forEach(input => input.value = '');
       document.getElementById('video-links-container').appendChild(videoLink);
    }
 
@@ -170,7 +176,9 @@
    }
    function addSpotifyLink(element) {
       let SpotifyLink = document.querySelector('.spotify-link').cloneNode(true);
-      SpotifyLink.querySelector('input').value = '';
+      //SpotifyLink.querySelector('input').value = '';
+      let inputs = SpotifyLink.querySelectorAll('input');
+      inputs.forEach(input => input.value = '');
       document.getElementById('spotify-links-container').appendChild(SpotifyLink);
    }
 

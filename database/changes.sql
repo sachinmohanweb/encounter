@@ -393,3 +393,9 @@ ALTER TABLE `user_bible_markings` CHANGE `status` `status` INT NOT NULL DEFAULT 
 -- 19/10/24----
 
 ALTER TABLE `users` ADD `country_code` VARCHAR(5) NULL DEFAULT NULL AFTER `password`, ADD `phone` VARCHAR(25) NULL DEFAULT NULL AFTER `country_code`;
+
+-- 04/11/24----
+
+ALTER TABLE `course_content_links` ADD `title` VARCHAR(256) NULL DEFAULT NULL AFTER `type`;
+ALTER TABLE `course_content_links` ADD `description` VARCHAR(256) NULL DEFAULT NULL AFTER `title`;
+
