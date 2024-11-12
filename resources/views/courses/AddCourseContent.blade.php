@@ -160,7 +160,7 @@
 <script type="text/javascript">
    function addVideoLink(element) {
       let videoLink = document.querySelector('.video-link').cloneNode(true);
-      videoLink.querySelector('input').value = '';
+      //videoLink.querySelector('input').value = '';
       let inputs = videoLink.querySelectorAll('input');
       inputs.forEach(input => input.value = '');
       document.getElementById('video-links-container').appendChild(videoLink);
