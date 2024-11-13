@@ -73,89 +73,6 @@ class HomeController extends Controller
             
             /*---------Courses----------*/
 
-            // $courses = Course::from(with(new Course)->getTable(). ' as a')
-            //     ->join(with(new Batch)->getTable(). ' as b', 'a.id', 'b.course_id')
-            //     ->leftJoin('user_l_m_s as ul', function($join) use ($login_user){
-            //         $join->on('a.id', '=', 'ul.course_id')
-            //              ->where('ul.user_id', '=', $login_user['id']);
-            //     })
-            //     ->select(
-            //         'a.id', 
-            //         'a.course_name as data1', 
-            //         'a.course_creator as data2', 
-            //         'a.thumbnail as image',
-            //         'b.id as batch_id', 
-            //         'b.batch_name as data3', 
-            //         'b.start_date', 
-            //         'a.no_of_days'
-            //     )
-            //     ->where(function($query) use ($login_user) {
-            //         $query->whereNull('ul.id')
-            //               ->where('b.end_date', '>', now()->subDay()->format('Y-m-d'))
-            //               ->orWhereNotNull('ul.id');
-            //     })
-            //     ->where('a.status', 1)
-            //     ->where('b.status', 1);
-
-            // if($request['search_word']){
-            //     $courses->where('a.course_name','like',$request['search_word'].'%')
-            //             ->orwhere('a.course_creator','like',$request['search_word'].'%');
-            // }
-
-            // if($request['length']){
-            //     $courses->take($request['length']);
-            // }
-
-            // $courses=$courses->orderByRaw('CASE WHEN ul.id IS NULL THEN 0 ELSE 1 END')
-            //                 ->orderBy('ul.completed_status', 'asc') 
-            //                 ->get();
-
-            // $courses->transform(function ($item, $key) use($login_user) {
-
-            //     if($item->start_date >= now()->format('Y-m-d')){
-            //         $item->data4 = 'Upcoming';
-            //         $item->data5 = '0%';
-            //     }else{
-
-            //         $course_cont_verse = CourseContent::from(with(new CourseContent)->getTable(). ' as a')
-            //                     ->join(with(new CourseDayVerse)->getTable(). ' as b', 'a.id', 'b.course_content_id')
-            //                     ->where('a.course_id',$item->id)->count();
-            //         if($course_cont_verse<1){
-            //             $item->data4 = 'Pending';
-            //             $item->data5 = '0%';
-
-            //         }else{
-            //             $item->data4 = 'Inactive';
-            //             $item->data5 = '0%';
-            //             $user_lms = UserLMS::where('user_id',$login_user['id'])->where('course_id',$item->id)->first();
-            //             if($user_lms){
-            //                 $readings_count = UserDailyReading::where('user_lms_id',$user_lms['id'])->count();
-            //                 $percentage= ( $readings_count/$item['no_of_days'])*100;
-
-            //                 if($readings_count>0 && $readings_count<$item->no_of_days){
-            //                     $item->data4 = 'Ongoing';
-            //                     $item->data5 = $percentage.' %';
-            //                 }elseif($readings_count>0 && $readings_count==$item->no_of_days){
-            //                     $item->data4 = 'Completed';
-            //                     $item->data5 = $percentage.' %';
-            //                 }
-            //             }else{
-            //                 $item->data4 = 'Non-enrolled';
-            //                 $item->data5 = '0 %';
-            //             }
-            //         }
-
-            //     }
-            //     if ($item->image !== null) {
-            //         $item->image = asset('/') . $item->image;
-            //     } else {
-            //         $item->image = null;
-            //     }
-            //     return $item;
-            // });
-            // $courses->makeHidden([ 'bible_name']);
-
-
             $courses = Course::from(with(new Course)->getTable() . ' as a')
                 ->join(with(new Batch)->getTable() . ' as b', 'a.id', 'b.course_id')
                 ->join(with(new CourseContent)->getTable() . ' as cc', 'a.id', '=', 'cc.course_id')
@@ -214,7 +131,9 @@ class HomeController extends Controller
 
                 }else {
                     $user_lms = UserLMS::where('user_id', $login_user['id'])
-                                    ->where('course_id', $item->id)->first();
+                                    ->where('course_id', $item->id)
+                                    ->where('batch_id', $item->batch_id)
+                                    ->first();
                     if ($user_lms) {
                         $readings_count = UserDailyReading::where('user_lms_id', $user_lms['id'])->count();
                         $percentage = round(($readings_count / $item['no_of_days']) * 100, 2);
@@ -278,100 +197,100 @@ class HomeController extends Controller
         }
     }
 
-    public function AllCourses(Request $request){
-        try {
+    // public function AllCourses(Request $request){
+    //     try {
 
-            $today= now();
-            $today_string = now()->toDateString();
+    //         $today= now();
+    //         $today_string = now()->toDateString();
 
-            $loggeed_user = Auth::user();
+    //         $loggeed_user = Auth::user();
 
-            $courses = Course::from(with(new Course)->getTable(). ' as a')
-                ->join(with(new Batch)->getTable(). ' as b', 'a.id', 'b.course_id')
-                ->leftJoin('user_l_m_s as ul', function($join) use ($loggeed_user){
-                    $join->on('a.id', '=', 'ul.course_id')
-                         ->where('ul.user_id', '=', $loggeed_user['id']);
-                })
-                ->select(
-                    'a.id', 
-                    'a.course_name as data1', 
-                    'a.course_creator as data2', 
-                    'a.thumbnail as image',
-                    'b.id as batch_id', 
-                    'b.batch_name as data3', 
-                    'b.start_date', 
-                    'a.no_of_days'
-                )
-                ->where(function($query) use ($loggeed_user) {
-                    $query->whereNull('ul.id')
-                          ->where('b.end_date', '>', now()->subDay()->format('Y-m-d'))
-                          ->orWhereNotNull('ul.id');
-                })
-                ->where('a.status', 1)
-                ->where('b.status', 1);
+    //         $courses = Course::from(with(new Course)->getTable(). ' as a')
+    //             ->join(with(new Batch)->getTable(). ' as b', 'a.id', 'b.course_id')
+    //             ->leftJoin('user_l_m_s as ul', function($join) use ($loggeed_user){
+    //                 $join->on('a.id', '=', 'ul.course_id')
+    //                      ->where('ul.user_id', '=', $loggeed_user['id']);
+    //             })
+    //             ->select(
+    //                 'a.id', 
+    //                 'a.course_name as data1', 
+    //                 'a.course_creator as data2', 
+    //                 'a.thumbnail as image',
+    //                 'b.id as batch_id', 
+    //                 'b.batch_name as data3', 
+    //                 'b.start_date', 
+    //                 'a.no_of_days'
+    //             )
+    //             ->where(function($query) use ($loggeed_user) {
+    //                 $query->whereNull('ul.id')
+    //                       ->where('b.end_date', '>', now()->subDay()->format('Y-m-d'))
+    //                       ->orWhereNotNull('ul.id');
+    //             })
+    //             ->where('a.status', 1)
+    //             ->where('b.status', 1);
 
-            if($request['search_word']){
-                $courses->where('a.course_name','like',$request['search_word'].'%')
-                        ->orwhere('a.course_creator','like',$request['search_word'].'%');
-            }
+    //         if($request['search_word']){
+    //             $courses->where('a.course_name','like',$request['search_word'].'%')
+    //                     ->orwhere('a.course_creator','like',$request['search_word'].'%');
+    //         }
 
-             $courses=$courses->orderByRaw('CASE WHEN ul.id IS NULL THEN 0 ELSE 1 END')
-                            ->orderBy('ul.completed_status', 'asc') 
-                            ->get();
+    //          $courses=$courses->orderByRaw('CASE WHEN ul.id IS NULL THEN 0 ELSE 1 END')
+    //                         ->orderBy('ul.completed_status', 'asc') 
+    //                         ->get();
 
-            $courses->transform(function ($item, $key) use($loggeed_user) {
+    //         $courses->transform(function ($item, $key) use($loggeed_user) {
 
-                if($item->start_date >= now()->format('Y-m-d')){
-                    $item->data4 = 'New Batch';
-                    $item->data5 = 0 .' %';
-                }else{
-                    $item->data4 = '';
-                    $item->data5 = '';
+    //             if($item->start_date >= now()->format('Y-m-d')){
+    //                 $item->data4 = 'New Batch';
+    //                 $item->data5 = 0 .' %';
+    //             }else{
+    //                 $item->data4 = '';
+    //                 $item->data5 = '';
 
-                    $user_lms = UserLMS::where('user_id',$loggeed_user['id'])->where('course_id',$item->id)->first();
-                    if($user_lms){
-                        $readings_count = UserDailyReading::where('user_lms_id',$user_lms['id'])->count();
-                        $percentage= ( $readings_count/$item['no_of_days'])*100;
+    //                 $user_lms = UserLMS::where('user_id',$loggeed_user['id'])->where('course_id',$item->id)->first();
+    //                 if($user_lms){
+    //                     $readings_count = UserDailyReading::where('user_lms_id',$user_lms['id'])->count();
+    //                     $percentage= ( $readings_count/$item['no_of_days'])*100;
 
-                        if($readings_count>0 && $readings_count<$item->no_of_days){
-                            $item->data4 = 'Ongoing';
-                            $item->data5 = $percentage.' %';
-                        }elseif($readings_count>0 && $readings_count==$item->no_of_days){
-                            $item->data4 = 'Completed';
-                            $item->data5 = $percentage.' %';
-                        }
-                    }else{
-                        $item->data4 = 'Non-enrolled';
-                        $item->data5 = '0 %';
-                    }
+    //                     if($readings_count>0 && $readings_count<$item->no_of_days){
+    //                         $item->data4 = 'Ongoing';
+    //                         $item->data5 = $percentage.' %';
+    //                     }elseif($readings_count>0 && $readings_count==$item->no_of_days){
+    //                         $item->data4 = 'Completed';
+    //                         $item->data5 = $percentage.' %';
+    //                     }
+    //                 }else{
+    //                     $item->data4 = 'Non-enrolled';
+    //                     $item->data5 = '0 %';
+    //                 }
 
-                }
+    //             }
 
 
-                if ($item->image !== null) {
-                    $item->image = asset('/') . $item->image;
-                } else {
-                    $item->image = null;
-                }
-                return $item;
-            });
-            $courses->makeHidden([ 'bible_name']);
+    //             if ($item->image !== null) {
+    //                 $item->image = asset('/') . $item->image;
+    //             } else {
+    //                 $item->image = null;
+    //             }
+    //             return $item;
+    //         });
+    //         $courses->makeHidden([ 'bible_name']);
 
-            if(empty($courses)) {
-                $return['result']=  "Empty course list ";
-                return $this->outputer->code(422)->error($return)->json();
-            }
+    //         if(empty($courses)) {
+    //             $return['result']=  "Empty course list ";
+    //             return $this->outputer->code(422)->error($return)->json();
+    //         }
 
-            return $this->outputer->code(200)
-                        ->success($courses )
-                        ->json();
+    //         return $this->outputer->code(200)
+    //                     ->success($courses )
+    //                     ->json();
 
-        }catch (\Exception $e) {
+    //     }catch (\Exception $e) {
 
-            $return['result']=$e->getMessage();
-            return $this->outputer->code(422)->error($return)->json();
-        }
-    }
+    //         $return['result']=$e->getMessage();
+    //         return $this->outputer->code(422)->error($return)->json();
+    //     }
+    // }
 
 
     public function CompletedCourses(Request $request){

@@ -15,15 +15,13 @@ Route::post('signup',[UserController::class, 'Signup']);
 
 Route::middleware('auth:sanctum')->group(function(){
 
-    Route::get('search',[UserController::class, 'SearchResults']);
-    // Route::get('bible_search',[SidebarController::class, 'BibleSearchResults']);
-    // Route::get('gq_search',[SidebarController::class, 'GQSearchResults']);
-
     Route::post('update_token',[UserController::class, 'updateToken']);
     Route::get('myprofile',[UserController::class, 'myProfile']);
     Route::post('edit_profile',[UserController::class, 'editProfile']);
     Route::get('logout',[UserController::class, 'logoutuser']);
     
+    Route::get('search',[UserController::class, 'SearchResults']);
+
     Route::get('completed_courses', [HomeController::class, 'CompletedCourses']);
 
     Route::get('got_questions',[SidebarController::class, 'GotQuestions']);
@@ -45,7 +43,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::delete('delete_bible_marking',[SidebarController::class, 'DeleteBibleMarking']);
 
     Route::get('home', [HomeController::class, 'Home']);
-    Route::get('all_courses', [HomeController::class, 'AllCourses']);
+    //Route::get('all_courses', [HomeController::class, 'AllCourses']);
     Route::get('course_details', [HomeController::class, 'CourseDetails']);
     Route::post('enroll_batch',[HomeController::class, 'EnrollBatch']);
     Route::get('course_day_content',[HomeController::class, 'CourseDayContent']);
