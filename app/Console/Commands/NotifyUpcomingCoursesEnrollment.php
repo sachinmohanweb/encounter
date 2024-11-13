@@ -44,8 +44,9 @@ class NotifyUpcomingCoursesEnrollment extends Command
                 $push_data              = []; 
 
                 $push_data['tokens']    =  User::whereNotNull('refresh_token')
-                                                ->where('id',1)
-                                                ->pluck('refresh_token')->toArray();
+                                                //->where('id',1)
+                                                ->pluck('refresh_token')
+                                                ->toArray();
                 if ($batch->days_left == 1) {
                     
                     $push_data['title'] = 'Hurry up! Today is the last day for enrollment – ' . $batch->course->course_name;

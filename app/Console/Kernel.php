@@ -11,7 +11,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
 
-        $schedule->command('app:notify-upcoming-courses-enrollment-left-days')->dailyAt('09:00');
+        $schedule->command('app:notify-upcoming-courses-enrollment-left-days')->dailyAt('04:30');
     }
 
     protected function commands()
