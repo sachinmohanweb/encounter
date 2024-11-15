@@ -51,4 +51,6 @@ Route::middleware('auth:sanctum')->group(function(){
 
     Route::get('bible_study' , [HomeController::class, 'BibleStudy']);
     Route::get('bible_study_chapters' , [HomeController::class, 'BibleStudyChapters']);
+
+    Route::get('testapi' , [HomeController::class, 'TestApi']);
 });

@@ -71,7 +71,7 @@ class NotifyUpcomingCoursesEnrollment extends Command
                 $pusher = new NotificationPusher();
                 $pusher->push($push_data);
                 
-                Log::info('Notifications for upcoming courses have been sent.Batch Id-'.$batch['id']);
+                Log::channel('notification_log')->info("======>>>>>Notifications for upcoming courses======>>>>>\n " . json_encode($push_data['tokens']));
             }
 
         }
