@@ -50,6 +50,8 @@ class UserController extends Controller
             
             $searchTerm = $request->input('text');
 
+            Log::channel('search_log')->info("======>>>>>Search Parameters- ". now()." ======>>>>>\n" . json_encode($searchTerm));
+
             //-----------Bible Verse--------------//
 
             $searchParts = explode(' ', $searchTerm);

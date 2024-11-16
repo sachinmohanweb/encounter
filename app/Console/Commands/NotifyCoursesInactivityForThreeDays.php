@@ -86,7 +86,7 @@ class NotifyCoursesInactivityForThreeDays extends Command
                             $pusher = new NotificationPusher();
                             $pusher->push($push_data);
 
-                            Log::channel('notification_log')->info("======>>>>>Notifications for user inactive in course ======>>>>>\n" . json_encode($push_data['tokens']));
+                            Log::channel('notification_log')->info("======>>>>>Notifications for user inactive in course- ". now()."  ======>>>>>\n" . json_encode($push_data['tokens']));
 
                         }
                     }
@@ -122,7 +122,7 @@ class NotifyCoursesInactivityForThreeDays extends Command
                         $pusher = new NotificationPusher();
                         $pusher->push($push_data);
 
-                        Log::channel('notification_log')->info("======>>>>>Notifications for user who didnt started courses yet. ======>>>>>\n" . json_encode($push_data['tokens']));
+                        Log::channel('notification_log')->info("======>>>>>Notifications for user who didnt started courses yet.- ". now()."  ======>>>>>\n" . json_encode($push_data['tokens']));
 
                     }                    
                 }

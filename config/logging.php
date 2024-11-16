@@ -123,6 +123,12 @@ return [
             'path' => storage_path('logs/notification_log.log'),
             'level' => 'info',
         ],
+        
+        'search_log' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/search_log.log'),
+            'level' => 'info',
+        ],
     ],
 
 ];

@@ -71,7 +71,7 @@ class NotifyUpcomingCoursesEnrollment extends Command
                 $pusher = new NotificationPusher();
                 $pusher->push($push_data);
                 
-                Log::channel('notification_log')->info("======>>>>>Notifications for upcoming courses======>>>>>\n " . json_encode($push_data['tokens']));
+                Log::channel('notification_log')->info("======>>>>>Notifications for upcoming courses- ". now()." ======>>>>>\n " . json_encode($push_data['tokens']));
             }
 
         }
