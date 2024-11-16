@@ -65,6 +65,7 @@ class NotifyCoursesInactivityForThreeDays extends Command
                             $push_data              = []; 
                             $push_data['tokens']    =  User::whereNotNull('refresh_token')
                                                        ->where('id',$value->user_id)
+                                                       //->where('id',1)
                                                        ->pluck('refresh_token')->toArray();
 
                             $push_data['title']     =   'We Miss You at course - '.$batch_details->course->course_name;
