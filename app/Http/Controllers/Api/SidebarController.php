@@ -436,22 +436,24 @@ class SidebarController extends Controller
                 $verse = HolyStatement::where('statement_id',$item->statement_id)->first();
                 $item->verse_statement = $verse['statement_text'];
                 $item->marked_data = [$item->data];
+                $item->chapter_no = $verse->chapter_no;
+                $item->statement_no = $verse->statement_no;
 
                 return $item;
             });
 
 
-            $user_bookmarks = UserBibleMarking::select('id','user_id','type','statement_id','data')
+            $user_tags = UserBibleMarking::select('id','user_id','type','statement_id','data')
                         ->where('user_id',$user_id)
                         ->where('type',2)
                         ->where('status',1)
                         ->orderBy('statement_id')
                         ->get()->makeHidden(['type_name','user_name']);
-            if(empty($user_bookmarks)) {
+            if(empty($user_tags)) {
                 $return['result']=  "Empty bookmarks ";
                 return $this->outputer->code(422)->error($return)->json();
             }
-            $user_bookmarks->transform(function ($item, $key) {
+            $user_tags->transform(function ($item, $key) {
 
                 $verse = HolyStatement::where('statement_id',$item->statement_id)->first();
                 $item->verse_statement = $verse['statement_text'];
@@ -459,6 +461,8 @@ class SidebarController extends Controller
                 $tagIds = explode(',', $item->data);
                 $tagNames = Tag::whereIn('id', $tagIds)->pluck('tag_name')->toArray();
                 $item->marked_data = $tagNames;
+                $item->chapter_no = $verse->chapter_no;
+                $item->statement_no = $verse->statement_no;
 
                 return $item;
             });
@@ -479,6 +483,9 @@ class SidebarController extends Controller
                 $verse = HolyStatement::where('statement_id',$item->statement_id)->first();
                 $item->verse_statement = $verse['statement_text'];
                 $item->marked_data = [$item->data];
+                $item->chapter_no = $verse->chapter_no;
+                $item->statement_no = $verse->statement_no;
+
                 return $item;
             });
 
@@ -486,7 +493,7 @@ class SidebarController extends Controller
             $mergedData = [
                 [ 'category' => 'Notes', 'list' => $user_notes ],
 
-                [ 'category' => "Bookmarks", 'list' => $user_bookmarks ],
+                [ 'category' => "Tags", 'list' => $user_tags ],
 
                 [ 'category' => 'Highlghts', 'list' => $user_colors ] 
             ];
@@ -498,7 +505,7 @@ class SidebarController extends Controller
         }catch (\Exception $e) {
 
             $return['result']=$e->getMessage();
-            return $this->outputer->code(422)->error($return)->json();
+            return $this->outputer->code(9+422)->error($return)->json();
         }
     }
 
