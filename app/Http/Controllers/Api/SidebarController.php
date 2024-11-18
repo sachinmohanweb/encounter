@@ -10,10 +10,10 @@ use Carbon\Carbon;
 
 use App\Models\Tag;
 use App\Models\UserQNA;
-use App\Models\UserNote;
 use App\Models\GQCategory;
 use App\Models\GotQuestion;
 use App\Models\GQSubCategory;
+use App\Models\UserCustomNote;
 use App\Models\UserBibleMarking;
 
 use App\Models\Bible;
@@ -264,13 +264,13 @@ class SidebarController extends Controller
         }
     }
 
-    public function MyNotes(Request $request){
+    public function CustomNotes(Request $request){
 
         try {
 
             $user_id = Auth::user()->id;
 
-            $user_notes = UserNote::select('*')
+            $user_notes = UserCustomNote::select('*')
                         ->where('user_id',$user_id)
                         ->where('status',1)
                         ->get();
@@ -290,7 +290,7 @@ class SidebarController extends Controller
         }
     }
 
-    public function AddNote(Request $request){
+    public function AddCustomNote(Request $request){
         
         DB::beginTransaction();
 
@@ -299,27 +299,15 @@ class SidebarController extends Controller
             $user_id = Auth::user()->id;
 
             $a =  $request->validate([
-                    'bible_id'      => 'required',
-                    'testament_id'  => 'required',
-                    'book_id'       => 'required',
-                    'chapter_id'    => 'required',
-                    'verse_id'      => 'required',
-                    // 'category'      => 'required',
-                    // 'sub_category'  => 'required',
-                    'note'      => 'required',
+                    'note_text'      => 'required',
+                    'tag_id'  => 'required',
                 ]);
 
             $inputData['user_id'] = $user_id;
-            $inputData['bible_id'] = $request['bible_id'];
-            $inputData['testament_id'] = $request['testament_id'];
-            $inputData['book_id'] = $request['book_id'];
-            $inputData['chapter_id'] = $request['chapter_id'];
-            $inputData['verse_id'] =$request['verse_id'];
-            // $inputData['category'] =$request['category'];
-            // $inputData['sub_category'] =$request['sub_category'];
-            $inputData['note'] =$request['note'];
+            $inputData['note_text'] =$request['note_text'];
+            $inputData['tag_id'] = $request['tag_id'];
 
-            $note = UserNote::create($inputData);
+            $note = UserCustomNote::create($inputData);
             DB::commit();
 
             $return['messsage']  =  'Success.Your Note added';

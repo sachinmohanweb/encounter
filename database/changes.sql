@@ -399,3 +399,14 @@ ALTER TABLE `users` ADD `country_code` VARCHAR(5) NULL DEFAULT NULL AFTER `passw
 ALTER TABLE `course_content_links` ADD `title` VARCHAR(256) NULL DEFAULT NULL AFTER `type`;
 ALTER TABLE `course_content_links` ADD `description` VARCHAR(256) NULL DEFAULT NULL AFTER `title`;
 
+
+-- 17/11/24----
+
+CREATE TABLE `user_custom_notes` (
+	`id` INT NOT NULL AUTO_INCREMENT , 
+	`user_id` INT NOT NULL , 
+	`note_text` LONGTEXT NOT NULL , 
+	`tag_id` INT NOT NULL , 
+	`status` INT NOT NULL DEFAULT '1' , 
+	`created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , 
+	`updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`id`));

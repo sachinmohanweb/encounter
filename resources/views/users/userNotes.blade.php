@@ -6,6 +6,11 @@
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/animate.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/datatables.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/cascade.css') }}">
+<style type="text/css">
+   .table-one table {
+    min-width: 100px !important;
+   }
+</style>
 @endsection
 @section('breadcrumb-title')
 <h3>User Notes</h3>
@@ -22,11 +27,7 @@
                      <thead>
                         <tr>
                            <th>User</th>
-                           <th>Bible</th>
-                           <th>Testament</th>
-                           <th>Book</th>
-                           <th>Chapter</th>
-                           <th>Verse</th>
+                           <th>Tag</th>
                            <!-- <th>Catgeory</th>
                            <th>Sub Category</th>-->
                            <th>Note</th>
@@ -73,15 +74,11 @@
             } 
          },
           columns: [
-              { data: 'user', name: 'user'},     
-              { data: 'bible', name: 'bible' , orderable: true},
-              { data: 'testament', name: 'testament' },
-              { data: 'book', name: 'book' },
-              { data: 'chapter', name: 'chapter' },
-              { data: 'verse', name: 'verse' },
+              { data: 'user', name: 'user',width: '15%'},     
+              { data: 'tag', name: 'tag' ,width: '15%'},
               // { data: 'category', name: 'category' },
               // { data: 'sub_category', name: 'sub_category' },
-              { data: 'note', name: 'note' },
+              { data: 'note_text', name: 'note' , width: '55%'},
               { data: 'action', name: 'action', orderable: false},
           ],
       });

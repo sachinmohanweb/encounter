@@ -13,9 +13,9 @@ use App\Models\Batch;
 use App\Models\Course;
 use App\Models\Chapter;
 use App\Models\UserLMS;
-use App\Models\UserNote;
 use App\Models\GotQuestion;
 use App\Models\HolyStatement;
+use App\Models\UserCustomNote;
 use App\Models\EmailVerification;
 
 
@@ -288,17 +288,17 @@ class UserController extends Controller
         
             //-----------User Notes--------------//
 
-            $user_note_results = collect(UserNote::search($searchTerm)
+            $user_note_results = collect(UserCustomNote::search($searchTerm)
                                 ->where('status', 1)->orderBy('id')->get());
 
             $color_user_note_results = $user_note_results->filter(function ($item) use ($searchTerm) {
-                return stripos($item->note, $searchTerm) !== false;
+                return stripos($item->note_text, $searchTerm) !== false;
             })->map(function ($item) use ($searchTerm) {
 
                 $contextWords = 8;
 
-                preg_match('/(?:\S+\s+){0,' . $contextWords . '}\S*' . preg_quote($searchTerm, '/') . '\S*(?:\s+\S+){0,' . $contextWords . '}/i', $item->note, $matches);
-                $highlighted_text = isset($matches[0]) ? preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $matches[0]) . '.....' : $item->note;
+                preg_match('/(?:\S+\s+){0,' . $contextWords . '}\S*' . preg_quote($searchTerm, '/') . '\S*(?:\s+\S+){0,' . $contextWords . '}/i', $item->note_text, $matches);
+                $highlighted_text = isset($matches[0]) ? preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $matches[0]) . '.....' : $item->note_text;
                 return [
                     'type' => 'User Notes',
                     'id' => $item->id,

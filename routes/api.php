@@ -31,8 +31,8 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('asked_questions',[SidebarController::class, 'AskedQuestions']);
     Route::post('ask_a_question',[SidebarController::class, 'AskAQuestion']);
 
-    Route::get('my_notes',[SidebarController::class, 'MyNotes']);
-    Route::post('add_note',[SidebarController::class, 'AddNote']);
+    Route::get('custom_notes',[SidebarController::class, 'CustomNotes']);
+    Route::post('add_custom_note',[SidebarController::class, 'AddCustomNote']);
 
     Route::get('my_tags',[SidebarController::class, 'MyTags']);
     Route::post('add_tag',[SidebarController::class, 'AddTag']);

@@ -14,7 +14,7 @@ use Exception;
 use Datatables;
 
 use App\Models\User;
-use App\Models\UserNote;
+use App\Models\UserCustomNote;
 use App\Models\UserLMS;
 
 class UserController extends Controller
@@ -179,39 +179,27 @@ class UserController extends Controller
 
         if(request()->ajax()) {
             return datatables()
-            ->of(UserNote::select('*'))
+            ->of(UserCustomNote::select('*'))
             ->addColumn('user', function ($user_note) {
                 return $user_note->user_name;
 
             })
-            ->addColumn('bible', function ($user_note) {
-                return $user_note->bible_name;
-            })
-            ->addColumn('testament', function ($user_note) {
-                return $user_note->testament_name;
-            })
-            ->addColumn('book', function ($user_note) {
-                return $user_note->book_name;
-            })
-            ->addColumn('chapter', function ($user_note) {
-                return $user_note->chapter_name;
-            })
-            ->addColumn('verse', function ($user_note) {
-                return $user_note->verse_no;
+            ->addColumn('tag', function ($user_note) {
+                return $user_note->tag_name;
             })
             ->addColumn('action', 'users.user_notes_status_datatable-action')
-            ->rawColumns(['user','bible','book','chapter','verse','action'])
+            ->rawColumns(['user','tag','action'])
             ->addIndexColumn()
             ->make(true);
         }
-        return view('bible_verse.DailyBibleVerse');
+        return view('users.userNotes');
     }
 
     public function UsersNotes_status_change(Request $request): JsonResponse
     {
         DB::beginTransaction();
         try {
-            $user = UserNote::find($request['id']);
+            $user = UserCustomNote::find($request['id']);
             if($user->status==1){
                 $user->status=2;
             }else{
