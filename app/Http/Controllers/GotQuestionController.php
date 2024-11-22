@@ -241,9 +241,18 @@ class GotQuestionController extends Controller
         try{
             $cat =GQCategory::where('id',$request->id)->first();
             if($cat){
-                $cat->delete();
-                DB::commit();
-                $return['status'] = "success";
+                
+                $gQ =GotQuestion::where('category_id',$request->id)->first();
+                $gQ_sub =GQSubCategory::where('cat_id',$request->id)->first();
+                
+                if(($gQ )|| ($gQ_sub)){
+                    $return['status'] = 'Forbidden';
+                }else{
+                    $cat->delete();
+                    DB::commit();
+                    $return['status'] = "success";  
+                }
+
             }else{
                 $return['status'] = 'failed';
             }
@@ -309,9 +318,16 @@ class GotQuestionController extends Controller
         try{
             $cat =GQSubCategory::where('id',$request->id)->first();
             if($cat){
-                $cat->delete();
-                DB::commit();
-                $return['status'] = "success";
+                $gQ =GotQuestion::where('sub_category_id',$request->id)->first();
+                
+                if(($gQ )){
+                    $return['status'] = 'Forbidden';
+                }else{
+
+                    $cat->delete();
+                    DB::commit();
+                    $return['status'] = "success";
+                }   
             }else{
                 $return['status'] = 'failed';
             }

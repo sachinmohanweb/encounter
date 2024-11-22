@@ -183,6 +183,27 @@
                         });
                      table = $('#gq_categories_data').DataTable();
                      table.ajax.reload(null, false);
+
+                  }else if (res.status=='Forbidden'){
+
+                    $.notify({
+                           title:'Category',
+                           message:'Category can not be deleted'
+                           },
+                           {
+                              type:'danger',
+                              offset:{
+                                x:35,
+                                y:230
+                              },
+                              animate:{
+                                enter:'animated fadeIn',
+                                exit:'animated fadeOut'
+                            }
+                        
+                        });
+
+
                   }else{
                         $.notify({
                            title:'Category',
