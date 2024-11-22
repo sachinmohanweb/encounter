@@ -733,43 +733,41 @@ class HomeController extends Controller
 
     public function BibleStudyV2(Request $request){
     
-    try {
+        try {
 
-        $bible_id = env('DEFAULT_BIBLE');
+            $bible_id = env('DEFAULT_BIBLE');
 
-        $testaments = Testament::with('books.chapters')->where('bible_id',$bible_id)->get();
+            $testaments = Testament::with('books.chapters')->where('bible_id',$bible_id)->get();
 
-        $mergedData = $testaments->map(function ($testament) {
-            $books = $testament->books->map(function ($book) {
-                $bookImg = BookImage::where('book_id', $book->book_id)->first();
+            $mergedData = $testaments->map(function ($testament) {
+                $books = $testament->books->map(function ($book) {
+                    $bookImg = BookImage::where('book_id', $book->book_id)->first();
 
-                $book_image = $bookImg !== null 
-                    ? asset('/') . $bookImg['image'] 
-                    : asset('/') . 'assets/images/logo.png';
+                    $book_image = $bookImg !== null 
+                        ? asset('/') . $bookImg['image'] 
+                        : asset('/') . 'assets/images/logo.png';
+
+                    return [
+                        'book_id' => $book->book_id,
+                        'book_name' => $book->book_name,
+                        'book_image' => $book_image,
+                        'total_chapters' => $book->chapters->count() - 1,
+                    ];
+                });
 
                 return [
-                    'book_id' => $book->book_id,
-                    'book_name' => $book->book_name,
-                    'book_image' => $book_image,
-                    'total_chapters' => $book->chapters->count() - 1,
+                    'category' => $testament->testament_name,
+                    'list' => $books,
                 ];
             });
 
-            return [
-                'category' => $testament->testament_name,
-                'list' => $books,
-            ];
-        });
+            return $this->outputer->code(200)->success($mergedData->values())->json();
 
-        return $this->outputer->code(200)->success($mergedData->values())->json();
-
-    } catch (\Exception $e) {
-        $return['result'] = $e->getMessage();
-        return $this->outputer->code(422)->error($return)->json();
+        } catch (\Exception $e) {
+            $return['result'] = $e->getMessage();
+            return $this->outputer->code(422)->error($return)->json();
+        }
     }
-}
-
-
 
     public function BibleStudyChapters(Request $request){
 
@@ -799,7 +797,6 @@ class HomeController extends Controller
             return $this->outputer->code(422)->error($return)->json();
         }
     }
-
 
     public function BibleSearch(Request $request)
     {

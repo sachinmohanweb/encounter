@@ -497,6 +497,166 @@ class SidebarController extends Controller
         }
     }
 
+    public function MyBibleMarkingsV2(Request $request){
+
+        try {
+
+            $user_id = Auth::user()->id;
+
+
+            /* ----------User Custom Notes---------*/
+
+
+            $user_custom_notes = Tag::select('id','tag_name as data',DB::raw("Null as verse_statement"),
+                                DB::raw("Null as chapter_no"),DB::raw("Null as statement_no"),
+                                DB::raw("Null as book_name"))
+                            ->where('user_id',$user_id)->where('status',1)->get();
+            $user_custom_notes = $user_custom_notes->filter(function ($item) use ($user_id) {
+                $allnotes = $item->getCustomNotes($user_id);
+                return !empty($allnotes); 
+            });
+
+            if(empty($user_custom_notes)) {
+                $return['result']=  "Empty tags ";
+                return $this->outputer->code(422)->error($return)->json();
+            }
+
+            $user_custom_notes->transform(function ($item, $key) use($user_id) {
+                
+                $item->marked_data = [];
+                $allnotes= $item->getCustomNotes($user_id);
+
+                $item->verse_list = array_map(function ($note) {
+                    return [
+                        'id' => $note->id ?? null,
+                        'note_text' => $note->note_text ?? null,
+                    ];
+                }, $allnotes);
+
+                return $item;
+            });
+
+
+            /* ----------User Bible Notes---------*/
+
+
+            $user_notes = UserBibleMarking::select('statement_id','data')
+                        ->where('user_id',$user_id)
+                        ->where('type',1)
+                        ->where('status',1)
+                        ->orderBy('statement_id')
+                        ->get()
+                        ->makeHidden(['type_name','user_name','chapter_name','testament_name',
+                            'bible_name','verse_no']);
+            if(empty($user_notes)) {
+                $return['result']=  "Empty notes ";
+                return $this->outputer->code(422)->error($return)->json();
+            }
+            $user_notes->transform(function ($item, $key) {
+
+                $verse = HolyStatement::where('statement_id',$item->statement_id)->first();
+                $item->verse_statement = $verse['statement_text'];
+                $item->marked_data = [$item->data];
+                $item->chapter_no = $verse->chapter_no;
+                $item->statement_no = $verse->statement_no;
+                $item->verse_list =[];
+
+                return $item;
+            });
+
+
+           /* ----------User Tags---------*/
+
+
+            $user_tags =  Tag::select('id','tag_name as data',DB::raw("Null as verse_statement"),
+                                DB::raw("Null as chapter_no"),DB::raw("Null as statement_no"),
+                                DB::raw("Null as book_name"))
+                            ->where('user_id',$user_id)->where('status',1)->get();
+            $user_tags = $user_tags->filter(function ($item) use ($user_id) {
+                $statementIds = $item->getBibleMarkings($user_id);
+                return !empty($statementIds);
+            });
+
+            if(empty($user_tags)) {
+                $return['result']=  "Empty tags ";
+                return $this->outputer->code(422)->error($return)->json();
+            }
+
+            $user_tags->transform(function ($item, $key) use($user_id) {
+                
+                $item->marked_data = [];
+                $statementIds = $item->getBibleMarkings($user_id);
+
+                $holyStatements = HolyStatement::whereIn('statement_id',$statementIds)
+                                        ->with('Book','Chapter')
+                                        ->get();
+                $verses = [];
+
+                foreach ($holyStatements as $verse) {
+                    $verses[] = [
+                        'book_name' => $verse->Book->book_name ?? null,
+                        'chapter_no' => $verse->Chapter->chapter_no ?? null,
+                        'statement_id' => $verse->statement_id,
+                        'statement_no' => $verse->statement_no,
+                        'statement_text' => $verse->statement_text,
+                    ];
+                }
+
+                $item->verse_list = $verses;
+
+                return $item;
+            });
+
+
+            /* ----------User Colors---------*/
+
+
+            $user_colors = UserBibleMarking::select('statement_id','data')
+                        ->where('user_id',$user_id)
+                        ->where('type',3)
+                        ->where('status',1)
+                        ->orderBy('statement_id')
+                        ->get()
+                        ->makeHidden(['type_name','user_name','chapter_name','testament_name',
+                            'bible_name','verse_no']);
+            if(empty($user_colors)) {
+                $return['result']=  "Empty color markings ";
+                return $this->outputer->code(422)->error($return)->json();
+            }
+            $user_colors->transform(function ($item, $key) {
+
+                $verse = HolyStatement::where('statement_id',$item->statement_id)->first();
+                $item->verse_statement = $verse['statement_text'];
+                $item->marked_data = [$item->data];
+                $item->chapter_no = $verse->chapter_no;
+                $item->statement_no = $verse->statement_no;
+                $item->verse_list = [];
+
+                return $item;
+            });
+
+            $mergedData = [
+
+                [ 'category' => 'Custom Notes', 'list' => $user_custom_notes ],
+
+                [ 'category' => 'Bible Notes', 'list' => $user_notes ],
+
+                [ 'category' => "Tags", 'list' => $user_tags ],
+
+                [ 'category' => 'Highlghts', 'list' => $user_colors ] 
+            ];
+
+            return $this->outputer->code(200)
+                        ->success($mergedData )
+                        ->json();
+
+        }catch (\Exception $e) {
+
+            $return['result']=$e->getMessage();
+            return $this->outputer->code(9+422)->error($return)->json();
+        }
+    }
+
     public function AddBibleMarking(Request $request){
         
         DB::beginTransaction();

@@ -39,6 +39,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::delete('delete_tag',[SidebarController::class, 'DeleteTag']);
 
     Route::get('my_bible_markings',[SidebarController::class, 'MyBibleMarkings']);
+    Route::get('v2/my_bible_markings',[SidebarController::class, 'MyBibleMarkingsV2']);
     Route::post('add_bible_marking',[SidebarController::class, 'AddBibleMarking']);
     Route::delete('delete_bible_marking',[SidebarController::class, 'DeleteBibleMarking']);
 
