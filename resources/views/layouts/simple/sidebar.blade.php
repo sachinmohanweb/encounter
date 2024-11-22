@@ -80,7 +80,7 @@
                         </a>
                     </li>
 
-                    <li class="sidebar-list">
+                    <!-- <li class="sidebar-list">
                         <a class="sidebar-link sidebar-title link-nav" href="{{route('admin.gereralreference')}}">
                             <svg class="stroke-icon">
                                 <use href="{{ asset('assets/svg/icon-sprite.svg#stroke-table') }}"></use>
@@ -90,7 +90,7 @@
                             </svg>
                             <span>Reference/Commentary</span>
                         </a>
-                    </li>
+                    </li> -->
 
                     <li class="sidebar-list">
                         <a class="sidebar-link sidebar-title"

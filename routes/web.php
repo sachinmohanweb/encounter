@@ -10,7 +10,7 @@ use App\Http\Controllers\GotQuestionController;
 use App\Http\Controllers\BibleVerseController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\GenReferenceController;
+//use App\Http\Controllers\GenReferenceController;
 use App\Http\Controllers\BibleDbController;
 use App\Http\Controllers\UserQNAController;
 
@@ -187,12 +187,12 @@ Route::middleware('auth:admin')->group(function(){
             ->name('admin.delete.notification');
 
 
-    Route::get('gereralreference', [GenReferenceController::class, 'GereralReference'])
-            ->name('admin.gereralreference');
-    Route::get('addgereralreference', [GenReferenceController::class, 'AddGereralReference'])
-            ->name('admin.add.gereralreference');
-    Route::get('editgereralreference', [GenReferenceController::class, 'EditGereralReference'])
-            ->name('admin.edit.gereralreference');
+    // Route::get('gereralreference', [GenReferenceController::class, 'GereralReference'])
+    //         ->name('admin.gereralreference');
+    // Route::get('addgereralreference', [GenReferenceController::class, 'AddGereralReference'])
+    //         ->name('admin.add.gereralreference');
+    // Route::get('editgereralreference', [GenReferenceController::class, 'EditGereralReference'])
+    //         ->name('admin.edit.gereralreference');
 
 
 });

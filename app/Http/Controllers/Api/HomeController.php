@@ -150,7 +150,7 @@ class HomeController extends Controller
                                 $order_weight = 4;
                             }
                         }else{
-                            $item->data4 = 'Inactive';
+                            $item->data4 = 'Non-progressing';
                             $item->data5 = $percentage . ' %';
                             $order_weight = 2;
                         }
