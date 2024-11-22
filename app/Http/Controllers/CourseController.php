@@ -32,7 +32,7 @@ class CourseController extends Controller
     
     public function CourseList() : View
     {
-        $courses = Course::all();
+        $courses = Course::with('BatchDetails')->get();
         return view('courses.Courselist',compact('courses'));
     }
 

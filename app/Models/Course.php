@@ -61,4 +61,10 @@ class Course extends Model
     {
         return $this->CourseContents()->where('day', $day)->first();
     }
+
+    public function BatchDetails()
+    {
+        return $this->hasMany(Batch::class, 'course_id', 'id');
+    }
+
 }

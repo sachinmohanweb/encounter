@@ -4,6 +4,27 @@
 @endsection
 @section('style')
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/cascade.css') }}">
+<style>
+   ::-webkit-scrollbar {
+      width: 8px; /* Set the width of the scrollbar */
+   }
+
+   ::-webkit-scrollbar-thumb {
+      background-color:#06b0e0a3; /* Scrollbar color */
+      border-radius: 20px; /* Round the corners */
+   }
+
+   ::-webkit-scrollbar-track {
+      background: #f1f1f1; /* Track color */
+      border-radius: 8px; /* Round the corners of the track */
+   }
+   .batch_div{
+      height:100px; 
+      overflow-y: auto; 
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+      padding:12px
+   }
+</style>
 @endsection
 @section('breadcrumb-title')
 <h3>Courses</h3>
@@ -53,6 +74,19 @@
                      </label>
 
                   </div>
+                  </div>
+                  <div class="batch_div">
+                     <h6>Batches - Ends in</h6>
+                     <table>
+                     @foreach($value->BatchDetails as $key1=>$value1)
+                        <tr>
+                           <td> {{$key1+1}}. </td>
+                           <td style="padding: 5px;">{{$value1->batch_name}} </td>
+                           <td> : </td>
+                           <td style="padding: 5px;"> {{ \Carbon\Carbon::parse($value1->end_date)->format('d/m/y') }}</td>
+                        </tr>
+                     @endforeach
+                     </table>
                   </div>
                </div>
             </div>

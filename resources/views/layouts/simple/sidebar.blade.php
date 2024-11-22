@@ -50,7 +50,7 @@
                         <ul class="sidebar-submenu">
                             <li><a href="{{ route('admin.user-profile') }}">User Profile</a></li>
                             <li><a href="{{ route('admin.user.lms') }}">User Lms</a></li>
-                            <li><a href="{{ route('admin.user.notes') }}">User Notes</a></li>
+                            <li><a href="{{ route('admin.user.notes') }}">Custom Notes</a></li>
                         </ul>
                     </li>
 
@@ -81,7 +81,7 @@
                     </li>
 
                     <!-- <li class="sidebar-list">
-                        <a class="sidebar-link sidebar-title link-nav" href="{{route('admin.gereralreference')}}">
+                        <a class="sidebar-link sidebar-title link-nav" href="">
                             <svg class="stroke-icon">
                                 <use href="{{ asset('assets/svg/icon-sprite.svg#stroke-table') }}"></use>
                             </svg>
