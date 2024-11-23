@@ -1,7 +1,7 @@
 
 <ul class="action">
     <li class="edit"> 
-        <a href="">
+        <a href="#" data-id="{{ $id }}" onclick="editCategory(this)">
         <i class="fas fa-pencil-alt"></i>
         </a>
     </li>

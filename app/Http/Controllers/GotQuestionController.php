@@ -42,6 +42,14 @@ class GotQuestionController extends Controller
         return response()->json(['results' => $results]);
     }
 
+    public function gq_category($id): JsonResponse
+    {
+
+        $GQ_category = GQCategory::find($id);
+                
+        return response()->json(['results' => $GQ_category]);
+    }
+
     public function gq_subcategory_list(Request $request): JsonResponse
     {
         $searchTerm = $request->input('search_tag');
@@ -62,7 +70,15 @@ class GotQuestionController extends Controller
                 'text' => $GQ_Subcategory->name,
             ];
         }
-        return response()->json(['results' => $results]);
+        return response()->json(['results' => $results]);  
+    }
+
+    public function gq_subcategory($id): JsonResponse
+    {
+
+        $GQ_subcategory = GQSubCategory::find($id);
+                
+        return response()->json(['results' => $GQ_subcategory]);
     }
 
     public function QotQuestionDatatable()
@@ -235,6 +251,29 @@ class GotQuestionController extends Controller
         }
     }
 
+    public function UpdateGQCategory(Request $request): RedirectResponse
+    {
+        DB::beginTransaction();
+        
+        try {
+            $data =  $request->validate([
+                'name' => 'required'
+            ]);
+
+            $Got_category = GQCategory::findOrFail($request->id);
+            $Got_category->update($data);
+            DB::commit();
+
+           return redirect()->route('admin.gq.categories')
+                            ->with('success',"Success! Got Question Category Updated.");
+        }catch (Exception $e) {
+
+            DB::rollBack();
+            $message = $e->getMessage();
+            return back()->withInput()->withErrors(['message' =>  $e->getMessage()]);
+        }
+    }
+
     public function DeleteGQCategory(Request $request) : JsonResponse
     {
         DB::beginTransaction();
@@ -309,6 +348,30 @@ class GotQuestionController extends Controller
             DB::rollBack();
             $message = $e->getMessage();
             return back()->withInput()->withErrors(['message' =>  $e->getMessage()]);;
+        }
+    }
+
+    public function UpdateGQSubCategory(Request $request): RedirectResponse
+    {
+        DB::beginTransaction();
+        
+        try {
+            $data =  $request->validate([
+                'cat_id' => 'required',
+                'name' => 'required'
+            ]);
+
+            $Got_subcategory = GQSubCategory::findOrFail($request->id);
+            $Got_subcategory->update($data);
+            DB::commit();
+
+           return redirect()->route('admin.gq.subcategories')
+                            ->with('success',"Success! Got Question Category Updated.");
+        }catch (Exception $e) {
+
+            DB::rollBack();
+            $message = $e->getMessage();
+            return back()->withInput()->withErrors(['message' =>  $e->getMessage()]);
         }
     }
 

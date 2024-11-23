@@ -43,10 +43,16 @@ Route::middleware('auth:admin')->group(function(){
     Route::post('activatesuserlms', [UserController::class, 'UsersLMS_status_change'])
                 ->name('admin.user.lms.status.change');
 
-    Route::get('gotquestion', [GotQuestionController::class, 'GotQuestion'])->name('admin.got-question');
-    Route::post('get_gq_category_list', [GotQuestionController::class, 'gq_category_list'])->name('gqCategory.list');
+    Route::get('gotquestion', [GotQuestionController::class, 'GotQuestion'])
+            ->name('admin.got-question');
+    Route::post('get_gq_category_list', [GotQuestionController::class, 'gq_category_list'])
+            ->name('gqCategory.list');
+    Route::get('get_gq_category/{id}', [GotQuestionController::class, 'gq_category'])
+            ->name('gqCategory.item');
     Route::post('get_gq_subcategory_list', [GotQuestionController::class, 'gq_subcategory_list'])
             ->name('gqSubcategory.list');
+    Route::get('get_gq_subcategory/{id}', [GotQuestionController::class, 'gq_subcategory'])
+            ->name('gqSubCategory.item');
     Route::post('gotquestionDatatable',[GotQuestionController::class,'QotQuestionDatatable'])
             ->name('admin.gotquestion.datatable');
     Route::get('creategotquestion', [GotQuestionController::class, 'AddGotQuestion'])
@@ -60,11 +66,14 @@ Route::middleware('auth:admin')->group(function(){
     Route::post('deletegotquestion', [GotQuestionController::class, 'DeleteGotQuestion'])
             ->name('admin.delete.GotQuestion');
 
-    Route::get('gq_categories', [GotQuestionController::class, 'GQ_Categories'])->name('admin.gq.categories');
+    Route::get('gq_categories', [GotQuestionController::class, 'GQ_Categories'])
+            ->name('admin.gq.categories');
     Route::post('gotcategoriesDatatable',[GotQuestionController::class,'GQCategoriesDatatable'])
             ->name('admin.categories.datatable');
     Route::post('store_gqcategory', [GotQuestionController::class, 'StoreGQCategory'])
             ->name('admin.store.GQCategory');
+    Route::post('update_gqcategory', [GotQuestionController::class, 'UpdateGQCategory'])
+            ->name('admin.update.GQCategory');
     Route::post('deletegqcategory', [GotQuestionController::class, 'DeleteGQCategory'])
             ->name('admin.delete.GQCategory');
 
@@ -73,6 +82,8 @@ Route::middleware('auth:admin')->group(function(){
             ->name('admin.subcategories.datatable');
     Route::post('store_gqsubcategory', [GotQuestionController::class, 'StoreGQSubCategory'])
             ->name('admin.store.GQSubCategory');
+    Route::post('update_gqsubcategory', [GotQuestionController::class, 'UpdateGQSubCategory'])
+            ->name('admin.update.GQSubCategory');
     Route::post('deletegqsubcategory', [GotQuestionController::class, 'DeleteGQSubCategory'])
             ->name('admin.delete.GQSubCategory');
 

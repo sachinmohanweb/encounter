@@ -72,7 +72,7 @@
                         <div class="col-md-6">
                          <div class="form-group">
                           <label class="form-label" for="validationCustom01">Category</label>
-                           <select class="js-data-example-ajax form-select" id="category" name="cat_id" required></select>
+                           <select class="js-data-example-ajax form-select category" name="cat_id" required></select>
 
                            </div>
                           <div class="valid-feedback">Looks good!</div>
@@ -93,33 +93,40 @@
     </div>
 
 
-    <div class="modal fade" id="EditGqSubCategoryModal" tabindex="-1" role="dialog" aria-labelledby="EditGqSubCategoryModalArea" aria-hidden="true">
+    <div class="modal fade" id="EditGQSubCategoryModal" tabindex="-1" role="dialog" aria-labelledby="AddGqSubCategoryModalArea" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 650px !important;"> 
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Category Details</h5>
+                    <h5 class="modal-title">Sub Category Details</h5>
                     <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form class="needs-validation" id="EditBibleVerseForm" novalidate="" method="Post">
+                <form class="needs-validation" novalidate="" action="{{route('admin.update.GQSubCategory')}}" method="Post">
                     <div class="modal-body">
                     @csrf
+                    <input type="hidden" name="id" id='id_edit'>
                     <div class="row g-3 mb-3">
-                        <div class="col-md-12">
-                          <label class="form-label" for="validationCustom01">Reference</label>
-                          <input class="form-control" id="reference_edit" type="text" 
-                          required="" name='ref'>
+                        <div class="col-md-6">
+                         <div class="form-group">
+                          <label class="form-label" for="validationCustom01">Category</label>
+                           <select class="js-data-example-ajax form-select category" id ="cat_edit" name="cat_id" required></select>
+
+                           </div>
+                          <div class="valid-feedback">Looks good!</div>
+                        </div>
+                        <div class="col-md-6">
+                          <label class="form-label" for="validationCustom01">Sub Category Name</label>
+                          <input class="form-control" id="edit_name" name="name" type="text" required>
                           <div class="valid-feedback">Looks good!</div>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button class="btn btn-secondary" type="button" data-bs-dismiss="modal" onclick="window.location='{{ route('admin.gq.subcategories') }}'">Close</button>
-                        <button class="btn btn-success" type="submit">Update</button>
+                        <button class="btn btn-success" type="submit">Save</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-
 
 @endsection
 @section('script')
@@ -244,7 +251,7 @@
       }
    }
 
-   $('#category').select2({
+   $('.category').select2({
          placeholder: "Select category",
          ajax: {
              url: "<?= url('get_gq_category_list') ?>",
@@ -268,6 +275,30 @@
              cache: true
          }
      });
+
+    function editSubCategory(element) {
+
+        var categoryId = $(element).data('id');
+        $.ajax({
+            url: `/get_gq_subcategory/${categoryId}`,
+            method: 'GET',
+            success: function(response) {
+                $('#edit_name').val(response.results.name);
+                $('#cat_edit option').each(function() {
+                    console.log(this.val())
+                    if ($(this).val() == response.results.cat_id) {
+                        $(this).prop('selected', true);
+                    }
+                });
+                $('#id_edit').val(response.results.id);
+                $('.modal').modal('show');
+
+            },
+            error: function(xhr) {
+                alert('Failed to fetch category details. Please try again.');
+            }
+        });
+    }
 
 </script>
 

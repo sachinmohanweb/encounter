@@ -58,58 +58,60 @@
 </div>
 
 <div class="modal fade" id="AddGQCategoryModal" tabindex="-1" role="dialog" aria-labelledby="AddGqCategoryModalArea" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 650px !important;"> 
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Category Details</h5>
-                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form class="needs-validation" novalidate="" action="{{route('admin.store.GQCategory')}}" method="Post">
-                    <div class="modal-body">
-                    @csrf
-                    <div class="row g-3 mb-3">
-                        <div class="col-md-12">
-                          <label class="form-label" for="validationCustom01">Category Name</label>
-                          <input class="form-control" id="name" name="name" type="text" required >
-                          <div class="valid-feedback">Looks good!</div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal" onclick="window.location='{{ route('admin.gq.categories') }}'">Close</button>
-                        <button class="btn btn-success" type="submit">Save</button>
-                    </div>
-                </form>
+    <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 650px !important;"> 
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Category Details</h5>
+                <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+            <form class="needs-validation" novalidate="" action="{{route('admin.store.GQCategory')}}" method="Post">
+                <div class="modal-body">
+                @csrf
+                <div class="row g-3 mb-3">
+                    <div class="col-md-12">
+                      <label class="form-label" for="validationCustom01">Category Name</label>
+                      <input class="form-control" id="name" name="name" type="text" required >
+                      <div class="valid-feedback">Looks good!</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal" onclick="window.location='{{ route('admin.gq.categories') }}'">Close</button>
+                    <button class="btn btn-success" type="submit">Save</button>
+                </div>
+            </form>
         </div>
     </div>
+</div>
 
 
-    <div class="modal fade" id="EditGqCategoryModal" tabindex="-1" role="dialog" aria-labelledby="EditGqCategoryModalArea" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 650px !important;"> 
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Category Details</h5>
-                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form class="needs-validation" id="EditBibleVerseForm" novalidate="" method="Post">
-                    <div class="modal-body">
+<div class="modal fade" id="EditGqCategoryModal" tabindex="-1" role="dialog" aria-labelledby="EditGqCategoryModalArea" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 650px !important;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Category Details</h5>
+                <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form class="needs-validation" id="EditBibleVerseForm" novalidate="" action="{{route('admin.update.GQCategory')}}" method="Post">
+                <div class="modal-body">
                     @csrf
+                    <input type="hidden" name="id" id='id_edit'>
                     <div class="row g-3 mb-3">
                         <div class="col-md-12">
-                          <label class="form-label" for="validationCustom01">Reference</label>
-                          <input class="form-control" id="reference_edit" type="text" 
-                          required="" name='ref'>
-                          <div class="valid-feedback">Looks good!</div>
+                            <label class="form-label" for="validationCustom01">Category Name</label>
+                            <input class="form-control" id="name_edit" type="text" required="" name="name">
+                            <div class="valid-feedback">Looks good!</div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal" onclick="window.location='{{ route('admin.gq.categories') }}'">Close</button>
+                        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
                         <button class="btn btn-success" type="submit">Update</button>
                     </div>
-                </form>
-            </div>
+                </div>
+            </form>
         </div>
     </div>
+</div>
+
 
 
 @endsection
@@ -232,7 +234,26 @@
          table = $('#gq_categories_data').DataTable();
          table.ajax.reload(null, false);
       }
-   }
+    }
+
+    function editCategory(element) {
+
+        var categoryId = $(element).data('id');
+        $.ajax({
+            url: `/get_gq_category/${categoryId}`,
+            method: 'GET',
+            success: function(response) {
+                $('#name_edit').val(response.results.name);
+                $('#id_edit').val(response.results.id);
+                $('#EditGqCategoryModal').css({ display: 'block', opacity: '1'});
+                $('.modal').modal('show');
+            },
+            error: function(xhr) {
+                alert('Failed to fetch category details. Please try again.');
+            }
+        });
+    }
+
 
 </script>
 
