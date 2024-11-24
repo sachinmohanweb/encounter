@@ -190,7 +190,7 @@
 
                     $.notify({
                            title:'Category',
-                           message:'Category can not be deleted'
+                           message:'Category deletion not allowed'
                            },
                            {
                               type:'danger',

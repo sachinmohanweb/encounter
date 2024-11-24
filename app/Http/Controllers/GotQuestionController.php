@@ -351,6 +351,15 @@ class GotQuestionController extends Controller
         }
     }
 
+    public function EditGQSubCategory($id): View
+    {
+
+        $sub_cat= GQSubCategory::where('id',$id)->first();
+        $cats = GQCategory::all();
+
+        return view('got_questions.edit_subcategories',compact('sub_cat','cats'));
+    }
+
     public function UpdateGQSubCategory(Request $request): RedirectResponse
     {
         DB::beginTransaction();

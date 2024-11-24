@@ -506,41 +506,55 @@ class SidebarController extends Controller
 
             /* ----------User Custom Notes---------*/
 
-
             $user_custom_notes = Tag::select('id','tag_name as data',DB::raw("Null as verse_statement"),
                                 DB::raw("Null as chapter_no"),DB::raw("Null as statement_no"),
                                 DB::raw("Null as book_name"))
-                            ->where('user_id',$user_id)->where('status',1)->get();
+                        ->where('user_id', $user_id)
+                        ->where('status', 1)
+                        ->get();
+
             $user_custom_notes = $user_custom_notes->filter(function ($item) use ($user_id) {
                 $allnotes = $item->getCustomNotes($user_id);
-                return !empty($allnotes); 
+                return !empty($allnotes);
             });
 
-            if(empty($user_custom_notes)) {
-                $return['result']=  "Empty tags ";
+            if ($user_custom_notes->isEmpty()) {
+                $return['result'] = "Empty tags";
                 return $this->outputer->code(422)->error($return)->json();
             }
 
-            $user_custom_notes->transform(function ($item, $key) use($user_id) {
+            $user_custom_notes->transform(function ($item, $key) use ($user_id) {
                 
                 $item->marked_data = [];
-                $allnotes= $item->getCustomNotes($user_id);
-
+                $allnotes = $item->getCustomNotes($user_id);
                 $item->verse_list = array_map(function ($note) {
                     return [
                         'id' => $note->id ?? null,
-                        'note_text' => $note->note_text ?? null,
+                        'data1' => $note->note_text ?? null,
+                        'data2' => null,
+                        'data3' => null,
+                        'data4' => null,
                     ];
                 }, $allnotes);
 
-                return $item;
+                return [
+                    'id' => $item->id,
+                    'data' => $item->data,
+                    'verse_statement' => $item->verse_statement,
+                    'chapter_no' => $item->chapter_no,
+                    'statement_no' => $item->statement_no,
+                    'book_name' => $item->book_name,
+                    'marked_data' => $item->marked_data,
+                    'verse_list' => $item->verse_list,
+                ];
             });
 
+            $user_custom_notes = $user_custom_notes->values()->all();
 
             /* ----------User Bible Notes---------*/
 
 
-            $user_notes = UserBibleMarking::select('statement_id','data')
+            $user_notes = UserBibleMarking::select('id','statement_id','data')
                         ->where('user_id',$user_id)
                         ->where('type',1)
                         ->where('status',1)
@@ -594,11 +608,13 @@ class SidebarController extends Controller
 
                 foreach ($holyStatements as $verse) {
                     $verses[] = [
-                        'book_name' => $verse->Book->book_name ?? null,
-                        'chapter_no' => $verse->Chapter->chapter_no ?? null,
-                        'statement_id' => $verse->statement_id,
-                        'statement_no' => $verse->statement_no,
-                        'statement_text' => $verse->statement_text,
+
+                        'id' => $verse->statement_id,
+                        'data1' => $verse->statement_text,
+                        'data2' => $verse->Book->book_name ?? null,
+                        'data3' => $verse->Chapter->chapter_no ?? null,
+                        'data4' => $verse->statement_no,
+                        //'statement_id' => $verse->statement_id,
                     ];
                 }
 
@@ -611,7 +627,7 @@ class SidebarController extends Controller
             /* ----------User Colors---------*/
 
 
-            $user_colors = UserBibleMarking::select('statement_id','data')
+            $user_colors = UserBibleMarking::select('id','statement_id','data')
                         ->where('user_id',$user_id)
                         ->where('type',3)
                         ->where('status',1)

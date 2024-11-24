@@ -1,8 +1,8 @@
 
 <ul class="action">
      <li class="edit"> 
-        <a href="#" data-id="{{ $id }}" onclick="editSubCategory(this)">
-        <i class="fas fa-pencil-alt"></i>
+        <a href="{{route('admin.edit.gq_sub_category', ['id' => $id])}}">
+            <i class="fas fa-pencil-alt"></i>
         </a>
     </li>
     <li class="delete">

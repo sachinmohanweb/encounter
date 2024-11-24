@@ -6,6 +6,11 @@
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/animate.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/datatables.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/cascade.css') }}">
+<style type="text/css">
+    .pd_sub{
+        padding: 0.630rem .75rem !important;
+    }
+</style>
 @endsection
 @section('breadcrumb-title')
 <h3>Sub Categories</h3>
@@ -79,7 +84,7 @@
                         </div>
                         <div class="col-md-6">
                           <label class="form-label" for="validationCustom01">Sub Category Name</label>
-                          <input class="form-control" id="name" name="name" type="text" required>
+                          <input class="form-control pd_sub" id="name" name="name" type="text" required>
                           <div class="valid-feedback">Looks good!</div>
                         </div>
                     </div>
@@ -115,7 +120,7 @@
                         </div>
                         <div class="col-md-6">
                           <label class="form-label" for="validationCustom01">Sub Category Name</label>
-                          <input class="form-control" id="edit_name" name="name" type="text" required>
+                          <input class="form-control pd_sub" id="edit_name" name="name" type="text" required>
                           <div class="valid-feedback">Looks good!</div>
                         </div>
                     </div>
@@ -165,6 +170,30 @@
               { data: 'action', name: 'action', orderable: false},
           ],
       });
+      $('.category').select2({
+         placeholder: "Select category",
+         ajax: {
+             url: "<?= url('get_gq_category_list') ?>",
+             dataType: 'json',
+             method: 'post',
+             delay: 250,
+
+              data: function(data) {
+                 return {
+                     _token    : "<?= csrf_token() ?>",
+                     search_tag: data.term,
+                 };
+             },
+             processResults: function(data, params) {
+                 params.page = params.page || 1;
+                 return {
+                     results: data.results,
+                     pagination: { more: (params.page * 30) < data.total_count }
+                 };
+             },
+             cache: true
+         }
+     });
    });
 
    function remove(id){
@@ -205,7 +234,7 @@
 
                     $.notify({
                            title:'Category',
-                           message:'Subcategory can not be deleted'
+                           message:'Subcategory deletion no allowed'
                            },
                            {
                               type:'danger',
@@ -250,56 +279,6 @@
          table.ajax.reload(null, false);
       }
    }
-
-   $('.category').select2({
-         placeholder: "Select category",
-         ajax: {
-             url: "<?= url('get_gq_category_list') ?>",
-             dataType: 'json',
-             method: 'post',
-             delay: 250,
-
-              data: function(data) {
-                 return {
-                     _token    : "<?= csrf_token() ?>",
-                     search_tag: data.term,
-                 };
-             },
-             processResults: function(data, params) {
-                 params.page = params.page || 1;
-                 return {
-                     results: data.results,
-                     pagination: { more: (params.page * 30) < data.total_count }
-                 };
-             },
-             cache: true
-         }
-     });
-
-    function editSubCategory(element) {
-
-        var categoryId = $(element).data('id');
-        $.ajax({
-            url: `/get_gq_subcategory/${categoryId}`,
-            method: 'GET',
-            success: function(response) {
-                $('#edit_name').val(response.results.name);
-                $('#cat_edit option').each(function() {
-                    console.log(this.val())
-                    if ($(this).val() == response.results.cat_id) {
-                        $(this).prop('selected', true);
-                    }
-                });
-                $('#id_edit').val(response.results.id);
-                $('.modal').modal('show');
-
-            },
-            error: function(xhr) {
-                alert('Failed to fetch category details. Please try again.');
-            }
-        });
-    }
-
 </script>
 
 @endsection

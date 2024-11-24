@@ -82,6 +82,8 @@ Route::middleware('auth:admin')->group(function(){
             ->name('admin.subcategories.datatable');
     Route::post('store_gqsubcategory', [GotQuestionController::class, 'StoreGQSubCategory'])
             ->name('admin.store.GQSubCategory');
+    Route::get('store_gqsubcategory/{id}', [GotQuestionController::class, 'EditGQSubCategory'])
+            ->name('admin.edit.gq_sub_category');
     Route::post('update_gqsubcategory', [GotQuestionController::class, 'UpdateGQSubCategory'])
             ->name('admin.update.GQSubCategory');
     Route::post('deletegqsubcategory', [GotQuestionController::class, 'DeleteGQSubCategory'])
