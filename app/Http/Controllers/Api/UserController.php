@@ -49,6 +49,10 @@ class UserController extends Controller
             // user qna---question answer,
             
             $searchTerm = $request->input('text');
+            $type=1;
+            if($request->input('type')){   
+                $type = $request->input('type');
+            }
 
             Log::channel('search_log')->info("======>>>>>Search Parameters- ". now()." ======>>>>>\n" . json_encode($searchTerm));
 
@@ -286,140 +290,149 @@ class UserController extends Controller
                 });
             }
         
-            //-----------User Notes--------------//
 
-            $user_note_results = collect(UserCustomNote::search($searchTerm)
-                                ->where('status', 1)->orderBy('id')->get());
-
-            $color_user_note_results = $user_note_results->filter(function ($item) use ($searchTerm) {
-                return stripos($item->note_text, $searchTerm) !== false;
-            })->map(function ($item) use ($searchTerm) {
-
-                $contextWords = 8;
-
-                preg_match('/(?:\S+\s+){0,' . $contextWords . '}\S*' . preg_quote($searchTerm, '/') . '\S*(?:\s+\S+){0,' . $contextWords . '}/i', $item->note_text, $matches);
-                $highlighted_text = isset($matches[0]) ? preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $matches[0]) . '.....' : $item->note_text;
-                return [
-                    'type' => 'User Notes',
-                    'id' => $item->id,
-                    'result' => $highlighted_text
-                ];
-            });
-            
-            //-----------Got Questions--------------//
-
-            $gq_results = collect(GotQuestion::search($searchTerm)
-                                ->where('status', 1)->orderBy('id')->get());
-            $color_qg_results = $gq_results->filter(function ($item) use ($searchTerm) {
-                return stripos($item->question, $searchTerm) !== false || stripos($item->answer, $searchTerm) !== false;
-            })->map(function ($item) use ($searchTerm) {
+            if($type==1){
                 
-                $contextWords = 8;
+                //-----------User Notes--------------//
 
-                if (stripos($item->question, $searchTerm) !== false) {
-                    preg_match('/(?:\S+\s+){0,' . $contextWords . '}\S*' . preg_quote($searchTerm, '/') . '\S*(?:\s+\S+){0,' . $contextWords . '}/i', $item->question, $matches);
-                    $highlighted_text = isset($matches[0]) ? preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $matches[0]) . '.....' : $item->question;
-                } else {
-                    preg_match('/(?:\S+\s+){0,' . $contextWords . '}\S*' . preg_quote($searchTerm, '/') . '\S*(?:\s+\S+){0,' . $contextWords . '}/i', $item->answer, $matches);
-                    $highlighted_text = isset($matches[0]) ? preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $matches[0]) . '.....' : $item->answer;
-                }
-                return [
-                    'type' => 'Got Questions',
-                    'id' => $item->id,
-                    'result' => $highlighted_text
-                ];
-            });
+                $user_note_results = collect(UserCustomNote::search($searchTerm)
+                                    ->where('status', 1)->orderBy('id')->get());
 
-            //-----------Course --------------//
+                $color_user_note_results = $user_note_results->filter(function ($item) use ($searchTerm) {
+                    return stripos($item->note_text, $searchTerm) !== false;
+                })->map(function ($item) use ($searchTerm) {
 
-            // $course_results = collect(Course::search($searchTerm)
-            //                     ->orderBy('id')->get());
+                    $contextWords = 8;
 
-            // $course_results = $course_results->filter(function ($item) use ($searchTerm){
-            //     return stripos($item->course_name, $searchTerm) !== false || stripos($item->course_creator, $searchTerm) !== false || stripos($item->description, $searchTerm) !== false;
-            // });
-
-
-            $user_id = Auth::user()->id;
-
-            $course_results = Course::from(with(new Course)->getTable() . ' as a')
-                ->join(with(new Batch)->getTable() . ' as b', 'a.id', '=', 'b.course_id') // Join with Batch table
-                ->leftJoin(with(new UserLMS)->getTable() . ' as c', function ($join) use ($user_id) {
-                    $join->on('b.id', '=', 'c.batch_id')
-                        ->where('c.user_id', '=', $user_id)
-                        ->where('c.status', 1);
-
-                })
-                ->select('a.course_name', 'b.id as batch_id') // Include last_date in the select
-                ->where(function ($query) use ($searchTerm) {
-                    $query->where('a.course_name', 'LIKE', '%' . $searchTerm . '%')
-                          ->orWhere('a.course_creator', 'LIKE', '%' . $searchTerm . '%');
-                })
-                ->where(function ($query) {
-                                $query->whereNotNull('c.id')
-                                      ->orWhere(function ($subQuery) {
-                                          $subQuery->where('b.last_date', '>=', now()->format('Y-m-d'));
-                                      });
-                            })
-                ->groupBy('a.id', 'b.id','a.course_name')
-                ->get();
-
-            $course_results = $course_results->map(function ($item) {
+                    preg_match('/(?:\S+\s+){0,' . $contextWords . '}\S*' . preg_quote($searchTerm, '/') . '\S*(?:\s+\S+){0,' . $contextWords . '}/i', $item->note_text, $matches);
+                    $highlighted_text = isset($matches[0]) ? preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $matches[0]) . '.....' : $item->note_text;
+                    return [
+                        'type' => 'User Notes',
+                        'id' => $item->id,
+                        'result' => $highlighted_text
+                    ];
+                });
                 
-                return [
-                    'type' => 'Courses',
-                    'result' => $item->course_name,
-                    'id' => $item->batch_id,
-                ];
-            });
+                //-----------Got Questions--------------//
 
-            //-----------Batch --------------//
+                $gq_results = collect(GotQuestion::search($searchTerm)
+                                    ->where('status', 1)->orderBy('id')->get());
+                $color_qg_results = $gq_results->filter(function ($item) use ($searchTerm) {
+                    return stripos($item->question, $searchTerm) !== false || stripos($item->answer, $searchTerm) !== false;
+                })->map(function ($item) use ($searchTerm) {
+                    
+                    $contextWords = 8;
 
-            // $batch_results = collect(Batch::search($searchTerm)
-            //                     ->orderBy('id')->get());
+                    if (stripos($item->question, $searchTerm) !== false) {
+                        preg_match('/(?:\S+\s+){0,' . $contextWords . '}\S*' . preg_quote($searchTerm, '/') . '\S*(?:\s+\S+){0,' . $contextWords . '}/i', $item->question, $matches);
+                        $highlighted_text = isset($matches[0]) ? preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $matches[0]) . '.....' : $item->question;
+                    } else {
+                        preg_match('/(?:\S+\s+){0,' . $contextWords . '}\S*' . preg_quote($searchTerm, '/') . '\S*(?:\s+\S+){0,' . $contextWords . '}/i', $item->answer, $matches);
+                        $highlighted_text = isset($matches[0]) ? preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $matches[0]) . '.....' : $item->answer;
+                    }
+                    return [
+                        'type' => 'Got Questions',
+                        'id' => $item->id,
+                        'result' => $highlighted_text
+                    ];
+                });
 
-            // $batch_results = $batch_results->filter(function ($item) use ($searchTerm){
-            //     return stripos($item->batch_name, $searchTerm) !== false;
-            // });
+                //-----------Course --------------//
+
+                // $course_results = collect(Course::search($searchTerm)
+                //                     ->orderBy('id')->get());
+
+                // $course_results = $course_results->filter(function ($item) use ($searchTerm){
+                //     return stripos($item->course_name, $searchTerm) !== false || stripos($item->course_creator, $searchTerm) !== false || stripos($item->description, $searchTerm) !== false;
+                // });
 
 
-            $batch_results = Batch::from(with(new Batch)->getTable() . ' as a')
-                ->leftJoin(with(new UserLMS)->getTable() . ' as b', function ($join) use ($user_id) {
-                    $join->on('a.id', '=', 'b.batch_id')
-                        ->where('b.user_id', '=', $user_id)
-                        ->where('b.status', 1);
+                $user_id = Auth::user()->id;
 
-                })
+                $course_results = Course::from(with(new Course)->getTable() . ' as a')
+                    ->join(with(new Batch)->getTable() . ' as b', 'a.id', '=', 'b.course_id') // Join with Batch table
+                    ->leftJoin(with(new UserLMS)->getTable() . ' as c', function ($join) use ($user_id) {
+                        $join->on('b.id', '=', 'c.batch_id')
+                            ->where('c.user_id', '=', $user_id)
+                            ->where('c.status', 1);
 
-                ->select('a.batch_name', 'a.id as batch_id') 
-                ->where(function ($query) use ($searchTerm) {
-                    $query->where('a.batch_name', 'LIKE', '%' . $searchTerm . '%');
-                })
-                ->where(function ($query) {
-                                $query->whereNotNull('b.id')
-                                      ->orWhere(function ($subQuery) {
-                                          $subQuery->where('a.last_date', '>=', now()->format('Y-m-d'));
-                                      });
-                            })
-                ->groupBy('a.id','a.batch_name')
-                ->get();
+                    })
+                    ->select('a.course_name', 'b.id as batch_id') // Include last_date in the select
+                    ->where(function ($query) use ($searchTerm) {
+                        $query->where('a.course_name', 'LIKE', '%' . $searchTerm . '%')
+                              ->orWhere('a.course_creator', 'LIKE', '%' . $searchTerm . '%');
+                    })
+                    ->where(function ($query) {
+                                    $query->whereNotNull('c.id')
+                                          ->orWhere(function ($subQuery) {
+                                              $subQuery->where('b.last_date', '>=', now()->format('Y-m-d'));
+                                          });
+                                })
+                    ->groupBy('a.id', 'b.id','a.course_name')
+                    ->get();
 
-            $batch_results = $batch_results->map(function ($item) {
-                
-                return [
-                    'type' => 'Batch',
-                    'result' => $item->batch_name,
-                    'id' => $item->batch_id
-                ];
-            });
-            
+                $course_results = $course_results->map(function ($item) {
+                    
+                    return [
+                        'type' => 'Courses',
+                        'result' => $item->course_name,
+                        'id' => $item->batch_id,
+                    ];
+                });
+
+                //-----------Batch --------------//
+
+                // $batch_results = collect(Batch::search($searchTerm)
+                //                     ->orderBy('id')->get());
+
+                // $batch_results = $batch_results->filter(function ($item) use ($searchTerm){
+                //     return stripos($item->batch_name, $searchTerm) !== false;
+                // });
+
+
+                $batch_results = Batch::from(with(new Batch)->getTable() . ' as a')
+                    ->leftJoin(with(new UserLMS)->getTable() . ' as b', function ($join) use ($user_id) {
+                        $join->on('a.id', '=', 'b.batch_id')
+                            ->where('b.user_id', '=', $user_id)
+                            ->where('b.status', 1);
+
+                    })
+
+                    ->select('a.batch_name', 'a.id as batch_id') 
+                    ->where(function ($query) use ($searchTerm) {
+                        $query->where('a.batch_name', 'LIKE', '%' . $searchTerm . '%');
+                    })
+                    ->where(function ($query) {
+                                    $query->whereNotNull('b.id')
+                                          ->orWhere(function ($subQuery) {
+                                              $subQuery->where('a.last_date', '>=', now()->format('Y-m-d'));
+                                          });
+                                })
+                    ->groupBy('a.id','a.batch_name')
+                    ->get();
+
+                $batch_results = $batch_results->map(function ($item) {
+                    
+                    return [
+                        'type' => 'Batch',
+                        'result' => $item->batch_name,
+                        'id' => $item->batch_id
+                    ];
+                });
+
+            }
+
             //-----------Merge Results--------------//
 
-            $merged_results = $color_bible_verse_results
-                                ->merge($color_user_note_results)
-                                ->merge($color_qg_results)
-                                ->merge($course_results)
-                                ->merge($batch_results);
+            if($type==1){
+                $merged_results = $color_bible_verse_results
+                                    ->merge($color_user_note_results)
+                                    ->merge($color_qg_results)
+                                    ->merge($course_results)
+                                    ->merge($batch_results);
+            }else{
+                $merged_results = $color_bible_verse_results;
+            }
 
             $total_results = $merged_results->count();
 

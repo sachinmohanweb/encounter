@@ -53,7 +53,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('bible_study' , [HomeController::class, 'BibleStudy']);
     Route::get('v2/bible_study' , [HomeController::class, 'BibleStudyV2']);
     Route::get('bible_study_chapters' , [HomeController::class, 'BibleStudyChapters']);
-    Route::get('bible_search' , [HomeController::class, 'BibleSearch']);
+    //Route::get('bible_search' , [HomeController::class, 'BibleSearch']);
 
     Route::get('testapi' , [HomeController::class, 'TestApi']);
 });
