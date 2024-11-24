@@ -256,15 +256,45 @@ class BibleVerseController extends Controller
         }
     }
 
+    public function UpdateBibleVerseTheme(Request $request): RedirectResponse
+    {
+        DB::beginTransaction();
+        try {
+            $data =  $request->validate([
+                'name' => 'required',   
+            ]);
+            
+            $theme = BibleVerseTheme::findOrFail($request->id);
+            $theme->update($data);
+            DB::commit();
+
+            $return['messsage']  =  'success';
+            $return['theme']     =  $theme; 
+            
+            return redirect()->route('admin.bible.verse.theme')
+                            ->with('success',"Success!  Bible Verse  theme has been successfully updated.");
+        }catch (Exception $e) {
+            DB::rollBack();
+            $message = $e->getMessage();
+            return back()->withInput()->withErrors(['message' =>  $e->getMessage()]);;
+        }
+    }
+
     public function DeleteBibleVerseTheme(Request $request) : JsonResponse
     {
         DB::beginTransaction();
         try{
             $theme =BibleVerseTheme::where('id',$request->id)->first();
             if($theme){
-                $theme->delete();
-                DB::commit();
-                $return['status'] = "success";
+                $daily_verse =DailyBibleVerse::where('theme_id',$request->id)->first();
+
+                if(($daily_verse )){
+                    $return['status'] = 'Forbidden';
+                }else{
+                    $theme->delete();
+                    DB::commit();
+                    $return['status'] = "success";  
+                }
             }else{
                 $return['status'] = 'failed';
             }

@@ -16,7 +16,7 @@
    <div class="row widget-grid">
       <div class="col-sm-12">
          <div class="new-question d-flex justify-content-end mb-4">
-            <a href="{{ route('admin.add.daily.bible.verse') }}"><button class="btn btn-pill btn-info-gradien pt-2 pb-2" type="button" data-bs-original-title="" title="">Add Daily Bible Verse</button>
+            <a href="{{ route('admin.add.daily.bible.verse') }}"><button class="btn btn-pill btn-info-gradien pt-2 pb-2" type="button" data-bs-original-title="" title="">Add Daily Bible Verse & Themes</button>
             </a>
          </div>
          <div class="card">

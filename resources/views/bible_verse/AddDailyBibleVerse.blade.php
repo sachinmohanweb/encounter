@@ -8,11 +8,14 @@
 @endsection
 @section('breadcrumb-title')
 <h3>Add Daily Bible Verse</h3>
- <a href="{{ route('admin.bible.verse.theme') }}" >Bible Verse Themes </a>
 @endsection
 
 @section('content')
 <div class="container-fluid">
+    <div class="new-question d-flex justify-content-end mb-4">
+            <a href="{{ route('admin.bible.verse.theme') }}"><button class="btn btn-pill btn-info-gradien pt-2 pb-2" type="button" data-bs-original-title="" title="">Bible Verse Themes</button>
+            </a>
+    </div>
    <div class="card">
       
       <div class="card-body">

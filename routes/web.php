@@ -121,6 +121,8 @@ Route::middleware('auth:admin')->group(function(){
             ->name('admin.bible_verse.theme.datatable');
     Route::post('storebibleversetheme', [BibleVerseController::class, 'StoreBibleVerseTheme'])
             ->name('admin.store.BibleVerseTheme');
+    Route::post('updatebibleversetheme', [BibleVerseController::class, 'UpdateBibleVerseTheme'])
+            ->name('admin.update.BibleVerseTheme');
     Route::post('deletebibleversetheme', [BibleVerseController::class, 'DeleteBibleVerseTheme'])
             ->name('admin.delete.BibleVerseTheme');
 

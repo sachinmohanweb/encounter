@@ -79,6 +79,29 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="editThemeModal" tabindex="-1" role="dialog" aria-labelledby="editThemeModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document" style="top:150px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editThemeModalLabel">Edit  Theme</h5>
+                <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close">
+                </button>
+            </div>
+            <div class="modal-body">
+                <form class="needs-validation" novalidate="" action="{{route('admin.update.BibleVerseTheme')}}" method="Post">
+                    @csrf
+                    <input type="hidden" name="id" id="edit_id">
+                    <div class="form-group">
+                        <label for="new_theme_name">Theme</label>
+                        <input type="text" class="form-control" id="edit_theme" name="name" required>
+                    </div><br>
+                    <button type="submit" class="btn btn-primary">Update Theme</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 @section('script')
 <script src="{{ asset('assets/js/clock.js') }}"></script>
@@ -155,10 +178,28 @@
                   if (res.status=='success'){
                         $.notify({
                            title:'Bible verse',
-                           message:'Bible verse Successfully deleted'
+                           message:'Bible verse theme Successfully deleted'
                            },
                            {
                               type:'primary',
+                              offset:{
+                                x:35,
+                                y:230
+                              },
+                              animate:{
+                                enter:'animated fadeIn',
+                                exit:'animated fadeOut'
+                            }
+                        });
+                     table = $('#bible_verse_datatable').DataTable();
+                     table.ajax.reload(null, false);
+                  }else if (res.status=='Forbidden'){
+                        $.notify({
+                           title:'Bible verse',
+                           message:'Bible verse deletion not allowed'
+                           },
+                           {
+                              type:'danger',
                               offset:{
                                 x:35,
                                 y:230
@@ -199,6 +240,13 @@
          table.ajax.reload(null, false);
       }
    }
+
+   function editTheme(element) {
+
+        $('#edit_id').val($(element).data('id'));
+        $('#edit_theme').val($(element).data('theme'));
+        $('#editThemeModal').modal('show');      
+    }
 </script>
 
 
