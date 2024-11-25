@@ -769,13 +769,27 @@ class SidebarController extends Controller
         DB::beginTransaction();
 
         try {
-            $marking =UserBibleMarking::where('id',$request->id)->first();
-            if($marking){
-                $marking->delete();
-                DB::commit();
-                $return['messsage']  =  'Success.Your marking Removed';
+
+            $user_id = Auth::user()->id;
+
+            if($request->category=='Custom Notes'){
+                $note =UserCustomNote::where('id',$request->id)->where('user_id',$user_id)->first();
+                if($note){
+                    $note->delete();
+                    DB::commit();
+                    $return['messsage']  =  'Success.Your Custom note Removed';
+                }else{
+                    $return['messsage']  =  'Failed.Custom note is not available';
+                }
             }else{
-                $return['messsage']  =  'Failed.Your marking Not Removed';
+                $marking =UserBibleMarking::where('id',$request->id)->where('user_id',$user_id)->first();
+                if($marking){
+                    $marking->delete();
+                    DB::commit();
+                    $return['messsage']  =  'Success.Your marking Removed';
+                }else{
+                    $return['messsage']  =  'Failed.Your marking Not Removed';
+                }
             }
             return $this->outputer->code(200)->success($return)->json();
 
