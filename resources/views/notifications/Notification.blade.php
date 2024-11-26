@@ -43,9 +43,10 @@
                      <thead>
                         <tr>
                            <th>Title</th>
-                           <th>Content</th>
+                           <th>Type</th>
+                           <th>Data</th>
+                           <th>Description</th>
                            <th>Redirection</th>
-                           <th>Thumbnail/image</th>
                            <th>Action</th>
                         </tr>
                      </thead>
@@ -87,10 +88,11 @@
             } 
          },
           columns: [
-              { data: 'title', name: 'title'},     
-              { data: 'content', name: 'content' , orderable: true},
-              { data: 'redirection', name: 'redirection' },
-              { data: 'image', name: 'image' },
+              { data: 'title', name: 'title', width:'15%'},     
+              { data: 'type', name: 'type' ,width:'25%'},
+              { data: 'data', name: 'data' ,width:'25%'},
+              { data: 'description', name: 'description' , width:'25%' , orderable: true},
+              { data: 'redirection', name: 'redirection' ,width:'25%'},
               { data: 'action', name: 'action', orderable: false},
           ],
       });
@@ -98,7 +100,7 @@
          
    function remove(id){
 
-      msg = 'Are you sure? Delete this user?';
+      msg = 'Are you sure? Delete this notification?';
 
       if (confirm(msg) == true) {
           var id = id;

@@ -11,9 +11,10 @@ class Notification extends Model
 
     protected $fillable = [
         'title',
-        'content',
+        'description',
         'redirection',
-        'image',
+        'type',
+        'data',
         'status',
     ];
 
@@ -21,4 +22,9 @@ class Notification extends Model
     {
         return $value == 1 ? 'Active' : 'Suspended';
     }
+  
+    public function TypeData()
+    {
+        return $this->belongsTo(NotificationType::class,'type','id');
+    }   
 }

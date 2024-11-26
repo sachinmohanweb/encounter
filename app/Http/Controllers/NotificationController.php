@@ -13,6 +13,7 @@ use Exception;
 use Datatables;
 
 use App\Models\Notification;
+use App\Models\NotificationType;
 
 class NotificationController extends Controller
 {
@@ -26,18 +27,26 @@ class NotificationController extends Controller
     {
         if(request()->ajax()) {
             return datatables()
-            ->of(Notification::select('*')->where('status',1))
-            ->addColumn('image', function ($notification) {
+            ->of(Notification::select('*')->where('status',1)->orderBy('created_at','desc'))
 
-                if($notification->image) {
-                    return '<img  class="img-70 rounded-circle" src="' . asset($notification->image) . '"  alt="notification" style="height: 70px;">';
+            ->addColumn('type', function ($notification) {
+
+               return $notification->TypeData->type_name;
+            })
+            ->addColumn('data', function ($notification) {
+
+                if($notification->type==1){
+                    if($notification['data']) {
+                        return '<img  class="img-70 rounded-circle" src="' . asset($notification->data) . '"  alt="notification" style="height: 70px;">';
+                    }else{
+                        return '<img  class="img-70 rounded-circle" src="' . asset('storage/others/no_image.jpg') . '"  alt="notification" style="height: 70px;">';
+                    }
                 }else{
-                    return '<img  class="img-70 rounded-circle" src="' . asset('storage/others/no_image.jpg') . '"  alt="notification" style="height: 70px;">';
-
+                    return '<a href="' . $notification->data . '" target="_blank">View Link</a>';
                 }
             })
             ->addColumn('action', 'notifications.datatable-action')
-            ->rawColumns(['image','action'])
+            ->rawColumns(['type','data','action'])
             ->addIndexColumn()
             ->make(true);
         }
@@ -46,7 +55,8 @@ class NotificationController extends Controller
 
     public function AddNotification() : View
     {
-        return view('notifications.AddNotification',[]);
+        $notification_type = NotificationType::all();
+        return view('notifications.AddNotification',compact('notification_type'));
     }
 
     public function StoreNotification(Request $request): RedirectResponse
@@ -55,19 +65,34 @@ class NotificationController extends Controller
         DB::beginTransaction();
         try {
 
-            $data =  $request->validate([
-                'title' => 'required',
-            ]);
+            if($request->type==1 || $request->type==2){
+
+                $inputs =  $request->validate([
+                    'title' => 'required',
+                    'type' => 'required',
+                    'file' => 'required',
+                ]);
+            }else{
+                $inputs =  $request->validate([
+                    'title' => 'required',
+                    'type' => 'required',
+                    'data' => 'required',
+                ]);
+            }
 
             $inputData = $request->all();
 
-            if($request['image']){
+            if($request->type==1 || $request->type==2){
 
-                $fileName = str_replace(' ', '_', $request->title).'.'.$request['image']->extension();
+                if($request['file']){
 
-                $request->image->storeAs('notification', $fileName);
-                $inputData['image'] = 'storage/notification/'.$fileName;
+                    $fileName = str_replace(' ', '_', $request->title) . '_' . now()->format('YmdHis') . '.' . $request['file']->extension();
+
+                    $request->file->storeAs('notification', $fileName);
+                    $inputData['data'] = 'storage/notification/'.$fileName;
+                }
             }
+
             $Notification = Notification::create($inputData);
             DB::commit();
              
@@ -84,34 +109,46 @@ class NotificationController extends Controller
     public function EditNotification($id) : View
     {
         $notification = Notification::where('id',$id)->first();
+        $notification_type = NotificationType::all();
 
-        return view('notifications.EditNotification',compact('notification'));
-
+        return view('notifications.EditNotification',compact('notification','notification_type'));
     }
 
     public function UpdateNotification(Request $request): RedirectResponse
     {
         DB::beginTransaction();
+
         try {
-            
             $notification = Notification::find($request->id);
 
-            $data =  $request->validate([
-                'title' => 'required',
-            ]);
+            if($request->type==1 || $request->type==2){
+
+                $inputs =  $request->validate([
+                    'title' => 'required',
+                    'type' => 'required',
+                ]);
+            }else{
+
+                $inputs =  $request->validate([
+                    'title' => 'required',
+                    'type' => 'required',
+                ]);
+            }
 
             $inputData = $request->all();
 
-            if($request['image']){
+            if($request->type==1 || $request->type==2){
 
-                $fileName = str_replace(' ', '_', $request->title).'.'.$request['image']->extension();
+                if($request['file']){
 
-                $request->image->storeAs('notification', $fileName);
-                $inputData['image'] = 'storage/notification/'.$fileName;
+                    $fileName = str_replace(' ', '_', $request->title) . '_' . now()->format('YmdHis') . '.' . $request['file']->extension();
+
+                    $request->file->storeAs('notification', $fileName);
+                    $inputData['data'] = 'storage/notification/'.$fileName;
+                }
             }
 
             $notification->update($inputData);
-
 
             DB::commit();
 
@@ -144,6 +181,23 @@ class NotificationController extends Controller
             $return['status'] = $e->getMessage();
         }
         return response()->json($return);
+    }
+
+    public function gq_notification_type_list(Request $request): JsonResponse
+    {
+        $searchTerm = $request->input('search_tag');
+
+        $types = NotificationType::where('type_name', 'like',  $searchTerm . '%')
+                        ->get(['id', 'type_name']);
+        $results = [];
+
+        foreach ($types as $type) {
+            $results[] = [
+                'id' => $type->id,
+                'text' => $type->type_name,
+            ];
+        }
+        return response()->json(['results' => $results]);
     }
 
 }

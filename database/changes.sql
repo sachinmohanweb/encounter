@@ -410,3 +410,27 @@ CREATE TABLE `user_custom_notes` (
 	`status` INT NOT NULL DEFAULT '1' , 
 	`created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , 
 	`updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`id`));
+
+
+-- 25/11/24----
+
+CREATE TABLE `notification_types` (
+	`id` INT NOT NULL AUTO_INCREMENT , 
+	`type_name` VARCHAR(256) NOT NULL ,
+	 `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , 
+	 `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`id`));
+
+INSERT INTO `notification_types` (`id`, `type_name`, `created_at`, `updated_at`) 
+VALUES (NULL, 'Image ', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+ (NULL, 'File', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP), 
+ (NULL, 'Text', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP), 
+ (NULL, 'Audio Link', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP), 
+ (NULL, 'Video Link', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP), 
+ (NULL, 'Document Link', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+
+ALTER TABLE `notifications` CHANGE `content` `description` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL;
+
+ALTER TABLE `notifications` ADD `type` INT NOT NULL AFTER `redirection`;
+
+ALTER TABLE `notifications` CHANGE `image` `data` LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL;

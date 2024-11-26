@@ -200,6 +200,8 @@ Route::middleware('auth:admin')->group(function(){
             ->name('admin.update.notification');
     Route::post('deletenotification', [NotificationController::class, 'DeleteNotification'])
             ->name('admin.delete.notification');
+    Route::post('get_notification_type_list', [NotificationController::class, 'gq_notification_type_list'])
+            ->name('notificationType.list');
 
 
     // Route::get('gereralreference', [GenReferenceController::class, 'GereralReference'])
