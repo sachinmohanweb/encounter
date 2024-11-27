@@ -18,6 +18,8 @@ class Notification extends Model
         'status',
     ];
 
+    protected $appends = ['type_name'];
+
     public function getStatusAttribute($value)
     {
         return $value == 1 ? 'Active' : 'Suspended';
@@ -27,4 +29,10 @@ class Notification extends Model
     {
         return $this->belongsTo(NotificationType::class,'type','id');
     }   
+    
+    public function getTypeNameAttribute()
+    {
+        $type = NotificationType::where('id',$this->type)->first();
+        return $type->type_name;
+    }
 }

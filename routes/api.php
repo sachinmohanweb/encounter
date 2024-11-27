@@ -44,7 +44,6 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::delete('delete_bible_marking',[SidebarController::class, 'DeleteBibleMarking']);
 
     Route::get('home', [HomeController::class, 'Home']);
-    //Route::get('all_courses', [HomeController::class, 'AllCourses']);
     Route::get('course_details', [HomeController::class, 'CourseDetails']);
     Route::post('enroll_batch',[HomeController::class, 'EnrollBatch']);
     Route::get('course_day_content',[HomeController::class, 'CourseDayContent']);
@@ -53,7 +52,8 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('bible_study' , [HomeController::class, 'BibleStudy']);
     Route::get('v2/bible_study' , [HomeController::class, 'BibleStudyV2']);
     Route::get('bible_study_chapters' , [HomeController::class, 'BibleStudyChapters']);
-    //Route::get('bible_search' , [HomeController::class, 'BibleSearch']);
+
+    Route::get('notifications' , [HomeController::class, 'Notifications']);
 
     Route::get('testapi' , [HomeController::class, 'TestApi']);
 });

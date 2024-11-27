@@ -17,6 +17,7 @@ use App\Models\Chapter;
 use App\Models\UserLMS;
 use App\Models\Testament;
 use App\Models\BookImage;
+use App\Models\Notification;
 use App\Models\CourseContent;
 use App\Models\HolyStatement;
 use App\Models\CourseDayVerse;
@@ -1053,6 +1054,35 @@ class HomeController extends Controller
     //         return $this->outputer->code(422)->error($return)->json();
     //     }
     // }
+
+
+    public function Notifications(Request $request){
+
+        try {
+
+            $notifications = Notification::select('id','title','type','redirection','description',
+                                'data')->get();
+
+            $notifications = $notifications->map(function ($notify) {
+                    
+                    if($notify->type==1 || $notify->type==2){
+
+                        $notify->data = $notify->data !== null 
+                            ? asset('/') . $notify['data'] 
+                            : asset('/') . 'assets/images/logo.png';
+                    }
+
+                    return $notify;
+            });
+
+            return $this->outputer->code(200)->success($notifications)->json();
+
+        }catch (\Exception $e) {
+
+            $return['result']=$e->getMessage();
+            return $this->outputer->code(422)->error($return)->json();
+        }
+    }
 
     public function TestApi(){
 
