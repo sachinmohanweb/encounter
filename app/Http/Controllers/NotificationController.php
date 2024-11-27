@@ -12,8 +12,11 @@ use Session;
 use Exception;
 use Datatables;
 
+use App\Models\User;
 use App\Models\Notification;
 use App\Models\NotificationType;
+
+use App\Notifications\NotificationPusher; 
 
 class NotificationController extends Controller
 {
@@ -96,6 +99,28 @@ class NotificationController extends Controller
             $Notification = Notification::create($inputData);
             DB::commit();
              
+            $push_data = [];
+
+            $push_data['tokens']    =  User::whereNotNull('refresh_token')
+                                            ->pluck('refresh_token')->toArray();
+
+            $push_data['title']         =   'Don’t miss out';
+            $push_data['body']          =   'New Notification:'.$Notification['title'];
+
+            $push_data['route']         =   'NewNotification';
+            $push_data['id']            =   $Notification['id'];
+            $push_data['category']      =   'NewNotification';
+
+            $push_data['data1']         =   $Notification['redirection'];
+            $push_data['data2']         =   $Notification['description'];
+            $push_data['data3']         =   $Notification['type'];
+            $push_data['data4']         =   $Notification['data'];
+            $push_data['data5']         =   null;
+            $push_data['image1']        =   null;
+
+            $pusher = new NotificationPusher();
+            $pusher->push($push_data);
+
             return redirect()->route('admin.notification.list')
                             ->with('success',"Success! Notification has been successfully added.");
         }catch (Exception $e) {
