@@ -315,20 +315,49 @@ class UserController extends Controller
                 
                 //-----------Got Questions--------------//
 
+                // $gq_results = collect(GotQuestion::search($searchTerm)
+                //                     ->where('status', 1)->orderBy('id')->get());
+
+                // $color_qg_results = $gq_results->filter(function ($item) use ($searchTerm) {
+                //     return stripos($item->question, $searchTerm) !== false || stripos($item->answer, $searchTerm) !== false;
+                // })->map(function ($item) use ($searchTerm) {
+                    
+                //     $contextWords = 8;
+
+                //     if (stripos($item->question, $searchTerm) !== false) {
+                //         preg_match('/(?:\S+\s+){0,' . $contextWords . '}\S*' . preg_quote($searchTerm, '/') . '\S*(?:\s+\S+){0,' . $contextWords . '}/i', $item->question, $matches);
+                //         $highlighted_text = isset($matches[0]) ? preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $matches[0]) . '.....' : $item->question;
+                //     } else {
+                //         preg_match('/(?:\S+\s+){0,' . $contextWords . '}\S*' . preg_quote($searchTerm, '/') . '\S*(?:\s+\S+){0,' . $contextWords . '}/i', $item->answer, $matches);
+                //         $highlighted_text = isset($matches[0]) ? preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $matches[0]) . '.....' : $item->answer;
+                //     }
+                //     return [
+                //         'type' => 'Got Questions',
+                //         'id' => $item->id,
+                //         'result' => $highlighted_text
+                //     ];
+                // });
+
                 $gq_results = collect(GotQuestion::search($searchTerm)
                                     ->where('status', 1)->orderBy('id')->get());
-                $color_qg_results = $gq_results->filter(function ($item) use ($searchTerm) {
-                    return stripos($item->question, $searchTerm) !== false || stripos($item->answer, $searchTerm) !== false;
+                $filteredQuestions = $gq_results->map(function ($item) { 
+                            $item->question = strip_tags($item->question); 
+                            $item->answer = strip_tags($item->answer); 
+                            return $item; 
+                    });
+
+                $color_qg_results = $filteredQuestions->filter(function ($item) use ($searchTerm) {
+                    return stripos(strip_tags($item->question), $searchTerm) !== false || stripos(strip_tags($item->answer), $searchTerm) !== false;
                 })->map(function ($item) use ($searchTerm) {
                     
                     $contextWords = 8;
 
                     if (stripos($item->question, $searchTerm) !== false) {
-                        preg_match('/(?:\S+\s+){0,' . $contextWords . '}\S*' . preg_quote($searchTerm, '/') . '\S*(?:\s+\S+){0,' . $contextWords . '}/i', $item->question, $matches);
-                        $highlighted_text = isset($matches[0]) ? preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $matches[0]) . '.....' : $item->question;
+                        preg_match('/(?:\S+\s+){0,' . $contextWords . '}\S*' . preg_quote($searchTerm, '/') . '\S*(?:\s+\S+){0,' . $contextWords . '}/i', strip_tags($item->question), $matches);
+                        $highlighted_text = isset($matches[0]) ? preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $matches[0]) . '.....' : strip_tags($item->question);
                     } else {
-                        preg_match('/(?:\S+\s+){0,' . $contextWords . '}\S*' . preg_quote($searchTerm, '/') . '\S*(?:\s+\S+){0,' . $contextWords . '}/i', $item->answer, $matches);
-                        $highlighted_text = isset($matches[0]) ? preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $matches[0]) . '.....' : $item->answer;
+                        preg_match('/(?:\S+\s+){0,' . $contextWords . '}\S*' . preg_quote($searchTerm, '/') . '\S*(?:\s+\S+){0,' . $contextWords . '}/i', strip_tags($item->answer), $matches);
+                        $highlighted_text = isset($matches[0]) ? preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $matches[0]) . '.....' : strip_tags($item->answer);
                     }
                     return [
                         'type' => 'Got Questions',
