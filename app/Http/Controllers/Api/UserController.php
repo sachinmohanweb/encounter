@@ -62,12 +62,20 @@ class UserController extends Controller
 
             if(count($searchParts) == 1){
 
-                $book_results = collect(Book::search($searchTerm)
-                                    ->orderBy('book_id')->get());
+                // $book_results = collect(Book::search($searchTerm)
+                //                     ->orderBy('book_id')->get());
 
-                $book_results = $book_results->filter(function ($item) use ($searchTerm){
-                    return stripos($item->book_name, $searchTerm) !== false;
+                // $book_results = $book_results->filter(function ($item) use ($searchTerm){
+                //     return stripos($item->book_name, $searchTerm) !== false;
+                // });
+
+                $processedSearchTerm = strlen($searchTerm) > 2 ? substr($searchTerm, 0, -2) : $searchTerm;
+
+                $book_results = collect(Book::search($processedSearchTerm)->orderBy('book_id')->get())
+                    ->filter(function ($item) use ($processedSearchTerm) {
+                        return stripos($item->book_name, $processedSearchTerm) !== false;
                 });
+
 
                 if($book_results->isNotEmpty()) {
                     $book_ids = $book_results->pluck('book_id');
@@ -119,10 +127,19 @@ class UserController extends Controller
                     $bookSearchTerm = $searchParts[0];
                     $chapterSearchTerm = $searchParts[1];
 
-                    $book_results = collect(Book::search($bookSearchTerm)
-                                        ->orderBy('book_id')->get());
+                    // $book_results = collect(Book::search($bookSearchTerm)
+                    //                     ->orderBy('book_id')->get());
 
-                    $book_results = $book_results->filter(function ($item) use ($bookSearchTerm){
+                    // $book_results = $book_results->filter(function ($item) use ($bookSearchTerm){
+                    //     return stripos($item->book_name, $bookSearchTerm) !== false;
+                    // });
+
+                    $bookSearchTerm = strlen($bookSearchTerm) > 2 ? substr($bookSearchTerm, 0, -2)
+                    : $bookSearchTerm; 
+                    $book_results = collect(Book::search($bookSearchTerm)
+                        ->orderBy('book_id')->get());
+
+                    $book_results = $book_results->filter(function ($item) use ($bookSearchTerm) {
                         return stripos($item->book_name, $bookSearchTerm) !== false;
                     });
 
@@ -202,10 +219,19 @@ class UserController extends Controller
 
                     $bookSearchTerm = $searchParts[0];
 
-                    $book_results = collect(Book::search($bookSearchTerm)
-                                        ->orderBy('book_id')->get());
+                    // $book_results = collect(Book::search($bookSearchTerm)
+                    //                     ->orderBy('book_id')->get());
 
-                    $book_results = $book_results->filter(function ($item) use ($bookSearchTerm){
+                    // $book_results = $book_results->filter(function ($item) use ($bookSearchTerm){
+                    //     return stripos($item->book_name, $bookSearchTerm) !== false;
+                    // });
+
+                    $bookSearchTerm = strlen($bookSearchTerm) > 2 ? substr($bookSearchTerm, 0, -2)
+                    : $bookSearchTerm; 
+                    $book_results = collect(Book::search($bookSearchTerm)
+                        ->orderBy('book_id')->get());
+
+                    $book_results = $book_results->filter(function ($item) use ($bookSearchTerm) {
                         return stripos($item->book_name, $bookSearchTerm) !== false;
                     });
 
