@@ -13,6 +13,7 @@ use App\Http\Controllers\NotificationController;
 //use App\Http\Controllers\GenReferenceController;
 use App\Http\Controllers\BibleDbController;
 use App\Http\Controllers\UserQNAController;
+use App\Http\Controllers\AppBannerController;
 
 Route::get('admin', [HomeController::class, 'admin_index'])->name('index');
 Route::post('/login', [UserController::class, 'admin_login'])->name('admin.login');
@@ -211,6 +212,15 @@ Route::middleware('auth:admin')->group(function(){
     // Route::get('editgereralreference', [GenReferenceController::class, 'EditGereralReference'])
     //         ->name('admin.edit.gereralreference');
 
+
+    Route::get('app_banners', [AppBannerController::class, 'App_Banners'])
+            ->name('admin.app_banners.list');
+    Route::post('store_app_banners', [AppBannerController::class, 'Store_App_Banner'])
+            ->name('admin.add.app_banner');
+    Route::post('statuschange_app_banner', [AppBannerController::class, 'BannerStatusChange'])
+            ->name('admin.app_banner.status.change');
+    Route::post('delete_app_banner', [AppBannerController::class, 'Delete_App_Banners'])
+            ->name('admin.delete.App_Banner');
 
 });
 

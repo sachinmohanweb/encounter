@@ -1,4 +1,4 @@
-
+ 
 /*-----------10/04/2024--------*/
 
 CREATE TABLE `users` (
@@ -434,3 +434,14 @@ ALTER TABLE `notifications` CHANGE `content` `description` TEXT CHARACTER SET ut
 ALTER TABLE `notifications` ADD `type` INT NOT NULL AFTER `redirection`;
 
 ALTER TABLE `notifications` CHANGE `image` `data` LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL;
+
+
+-- 06/12/24----
+
+CREATE TABLE `app_banners` (
+	`id` INT NOT NULL AUTO_INCREMENT , 
+	`name` VARCHAR(256) NOT NULL , 
+	`path` VARCHAR(256) NOT NULL , 
+	`status` INT NOT NULL DEFAULT '1' , 
+	`created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , 
+	`updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`id`));

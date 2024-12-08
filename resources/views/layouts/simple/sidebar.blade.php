@@ -144,6 +144,18 @@
                             <span>Notification</span>
                         </a>
                     </li>
+                    <li class="sidebar-list">
+                        <a class="sidebar-link sidebar-title link-nav" 
+                        href="{{route('admin.app_banners.list')}}">
+                            <svg class="stroke-icon">
+                                <use href="{{ asset('assets/svg/icon-sprite.svg#image') }}"></use>
+                            </svg>
+                            <svg class="fill-icon">
+                                <use href="{{ asset('assets/svg/icon-sprite.svg#image') }}"></use>
+                            </svg>
+                            <span>App Banners</span>
+                        </a>
+                    </li>
                      <li class="sidebar-list">
                         <a class="sidebar-link sidebar-title link-nav" >
                         </a>
