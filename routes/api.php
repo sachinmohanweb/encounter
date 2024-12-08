@@ -54,6 +54,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('bible_study_chapters' , [HomeController::class, 'BibleStudyChapters']);
 
     Route::get('notifications' , [HomeController::class, 'Notifications']);
+    Route::get('app_banners', [HomeController::class, 'AppBanners']);
 
     Route::get('testapi' , [HomeController::class, 'TestApi']);
 });

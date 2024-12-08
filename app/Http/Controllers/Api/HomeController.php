@@ -16,6 +16,7 @@ use App\Models\Course;
 use App\Models\Chapter;
 use App\Models\UserLMS;
 use App\Models\Testament;
+use App\Models\AppBanner;
 use App\Models\BookImage;
 use App\Models\Notification;
 use App\Models\CourseContent;
@@ -1081,6 +1082,30 @@ class HomeController extends Controller
             });
 
             return $this->outputer->code(200)->success($notifications)->json();
+
+        }catch (\Exception $e) {
+
+            $return['result']=$e->getMessage();
+            return $this->outputer->code(422)->error($return)->json();
+        }
+    }
+
+    public function AppBanners(Request $request){
+
+        try {
+
+            $banners = AppBanner::select('id','title','path')->where('status',2)->get();
+
+            $banners = $banners->map(function ($item) {
+                    
+                $item->path = $item->path !== null 
+                    ? asset('/') . $item->path
+                    : asset('/') . 'assets/images/logo.png';
+
+                return $item;
+            });
+
+            return $this->outputer->code(200)->success($banners)->json();
 
         }catch (\Exception $e) {
 
