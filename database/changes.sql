@@ -440,7 +440,7 @@ ALTER TABLE `notifications` CHANGE `image` `data` LONGTEXT CHARACTER SET utf8mb4
 
 CREATE TABLE `app_banners` (
 	`id` INT NOT NULL AUTO_INCREMENT , 
-	`name` VARCHAR(256) NOT NULL , 
+	`title` VARCHAR(256) NOT NULL , 
 	`path` VARCHAR(256) NOT NULL , 
 	`status` INT NOT NULL DEFAULT '1' , 
 	`created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , 
