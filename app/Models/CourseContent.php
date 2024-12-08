@@ -10,6 +10,7 @@ use Auth;
 class CourseContent extends Model
 {
     use HasFactory;
+    protected $courseBatchId;
 
     protected $fillable = [
         'course_id',
@@ -55,12 +56,18 @@ class CourseContent extends Model
         return $this->hasMany(CourseContentLink::class,'course_content_id', 'id')->where('type', 2);
     }
 
+    public function setCourseBatchId($batchId)
+    {
+        $this->courseBatchId = $batchId;
+    }
+
     public function getCompletedStatusAttribute()
     {
         $status = False;
         $user = Auth::user();
         $user_lms = UserLMS::where('user_id',$user->id)
-                    ->where('course_id',$this->course_id)->where('status',1)->first();
+                    ->where('course_id',$this->course_id)
+                    ->where('batch_id', $this->courseBatchId)->where('status',1)->first();
         if($user_lms){
             $user_readings = UserDailyReading::where('user_lms_id',$user_lms->id)
                     ->where('day',$this->day)->where('status',1)->first();

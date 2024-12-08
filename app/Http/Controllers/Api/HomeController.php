@@ -565,6 +565,7 @@ class HomeController extends Controller
 
         try {
             $course_content_id = $request['course_content_id'];
+            $course_batch_id = $request['batch_id'];
 
            $course_day_content = CourseContent::select('id','course_id','day','text_description',
                 'audio_file','website_link','image','documents')
@@ -576,6 +577,10 @@ class HomeController extends Controller
                 }])
                 ->with('CourseContentVideoLink','CourseContentSpotifyLink')
                 ->first();
+            if ($course_day_content) {
+                $course_day_content->setCourseBatchId($course_batch_id);
+                $course_day_content->append('completed_status');
+            }
 
             if ($course_day_content) {
                 $course_day_content->makeHidden(['verse_from_name', 'verse_to_name']);

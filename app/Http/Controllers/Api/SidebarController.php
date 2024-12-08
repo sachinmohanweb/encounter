@@ -533,7 +533,6 @@ class SidebarController extends Controller
 
             if ($user_custom_notes->isEmpty()) {
                 $return['result'] = "Empty tags";
-                return $this->outputer->code(422)->error($return)->json();
             }
 
             $user_custom_notes->transform(function ($item, $key) use ($user_id) {
@@ -576,8 +575,7 @@ class SidebarController extends Controller
                         ->makeHidden(['type_name','user_name','chapter_name','testament_name',
                             'bible_name','verse_no']);
             if(empty($user_notes)) {
-                $return['result']=  "Empty notes ";
-                return $this->outputer->code(422)->error($return)->json();
+                $return['result']=  "Empty Bible notes ";
             }
             $user_notes->transform(function ($item, $key) {
 
@@ -595,8 +593,7 @@ class SidebarController extends Controller
            /* ----------User Tags---------*/
 
 
-            $user_tags =  Tag::select('id','tag_name as data',DB::raw("Null as verse_statement"),
-                                DB::raw("Null as chapter_no"),DB::raw("Null as statement_no"),
+            $user_tags =  Tag::select('id','tag_name as data',DB::raw("Null as verse_statement"),DB::raw("Null as chapter_no"),DB::raw("Null as statement_no"),
                                 DB::raw("Null as book_name"))
                             ->where('user_id',$user_id)->where('status',1)->get();
             $user_tags = $user_tags->filter(function ($item) use ($user_id) {
@@ -606,65 +603,74 @@ class SidebarController extends Controller
 
             if(empty($user_tags)) {
                 $return['result']=  "Empty tags ";
-                return $this->outputer->code(422)->error($return)->json();
             }
 
-            // $user_tags->transform(function ($item, $key) use($user_id) {
-                
-            //     $item->marked_data = [];
+            // $user_tags = $user_tags->map(function ($item) use ($user_id) {
             //     $statementIds = $item->getBibleMarkings($user_id);
+            //     $statementIdsValues = array_values($statementIds);
+            //     dd($statementIds,$statementIdsValues);
+            //     $holyStatements = HolyStatement::whereIn('statement_id', $statementIds)
+            //                                     ->with('Book', 'Chapter')
+            //                                     ->get();
 
-            //     $holyStatements = HolyStatement::whereIn('statement_id',$statementIds)
-            //                             ->with('Book','Chapter')
-            //                             ->get();
-            //     $verses = [];
+            //     $verses = $holyStatements->map(function ($verse) use ($item){
+            //             return [
+            //                 'id' => $verse->statement_id,
+            //                 'data1' => $verse->statement_text,
+            //                 'data2' => $verse->Book->book_name ?? null,
+            //                 'data3' => $verse->Chapter->chapter_no ?? null,
+            //                 'data4' => $verse->statement_no,
+            //             ];
+            //     });
 
-            //     foreach ($holyStatements as $verse) {
-            //         $verses[] = [
-
-            //             'id' => $verse->statement_id,
-            //             'data1' => $verse->statement_text,
-            //             'data2' => $verse->Book->book_name ?? null,
-            //             'data3' => $verse->Chapter->chapter_no ?? null,
-            //             'data4' => $verse->statement_no,
-            //             //'statement_id' => $verse->statement_id,
-            //         ];
-            //     }
-
-            //     $item->verse_list = $verses;
-
-            //     return $item;
-            // });
+            //     return [
+            //         'id' => $item->id,
+            //         'data' => $item->data,
+            //         'verse_statement' => $item->verse_statement,
+            //         'chapter_no' => $item->chapter_no,
+            //         'statement_no' => $item->statement_no,
+            //         'book_name' => $item->book_name,
+            //         'marked_data' => [],
+            //         'verse_list' => $verses->toArray(),
+            //     ];
+            
+            // })->values();
 
 
             $user_tags = $user_tags->map(function ($item) use ($user_id) {
-            $statementIds = $item->getBibleMarkings($user_id);
+                $statementIds = $item->getBibleMarkings($user_id);
+                $statementIdsValues = array_values($statementIds);
+                $statementKeyMap = array_flip($statementIds);
 
-            $holyStatements = HolyStatement::whereIn('statement_id', $statementIds)
-                                            ->with('Book', 'Chapter')
-                                            ->get();
+                $holyStatements = HolyStatement::whereIn('statement_id', $statementIdsValues)
+                    ->with('Book', 'Chapter')
+                    ->get();
 
-            $verses = $holyStatements->map(function ($verse) {
+                $verses = $holyStatements->map(function ($verse) use ($statementKeyMap) {
+                    $key = $statementKeyMap[$verse->statement_id] ?? null;
+
+                    return [
+                        'id' => $key,
+                        'data1' => $verse->statement_text,
+                        'data2' => $verse->Book->book_name ?? null,
+                        'data3' => $verse->Chapter->chapter_no ?? null,
+                        'data4' => $verse->statement_no,
+                        'data5' => $verse->statement_id,
+                    ];
+                });
+
+                // Build the final structure for each tag
                 return [
-                    'id' => $verse->statement_id,
-                    'data1' => $verse->statement_text,
-                    'data2' => $verse->Book->book_name ?? null,
-                    'data3' => $verse->Chapter->chapter_no ?? null,
-                    'data4' => $verse->statement_no,
+                    'id' => $item->id,
+                    'data' => $item->data,
+                    'verse_statement' => $item->verse_statement,
+                    'chapter_no' => $item->chapter_no,
+                    'statement_no' => $item->statement_no,
+                    'book_name' => $item->book_name,
+                    'marked_data' => [],
+                    'verse_list' => $verses->toArray(),
                 ];
-            });
-
-            return [
-                'id' => $item->id,
-                'data' => $item->data,
-                'verse_statement' => $item->verse_statement,
-                'chapter_no' => $item->chapter_no,
-                'statement_no' => $item->statement_no,
-                'book_name' => $item->book_name,
-                'marked_data' => [],
-                'verse_list' => $verses->toArray(),
-            ];
-        })->values();
+            })->values();
 
 
             /* ----------User Colors---------*/
@@ -680,7 +686,6 @@ class SidebarController extends Controller
                             'bible_name','verse_no']);
             if(empty($user_colors)) {
                 $return['result']=  "Empty color markings ";
-                return $this->outputer->code(422)->error($return)->json();
             }
             $user_colors->transform(function ($item, $key) {
 
@@ -782,7 +787,9 @@ class SidebarController extends Controller
                     $return['messsage']  =  'Failed.Custom note is not available';
                 }
             }else{
-                $marking =UserBibleMarking::where('id',$request->id)->where('user_id',$user_id)->first();
+
+                $marking =UserBibleMarking::where('id',$request->id)
+                            ->where('user_id',$user_id)->first();
                 if($marking){
                     $marking->delete();
                     DB::commit();

@@ -27,7 +27,7 @@ class Tag extends Model
             ->where('user_id', $userId)
             ->where('type', $type)
             ->whereRaw("FIND_IN_SET(?, data)", [$this->id])
-            ->pluck('statement_id')
+            ->pluck('statement_id','id')
             ->toArray();
     }
 
