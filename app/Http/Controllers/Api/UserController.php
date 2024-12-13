@@ -321,7 +321,10 @@ class UserController extends Controller
                 
                 //-----------User Notes--------------//
 
+                $logged_user=Auth::user();
+
                 $user_note_results = collect(UserCustomNote::search($searchTerm)
+                                    ->where('user_id',$logged_user->id)
                                     ->where('status', 1)->orderBy('id')->get());
 
                 $color_user_note_results = $user_note_results->filter(function ($item) use ($searchTerm) {
