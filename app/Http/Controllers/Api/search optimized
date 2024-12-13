@@ -1,0 +1,97 @@
+$searchParts = explode(' ', $searchTerm);
+$colorBibleVerseResults = collect();
+
+if (count($searchParts) === 1) {
+    $processedSearchTerm = strlen($searchTerm) > 2 ? substr($searchTerm, 0, -2) : $searchTerm;
+    $bookResults = Book::search($processedSearchTerm)
+        ->orderBy('book_id')
+        ->get()
+        ->filter(fn($item) => stripos($item->book_name, $processedSearchTerm) !== false);
+
+    if ($bookResults->isNotEmpty()) {
+        $bookIds = $bookResults->pluck('book_id');
+        $colorBibleVerseResults = HolyStatement::whereIn('book_id', $bookIds)
+            ->get()
+            ->map(fn($item) => formatBibleVerse($item));
+    } else {
+        $colorBibleVerseResults = searchAndHighlight($searchTerm);
+    }
+} elseif (count($searchParts) === 2) {
+    $bookSearchTerm = strlen($searchParts[0]) > 2 ? substr($searchParts[0], 0, -2) : $searchParts[0];
+    $chapterSearchTerm = $searchParts[1];
+
+    $bookResults = Book::search($bookSearchTerm)
+        ->orderBy('book_id')
+        ->get()
+        ->filter(fn($item) => stripos($item->book_name, $bookSearchTerm) !== false);
+
+    if ($bookResults->isNotEmpty()) {
+        $bookIds = $bookResults->pluck('book_id');
+
+        if (is_numeric($chapterSearchTerm)) {
+            $chapterResults = Chapter::whereIn('book_id', $bookIds)
+                ->where('chapter_no', $chapterSearchTerm)
+                ->get();
+
+            $chapterIds = $chapterResults->pluck('chapter_id');
+
+            $colorBibleVerseResults = HolyStatement::whereIn('chapter_id', $chapterIds)
+                ->get()
+                ->map(fn($item) => formatBibleVerse($item));
+        } else {
+            $pattern = '/^\d+\s*:\s*\d+$/';
+            if (preg_match($pattern, $chapterSearchTerm)) {
+                [$chapterNo, $statementNo] = array_map('intval', explode(':', str_replace(' ', '', $chapterSearchTerm)));
+
+                $colorBibleVerseResults = HolyStatement::whereIn('book_id', $bookIds)
+                    ->where('chapter_no', $chapterNo)
+                    ->where('statement_no', $statementNo)
+                    ->get()
+                    ->map(fn($item) => formatBibleVerse($item));
+            }
+        }
+    } else {
+        $colorBibleVerseResults = searchAndHighlight($searchTerm);
+    }
+} else {
+    $colorBibleVerseResults = searchAndHighlight($searchTerm);
+}
+
+function formatBibleVerse($item)
+{
+    $sentences = preg_split('/(?<=[.?!])\s+/', $item->statement_text, -1, PREG_SPLIT_NO_EMPTY);
+    $snippet = implode(' ', array_slice($sentences, 0, 2));
+
+    return [
+        'type' => 'Bible Verse',
+        'result' => $snippet,
+        'id' => $item->statement_id,
+        'book_id' => $item->book_id,
+        'chapter_id' => $item->chapter_id,
+        'chapter_no' => $item->chapter->chapter_no,
+        'reference' => sprintf('%s %d:%d', $item->book->book_name, $item->chapter->chapter_no, $item->statement_no),
+    ];
+}
+
+function searchAndHighlight($searchTerm)
+{
+    return HolyStatement::search($searchTerm)
+        ->orderBy('statement_id')
+        ->get()
+        ->filter(fn($item) => stripos($item->statement_text, $searchTerm) !== false)
+        ->map(function ($item) use ($searchTerm) {
+            $contextWords = 8;
+            preg_match('/(?:\S+\s+){0,' . $contextWords . '}\S*' . preg_quote($searchTerm, '/') . '\S*(?:\s+\S+){0,' . $contextWords . '}/i', $item->statement_text, $matches);
+            $highlightedText = isset($matches[0]) ? preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $matches[0]) . '.....' : $item->statement_text;
+
+            return [
+                'type' => 'Bible Verse',
+                'result' => $highlightedText,
+                'id' => $item->statement_id,
+                'book_id' => $item->book_id,
+                'chapter_id' => $item->chapter_id,
+                'chapter_no' => $item->chapter->chapter_no,
+                'reference' => sprintf('%s %d:%d', $item->book->book_name, $item->chapter->chapter_no, $item->statement_no),
+            ];
+        });
+}
