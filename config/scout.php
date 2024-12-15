@@ -4,20 +4,13 @@ return [
     'driver' => env('SCOUT_DRIVER', 'tntsearch'),
     'tntsearch' => [
         'storage'  => storage_path('app/tntsearch_indexes'),
-        'fuzziness' => env('TNTSEARCH_FUZZINESS', false),
+        'fuzziness' => env('TNTSEARCH_FUZZINESS', true),
         'fuzzy' => [
-            'prefix_length' => 2,
+            'prefix_length' => 4,
             'max_expansions' => 50,
-            'distance' => 2
+            'distance' => 4
         ],
         'asYouType' => false,
-        'searchBoolean' => env('TNTSEARCH_BOOLEAN', false),
-        'index' => [
-            'stemmers' => [
-                \TeamTNT\TNTSearch\Stemmer\PorterStemmer::class,
-            ],
-        ],
+        'searchBoolean' => env('TNTSEARCH_BOOLEAN', false)
     ],
-    'queue' => env('SCOUT_QUEUE', true),
-
 ];

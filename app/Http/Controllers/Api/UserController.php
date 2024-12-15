@@ -38,249 +38,6 @@ class UserController extends Controller
         $this->userRepo = $userRepo;
     }
 
-    public function SearchResults(Request $request)
-    {
-        try {
-            
-            $searchTerm = $request->input('text');
-            $type=1;
-            
-            if($request->input('type')){   
-                $type = $request->input('type');
-            }
-
-            Log::channel('search_log')->info("======>>>>>Search Parameters- ". now()." ======>>>>>\n" . json_encode($searchTerm));
-
-            
-            //-----------Bible Verse--------------//
-
-            $searchParts = explode(' ', $searchTerm);
-            $color_bible_verse_results = collect();
-
-            if (count($searchParts) === 1) {
-
-                $processedSearchTerm = strlen($searchTerm) > 2 ? substr($searchTerm, 0, -2) : $searchTerm;
-                $bookResults = Book::search($processedSearchTerm)
-                    ->orderBy('book_id')
-                    ->get()
-                    ->filter(fn($item) => stripos($item->book_name, $processedSearchTerm) !== false);
-
-                if ($bookResults->isNotEmpty()) {
-                    $bookIds = $bookResults->pluck('book_id');
-                    $color_bible_verse_results = HolyStatement::whereIn('book_id', $bookIds)
-                        ->get()
-                        ->map(fn($item) => $this->userRepo->formatBibleVerse($item));
-                } else {
-                    $color_bible_verse_results = $this->userRepo->searchAndHighlight($searchTerm);
-                }
-
-            } elseif (count($searchParts) === 2) {
-
-                $bookSearchTerm = strlen($searchParts[0]) > 2 ? substr($searchParts[0], 0, -2) : $searchParts[0];
-                $chapterSearchTerm = $searchParts[1];
-
-                $bookResults = Book::search($bookSearchTerm)
-                    ->orderBy('book_id')
-                    ->get()
-                    ->filter(fn($item) => stripos($item->book_name, $bookSearchTerm) !== false);
-
-                if ($bookResults->isNotEmpty()) {
-
-                    $bookIds = $bookResults->pluck('book_id');
-
-                    if (is_numeric($chapterSearchTerm)) {
-                        $chapterResults = Chapter::whereIn('book_id', $bookIds)
-                            ->where('chapter_no', $chapterSearchTerm)
-                            ->get();
-
-                        $chapterIds = $chapterResults->pluck('chapter_id');
-
-                        $color_bible_verse_results = HolyStatement::whereIn('chapter_id', $chapterIds)
-                            ->get()
-                            ->map(fn($item) => $this->userRepo->formatBibleVerse($item));
-
-                    } else {
-
-                        $pattern = '/^\d+\s*:\s*\d+$/';
-
-                        if (preg_match($pattern, $chapterSearchTerm)) {
-
-                            [$chapterNo, $statementNo] = array_map('intval', explode(':', str_replace(' ', '', $chapterSearchTerm)));
-
-                            $color_bible_verse_results = HolyStatement::whereIn('book_id', $bookIds)
-                                ->where('chapter_no', $chapterNo)
-                                ->where('statement_no', $statementNo)
-                                ->get()
-                                ->map(fn($item) => $this->userRepo->formatBibleVerse($item));
-                        }
-                    }
-                } else {
-                    $color_bible_verse_results = $this->userRepo->searchAndHighlight($searchTerm);
-                }
-
-            } else {
-                $color_bible_verse_results = $this->userRepo->searchAndHighlight($searchTerm);
-            }
-        
-
-            if($type==1){
-                
-
-                //-----------User Notes--------------//
-
-
-                $logged_user=Auth::user();
-
-                $user_note_results = collect(UserCustomNote::search($searchTerm)
-                                    ->where('user_id',$logged_user->id)
-                                    ->where('status', 1)->orderBy('id')->get());
-
-                $color_user_note_results = $user_note_results->filter(function ($item) use ($searchTerm) {
-                    return stripos($item->note_text, $searchTerm) !== false;
-                })->map(function ($item) use ($searchTerm) {
-
-                    $contextWords = 8;
-
-                    preg_match('/(?:\S+\s+){0,' . $contextWords . '}\S*' . preg_quote($searchTerm, '/') . '\S*(?:\s+\S+){0,' . $contextWords . '}/i', $item->note_text, $matches);
-                    $highlighted_text = isset($matches[0]) ? preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $matches[0]) . '.....' : $item->note_text;
-                    return [
-                        'type' => 'User Notes',
-                        'id' => $item->id,
-                        'result' => $highlighted_text
-                    ];
-                });
-                
-
-                //-----------Got Questions--------------//
-
-
-                $gq_results = collect(GotQuestion::search($searchTerm)
-                                    ->where('status', 1)->orderBy('id')->get());
-                $filteredQuestions = $gq_results->map(function ($item) { 
-                            $item->question = strip_tags($item->question); 
-                            $item->answer = strip_tags($item->answer); 
-                            return $item; 
-                    });
-
-                $color_qg_results = $filteredQuestions->filter(function ($item) use ($searchTerm) {
-                    return stripos(strip_tags($item->question), $searchTerm) !== false || stripos(strip_tags($item->answer), $searchTerm) !== false;
-                })->map(function ($item) use ($searchTerm) {
-                    
-                    $contextWords = 8;
-
-                    if (stripos($item->question, $searchTerm) !== false) {
-                        preg_match('/(?:\S+\s+){0,' . $contextWords . '}\S*' . preg_quote($searchTerm, '/') . '\S*(?:\s+\S+){0,' . $contextWords . '}/i', strip_tags($item->question), $matches);
-                        $highlighted_text = isset($matches[0]) ? preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $matches[0]) . '.....' : strip_tags($item->question);
-                    } else {
-                        preg_match('/(?:\S+\s+){0,' . $contextWords . '}\S*' . preg_quote($searchTerm, '/') . '\S*(?:\s+\S+){0,' . $contextWords . '}/i', strip_tags($item->answer), $matches);
-                        $highlighted_text = isset($matches[0]) ? preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $matches[0]) . '.....' : strip_tags($item->answer);
-                    }
-                    return [
-                        'type' => 'Got Questions',
-                        'id' => $item->id,
-                        'result' => $highlighted_text
-                    ];
-                });
-
-
-                //-----------Course --------------//
-
-
-                $user_id = Auth::user()->id;
-
-                $course_results = Course::from(with(new Course)->getTable() . ' as a')
-                    ->join(with(new Batch)->getTable() . ' as b', 'a.id', '=', 'b.course_id') // Join with Batch table
-                    ->leftJoin(with(new UserLMS)->getTable() . ' as c', function ($join) use ($user_id) {
-                        $join->on('b.id', '=', 'c.batch_id')
-                            ->where('c.user_id', '=', $user_id)
-                            ->where('c.status', 1);
-
-                    })
-                    ->select('a.course_name', 'b.id as batch_id') // Include last_date in the select
-                    ->where(function ($query) use ($searchTerm) {
-                        $query->where('a.course_name', 'LIKE', '%' . $searchTerm . '%')
-                              ->orWhere('a.course_creator', 'LIKE', '%' . $searchTerm . '%');
-                    })
-                    ->where(function ($query) {
-                                    $query->whereNotNull('c.id')
-                                          ->orWhere(function ($subQuery) {
-                                              $subQuery->where('b.last_date', '>=', now()->format('Y-m-d'));
-                                          });
-                                })
-                    ->groupBy('a.id', 'b.id','a.course_name')
-                    ->get();
-
-                $course_results = $course_results->map(function ($item) {
-                    
-                    return [
-                        'type' => 'Courses',
-                        'result' => $item->course_name,
-                        'id' => $item->batch_id,
-                    ];
-                });
-
-
-                //-----------Batch --------------//
-
-
-                $batch_results = Batch::from(with(new Batch)->getTable() . ' as a')
-                    ->leftJoin(with(new UserLMS)->getTable() . ' as b', function ($join) use ($user_id) {
-                        $join->on('a.id', '=', 'b.batch_id')
-                            ->where('b.user_id', '=', $user_id)
-                            ->where('b.status', 1);
-
-                    })
-
-                    ->select('a.batch_name', 'a.id as batch_id') 
-                    ->where(function ($query) use ($searchTerm) {
-                        $query->where('a.batch_name', 'LIKE', '%' . $searchTerm . '%');
-                    })
-                    ->where(function ($query) {
-                                    $query->whereNotNull('b.id')
-                                          ->orWhere(function ($subQuery) {
-                                              $subQuery->where('a.last_date', '>=', now()->format('Y-m-d'));
-                                          });
-                                })
-                    ->groupBy('a.id','a.batch_name')
-                    ->get();
-
-                $batch_results = $batch_results->map(function ($item) {
-                    
-                    return [
-                        'type' => 'Batch',
-                        'result' => $item->batch_name,
-                        'id' => $item->batch_id
-                    ];
-                });
-
-            }
-
-            //-----------Merge Results--------------//
-
-            if($type==1){
-                $merged_results = $color_bible_verse_results
-                                    ->merge($color_user_note_results)
-                                    ->merge($color_qg_results)
-                                    ->merge($course_results)
-                                    ->merge($batch_results);
-            }else{
-                $merged_results = $color_bible_verse_results;
-            }
-
-            $total_results = $merged_results->count();
-
-            return $this->outputer->code(200)->metadata($total_results)
-                                    ->success($merged_results)->json();
-
-
-        }catch (\Exception $e) {
-
-            DB::rollBack();
-            $return['result']=$e->getMessage();
-            return $this->outputer->code(422)->error($return)->json();
-        }
-    }
-
     public function Signup(Request $request){
         DB::beginTransaction();
 
@@ -561,288 +318,564 @@ class UserController extends Controller
         }
     }
 
+    public function SearchResults(Request $request)
+    {
+        try {
+
+            // courses---description,
+            // course content---descriptiopn,
+            // Notifications---title, content,
+            // user notes---note, category,subcategory,
+            // user qna---question answer,
+            
+            $searchTerm = $request->input('text');
+            $type=1;
+            if($request->input('type')){   
+                $type = $request->input('type');
+            }
+
+            Log::channel('search_log')->info("======>>>>>Search Parameters- ". now()." ======>>>>>\n" . json_encode($searchTerm));
+
+            //-----------Bible Verse--------------//
+
+            $searchParts = explode(' ', $searchTerm);
+
+            if(count($searchParts) == 1){
+
+                // $book_results = collect(Book::search($searchTerm)
+                //                     ->orderBy('book_id')->get());
+
+                // $book_results = $book_results->filter(function ($item) use ($searchTerm){
+                //     return stripos($item->book_name, $searchTerm) !== false;
+                // });
+
+                $processedSearchTerm = strlen($searchTerm) > 2 ? substr($searchTerm, 0, -2) : $searchTerm;
+
+                $book_results = collect(Book::search($processedSearchTerm)->orderBy('book_id')->get())
+                    ->filter(function ($item) use ($processedSearchTerm) {
+                        return stripos($item->book_name, $processedSearchTerm) !== false;
+                });
+
+
+                if($book_results->isNotEmpty()) {
+                    $book_ids = $book_results->pluck('book_id');
+
+                    $color_bible_verse_results = HolyStatement::whereIn('book_id', $book_ids)->get();
+
+                    $color_bible_verse_results = $color_bible_verse_results->map(function ($item) {
+
+                        $sentences = preg_split('/(?<=[.?!])\s+/', $item->statement_text, -1, PREG_SPLIT_NO_EMPTY);
+                        $snippet = implode(' ', array_slice($sentences, 0, 2));
+                        
+                        return [
+                            'type' => 'Bible Verse',
+                            'result' => $snippet,
+                            'id' => $item->statement_id,
+                            'book_id' => $item->book_id,
+                            'chapter_id' => $item->chapter_id,
+                            'chapter_no' => $item->chapter->chapter_no,
+                            'reference' => $item->book->book_name.' '.$item->chapter->chapter_no.':'.$item->statement_no
+                        ];
+                    });
+                }else{
+
+                    $bible_verse_results = collect(HolyStatement::search($searchTerm)
+                                        ->orderBy('statement_id')->get());
+
+                    $color_bible_verse_results = $bible_verse_results->filter(function ($item) use ($searchTerm){
+                        return stripos($item->statement_text, $searchTerm) !== false;
+                    })->map(function ($item) use ($searchTerm) {
+
+                        $contextWords = 8;
+                        preg_match('/(?:\S+\s+){0,' . $contextWords . '}\S*' . preg_quote($searchTerm, '/') . '\S*(?:\s+\S+){0,' . $contextWords . '}/i', $item->statement_text, $matches);
+                        $highlighted_text = isset($matches[0]) ? preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $matches[0]) . '.....' : $item->statement_text;
+                        return [
+                            'type' => 'Bible Verse',
+                            'result' => $highlighted_text,
+                            'id' => $item->statement_id,
+                            'book_id' => $item->book_id,
+                            'chapter_id' => $item->chapter_id,
+                            'chapter_no' => $item->chapter->chapter_no,
+                            'reference' => $item->book->book_name.' '.$item->chapter->chapter_no.':'.$item->statement_no
+                        ];
+                    });
+                }
+            }else if(count($searchParts) == 2) {
+
+                if(is_numeric($searchParts[1])){
+
+                    $bookSearchTerm = $searchParts[0];
+                    $chapterSearchTerm = $searchParts[1];
+
+                    // $book_results = collect(Book::search($bookSearchTerm)
+                    //                     ->orderBy('book_id')->get());
+
+                    // $book_results = $book_results->filter(function ($item) use ($bookSearchTerm){
+                    //     return stripos($item->book_name, $bookSearchTerm) !== false;
+                    // });
+
+                    $bookSearchTerm = strlen($bookSearchTerm) > 2 ? substr($bookSearchTerm, 0, -2)
+                    : $bookSearchTerm; 
+                    $book_results = collect(Book::search($bookSearchTerm)
+                        ->orderBy('book_id')->get());
+
+                    $book_results = $book_results->filter(function ($item) use ($bookSearchTerm) {
+                        return stripos($item->book_name, $bookSearchTerm) !== false;
+                    });
+
+                    if($book_results->isNotEmpty()) {
+                        $book_ids = $book_results->pluck('book_id');
+
+                        $chapter_results = Chapter::whereIn('book_id', $book_ids)
+                            ->where('chapter_no', $chapterSearchTerm)
+                            ->get();
+
+                        if($chapter_results->isNotEmpty()) {
+                            $chapter_ids = $chapter_results->pluck('chapter_id');
+
+                            $color_bible_verse_results = HolyStatement::whereIn('chapter_id', 
+                                $chapter_ids)->get();
+
+                            $color_bible_verse_results = $color_bible_verse_results->map(function ($item) {
+                                $sentences = preg_split('/(?<=[.?!])\s+/', $item->statement_text, -1, PREG_SPLIT_NO_EMPTY);
+                                $snippet = implode(' ', array_slice($sentences, 0, 2));
+
+                                return [
+                                    'type' => 'Bible Verse',
+                                    'result' => $snippet,
+                                    'id' => $item->statement_id,
+                                    'book_id' => $item->book_id,
+                                    'chapter_id' => $item->chapter_id,
+                                    'chapter_no' => $item->chapter->chapter_no,
+                                    'reference' => $item->book->book_name . ' ' . $item->chapter->chapter_no . ':' . $item->statement_no
+                                ];
+                            });
+                        }else{
+
+                            $color_bible_verse_results = HolyStatement::whereIn('book_id', $book_ids)
+                                    ->get();
+
+                            $color_bible_verse_results = $color_bible_verse_results
+                                ->map(function ($item) {
+
+                                $sentences = preg_split('/(?<=[.?!])\s+/', $item->statement_text, -1, PREG_SPLIT_NO_EMPTY);
+                                $snippet = implode(' ', array_slice($sentences, 0, 2));
+                                
+                                return [
+                                    'type' => 'Bible Verse',
+                                    'result' => $snippet,
+                                    'id' => $item->statement_id,
+                                    'book_id' => $item->book_id,
+                                    'chapter_id' => $item->chapter_id,
+                                    'chapter_no' => $item->chapter->chapter_no,
+                                    'reference' => $item->book->book_name.' '.$item->chapter->chapter_no.':'.$item->statement_no
+                                ];
+                            });
+                        }
+                    }else{
+
+                        $bible_verse_results = collect(HolyStatement::search($searchTerm)
+                                            ->orderBy('statement_id')->get());
+
+                        $color_bible_verse_results = $bible_verse_results->filter(function ($item) use ($searchTerm){
+                            return stripos($item->statement_text, $searchTerm) !== false;
+                        })->map(function ($item) use ($searchTerm) {
+
+                            $contextWords = 8;
+                            preg_match('/(?:\S+\s+){0,' . $contextWords . '}\S*' . preg_quote($searchTerm, '/') . '\S*(?:\s+\S+){0,' . $contextWords . '}/i', $item->statement_text, $matches);
+                            $highlighted_text = isset($matches[0]) ? preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $matches[0]) . '.....' : $item->statement_text;
+                            return [
+                                'type' => 'Bible Verse',
+                                'result' => $highlighted_text,
+                                'id' => $item->statement_id,
+                                'book_id' => $item->book_id,
+                                'chapter_id' => $item->chapter_id,
+                                'chapter_no' => $item->chapter->chapter_no,
+                                'reference' => $item->book->book_name.' '.$item->chapter->chapter_no.':'.$item->statement_no
+                            ];
+                        });
+                    }    
+                }else{
+
+                    $bookSearchTerm = $searchParts[0];
+
+                    // $book_results = collect(Book::search($bookSearchTerm)
+                    //                     ->orderBy('book_id')->get());
+
+                    // $book_results = $book_results->filter(function ($item) use ($bookSearchTerm){
+                    //     return stripos($item->book_name, $bookSearchTerm) !== false;
+                    // });
+
+                    $bookSearchTerm = strlen($bookSearchTerm) > 2 ? substr($bookSearchTerm, 0, -2)
+                    : $bookSearchTerm; 
+                    $book_results = collect(Book::search($bookSearchTerm)
+                        ->orderBy('book_id')->get());
+
+                    $book_results = $book_results->filter(function ($item) use ($bookSearchTerm) {
+                        return stripos($item->book_name, $bookSearchTerm) !== false;
+                    });
+
+                    if($book_results->isNotEmpty()) {
+                        $book_ids = $book_results->pluck('book_id');
+
+                        $pattern = '/^\d+\s*:\s*\d+$/';
+                        $bookchapterSearchTerm = $searchParts[1];
+                        $book_chpater_valid = preg_match($pattern, $bookchapterSearchTerm);
+
+                        list($first, $second) = explode(':', str_replace(' ', '', $bookchapterSearchTerm));
+                        if ($book_chpater_valid && is_numeric($first) && is_numeric($second)) {
+
+                            $color_bible_verse_results = HolyStatement::
+                                        whereIn('book_id', $book_ids)
+                                        ->where('chapter_no', $first)
+                                        ->where('statement_no', $second)
+                                        ->get();
+
+                                $color_bible_verse_results = $color_bible_verse_results
+                                    ->map(function ($item) {
+
+                                    $sentences = preg_split('/(?<=[.?!])\s+/', $item->statement_text, -1, PREG_SPLIT_NO_EMPTY);
+                                    $snippet = implode(' ', array_slice($sentences, 0, 2));
+                                    
+                                    return [
+                                        'type' => 'Bible Verse',
+                                        'result' => $snippet,
+                                        'id' => $item->statement_id,
+                                        'book_id' => $item->book_id,
+                                        'chapter_id' => $item->chapter_id,
+                                        'chapter_no' => $item->chapter->chapter_no,
+                                        'reference' => $item->book->book_name.' '.$item->chapter->chapter_no.':'.$item->statement_no
+                                    ];
+                                });
+                        }
+                    }else{
+
+                        $bible_verse_results = collect(HolyStatement::search($searchTerm)
+                                            ->orderBy('statement_id')->get());
+
+                        $color_bible_verse_results = $bible_verse_results->filter(function ($item) use ($searchTerm){
+                            return stripos($item->statement_text, $searchTerm) !== false;
+                        })->map(function ($item) use ($searchTerm) {
+
+                            $contextWords = 8;
+                            preg_match('/(?:\S+\s+){0,' . $contextWords . '}\S*' . preg_quote($searchTerm, '/') . '\S*(?:\s+\S+){0,' . $contextWords . '}/i', $item->statement_text, $matches);
+                            $highlighted_text = isset($matches[0]) ? preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $matches[0]) . '.....' : $item->statement_text;
+                            return [
+                                'type' => 'Bible Verse',
+                                'result' => $highlighted_text,
+                                'id' => $item->statement_id,
+                                'book_id' => $item->book_id,
+                                'chapter_id' => $item->chapter_id,
+                                'chapter_no' => $item->chapter->chapter_no,
+                                'reference' => $item->book->book_name.' '.$item->chapter->chapter_no.':'.$item->statement_no
+                            ];
+                        });
+                    }
+                }
+            }else{
+
+                $bible_verse_results = collect(HolyStatement::search($searchTerm)
+                                    ->orderBy('statement_id')->get());
+
+                $color_bible_verse_results = $bible_verse_results->filter(function ($item) use ($searchTerm){
+                    return stripos($item->statement_text, $searchTerm) !== false;
+                })->map(function ($item) use ($searchTerm) {
+
+                    $contextWords = 8;
+                    preg_match('/(?:\S+\s+){0,' . $contextWords . '}\S*' . preg_quote($searchTerm, '/') . '\S*(?:\s+\S+){0,' . $contextWords . '}/i', $item->statement_text, $matches);
+                    $highlighted_text = isset($matches[0]) ? preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $matches[0]) . '.....' : $item->statement_text;
+                    return [
+                        'type' => 'Bible Verse',
+                        'result' => $highlighted_text,
+                        'id' => $item->statement_id,
+                        'book_id' => $item->book_id,
+                        'chapter_id' => $item->chapter_id,
+                        'chapter_no' => $item->chapter->chapter_no,
+                        'reference' => $item->book->book_name.' '.$item->chapter->chapter_no.':'.$item->statement_no
+                    ];
+                });
+            }
+        
+
+            if($type==1){
+                
+                //-----------User Notes--------------//
+
+                $logged_user=Auth::user();
+
+                $user_note_results = collect(UserCustomNote::search($searchTerm)
+                                    ->where('user_id',$logged_user->id)
+                                    ->where('status', 1)->orderBy('id')->get());
+
+                $color_user_note_results = $user_note_results->filter(function ($item) use ($searchTerm) {
+                    return stripos($item->note_text, $searchTerm) !== false;
+                })->map(function ($item) use ($searchTerm) {
+
+                    $contextWords = 8;
+
+                    preg_match('/(?:\S+\s+){0,' . $contextWords . '}\S*' . preg_quote($searchTerm, '/') . '\S*(?:\s+\S+){0,' . $contextWords . '}/i', $item->note_text, $matches);
+                    $highlighted_text = isset($matches[0]) ? preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $matches[0]) . '.....' : $item->note_text;
+                    return [
+                        'type' => 'User Notes',
+                        'id' => $item->id,
+                        'result' => $highlighted_text
+                    ];
+                });
+                
+                //-----------Got Questions--------------//
+
+                // $gq_results = collect(GotQuestion::search($searchTerm)
+                //                     ->where('status', 1)->orderBy('id')->get());
+
+                // $color_qg_results = $gq_results->filter(function ($item) use ($searchTerm) {
+                //     return stripos($item->question, $searchTerm) !== false || stripos($item->answer, $searchTerm) !== false;
+                // })->map(function ($item) use ($searchTerm) {
+                    
+                //     $contextWords = 8;
+
+                //     if (stripos($item->question, $searchTerm) !== false) {
+                //         preg_match('/(?:\S+\s+){0,' . $contextWords . '}\S*' . preg_quote($searchTerm, '/') . '\S*(?:\s+\S+){0,' . $contextWords . '}/i', $item->question, $matches);
+                //         $highlighted_text = isset($matches[0]) ? preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $matches[0]) . '.....' : $item->question;
+                //     } else {
+                //         preg_match('/(?:\S+\s+){0,' . $contextWords . '}\S*' . preg_quote($searchTerm, '/') . '\S*(?:\s+\S+){0,' . $contextWords . '}/i', $item->answer, $matches);
+                //         $highlighted_text = isset($matches[0]) ? preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $matches[0]) . '.....' : $item->answer;
+                //     }
+                //     return [
+                //         'type' => 'Got Questions',
+                //         'id' => $item->id,
+                //         'result' => $highlighted_text
+                //     ];
+                // });
+
+                $gq_results = collect(GotQuestion::search($searchTerm)
+                                    ->where('status', 1)->orderBy('id')->get());
+                $filteredQuestions = $gq_results->map(function ($item) { 
+                            $item->question = strip_tags($item->question); 
+                            $item->answer = strip_tags($item->answer); 
+                            return $item; 
+                    });
+
+                $color_qg_results = $filteredQuestions->filter(function ($item) use ($searchTerm) {
+                    return stripos(strip_tags($item->question), $searchTerm) !== false || stripos(strip_tags($item->answer), $searchTerm) !== false;
+                })->map(function ($item) use ($searchTerm) {
+                    
+                    $contextWords = 8;
+
+                    if (stripos($item->question, $searchTerm) !== false) {
+                        preg_match('/(?:\S+\s+){0,' . $contextWords . '}\S*' . preg_quote($searchTerm, '/') . '\S*(?:\s+\S+){0,' . $contextWords . '}/i', strip_tags($item->question), $matches);
+                        $highlighted_text = isset($matches[0]) ? preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $matches[0]) . '.....' : strip_tags($item->question);
+                    } else {
+                        preg_match('/(?:\S+\s+){0,' . $contextWords . '}\S*' . preg_quote($searchTerm, '/') . '\S*(?:\s+\S+){0,' . $contextWords . '}/i', strip_tags($item->answer), $matches);
+                        $highlighted_text = isset($matches[0]) ? preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $matches[0]) . '.....' : strip_tags($item->answer);
+                    }
+                    return [
+                        'type' => 'Got Questions',
+                        'id' => $item->id,
+                        'result' => $highlighted_text
+                    ];
+                });
+
+                //-----------Course --------------//
+
+                // $course_results = collect(Course::search($searchTerm)
+                //                     ->orderBy('id')->get());
+
+                // $course_results = $course_results->filter(function ($item) use ($searchTerm){
+                //     return stripos($item->course_name, $searchTerm) !== false || stripos($item->course_creator, $searchTerm) !== false || stripos($item->description, $searchTerm) !== false;
+                // });
+
+
+                $user_id = Auth::user()->id;
+
+                $course_results = Course::from(with(new Course)->getTable() . ' as a')
+                    ->join(with(new Batch)->getTable() . ' as b', 'a.id', '=', 'b.course_id') // Join with Batch table
+                    ->leftJoin(with(new UserLMS)->getTable() . ' as c', function ($join) use ($user_id) {
+                        $join->on('b.id', '=', 'c.batch_id')
+                            ->where('c.user_id', '=', $user_id)
+                            ->where('c.status', 1);
+
+                    })
+                    ->select('a.course_name', 'b.id as batch_id') // Include last_date in the select
+                    ->where(function ($query) use ($searchTerm) {
+                        $query->where('a.course_name', 'LIKE', '%' . $searchTerm . '%')
+                              ->orWhere('a.course_creator', 'LIKE', '%' . $searchTerm . '%');
+                    })
+                    ->where(function ($query) {
+                                    $query->whereNotNull('c.id')
+                                          ->orWhere(function ($subQuery) {
+                                              $subQuery->where('b.last_date', '>=', now()->format('Y-m-d'));
+                                          });
+                                })
+                    ->groupBy('a.id', 'b.id','a.course_name')
+                    ->get();
+
+                $course_results = $course_results->map(function ($item) {
+                    
+                    return [
+                        'type' => 'Courses',
+                        'result' => $item->course_name,
+                        'id' => $item->batch_id,
+                    ];
+                });
+
+                //-----------Batch --------------//
+
+                // $batch_results = collect(Batch::search($searchTerm)
+                //                     ->orderBy('id')->get());
+
+                // $batch_results = $batch_results->filter(function ($item) use ($searchTerm){
+                //     return stripos($item->batch_name, $searchTerm) !== false;
+                // });
+
+
+                $batch_results = Batch::from(with(new Batch)->getTable() . ' as a')
+                    ->leftJoin(with(new UserLMS)->getTable() . ' as b', function ($join) use ($user_id) {
+                        $join->on('a.id', '=', 'b.batch_id')
+                            ->where('b.user_id', '=', $user_id)
+                            ->where('b.status', 1);
+
+                    })
+
+                    ->select('a.batch_name', 'a.id as batch_id') 
+                    ->where(function ($query) use ($searchTerm) {
+                        $query->where('a.batch_name', 'LIKE', '%' . $searchTerm . '%');
+                    })
+                    ->where(function ($query) {
+                                    $query->whereNotNull('b.id')
+                                          ->orWhere(function ($subQuery) {
+                                              $subQuery->where('a.last_date', '>=', now()->format('Y-m-d'));
+                                          });
+                                })
+                    ->groupBy('a.id','a.batch_name')
+                    ->get();
+
+                $batch_results = $batch_results->map(function ($item) {
+                    
+                    return [
+                        'type' => 'Batch',
+                        'result' => $item->batch_name,
+                        'id' => $item->batch_id
+                    ];
+                });
+
+            }
+
+            //-----------Merge Results--------------//
+
+            if($type==1){
+                $merged_results = $color_bible_verse_results
+                                    ->merge($color_user_note_results)
+                                    ->merge($color_qg_results)
+                                    ->merge($course_results)
+                                    ->merge($batch_results);
+            }else{
+                $merged_results = $color_bible_verse_results;
+            }
+
+            $total_results = $merged_results->count();
+
+            return $this->outputer->code(200)->metadata($total_results)
+                                    ->success($merged_results)->json();
+
+
+        }catch (\Exception $e) {
+
+            DB::rollBack();
+            $return['result']=$e->getMessage();
+            return $this->outputer->code(422)->error($return)->json();
+        }
+    }
+
     // public function SearchResults(Request $request)
     // {
     //     try {
-
-    //         // courses---description,
-    //         // course content---descriptiopn,
-    //         // Notifications---title, content,
-    //         // user notes---note, category,subcategory,
-    //         // user qna---question answer,
             
     //         $searchTerm = $request->input('text');
     //         $type=1;
+            
     //         if($request->input('type')){   
     //             $type = $request->input('type');
     //         }
 
     //         Log::channel('search_log')->info("======>>>>>Search Parameters- ". now()." ======>>>>>\n" . json_encode($searchTerm));
 
+            
     //         //-----------Bible Verse--------------//
 
     //         $searchParts = explode(' ', $searchTerm);
+    //         $color_bible_verse_results = collect();
 
-    //         if(count($searchParts) == 1){
-
-    //             // $book_results = collect(Book::search($searchTerm)
-    //             //                     ->orderBy('book_id')->get());
-
-    //             // $book_results = $book_results->filter(function ($item) use ($searchTerm){
-    //             //     return stripos($item->book_name, $searchTerm) !== false;
-    //             // });
+    //         if (count($searchParts) === 1) {
 
     //             $processedSearchTerm = strlen($searchTerm) > 2 ? substr($searchTerm, 0, -2) : $searchTerm;
+    //             $bookResults = Book::search($processedSearchTerm)
+    //                 ->orderBy('book_id')
+    //                 ->get()
+    //                 ->filter(fn($item) => stripos($item->book_name, $processedSearchTerm) !== false);
 
-    //             $book_results = collect(Book::search($processedSearchTerm)->orderBy('book_id')->get())
-    //                 ->filter(function ($item) use ($processedSearchTerm) {
-    //                     return stripos($item->book_name, $processedSearchTerm) !== false;
-    //             });
-
-
-    //             if($book_results->isNotEmpty()) {
-    //                 $book_ids = $book_results->pluck('book_id');
-
-    //                 $color_bible_verse_results = HolyStatement::whereIn('book_id', $book_ids)->get();
-
-    //                 $color_bible_verse_results = $color_bible_verse_results->map(function ($item) {
-
-    //                     $sentences = preg_split('/(?<=[.?!])\s+/', $item->statement_text, -1, PREG_SPLIT_NO_EMPTY);
-    //                     $snippet = implode(' ', array_slice($sentences, 0, 2));
-                        
-    //                     return [
-    //                         'type' => 'Bible Verse',
-    //                         'result' => $snippet,
-    //                         'id' => $item->statement_id,
-    //                         'book_id' => $item->book_id,
-    //                         'chapter_id' => $item->chapter_id,
-    //                         'chapter_no' => $item->chapter->chapter_no,
-    //                         'reference' => $item->book->book_name.' '.$item->chapter->chapter_no.':'.$item->statement_no
-    //                     ];
-    //                 });
-    //             }else{
-
-    //                 $bible_verse_results = collect(HolyStatement::search($searchTerm)
-    //                                     ->orderBy('statement_id')->get());
-
-    //                 $color_bible_verse_results = $bible_verse_results->filter(function ($item) use ($searchTerm){
-    //                     return stripos($item->statement_text, $searchTerm) !== false;
-    //                 })->map(function ($item) use ($searchTerm) {
-
-    //                     $contextWords = 8;
-    //                     preg_match('/(?:\S+\s+){0,' . $contextWords . '}\S*' . preg_quote($searchTerm, '/') . '\S*(?:\s+\S+){0,' . $contextWords . '}/i', $item->statement_text, $matches);
-    //                     $highlighted_text = isset($matches[0]) ? preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $matches[0]) . '.....' : $item->statement_text;
-    //                     return [
-    //                         'type' => 'Bible Verse',
-    //                         'result' => $highlighted_text,
-    //                         'id' => $item->statement_id,
-    //                         'book_id' => $item->book_id,
-    //                         'chapter_id' => $item->chapter_id,
-    //                         'chapter_no' => $item->chapter->chapter_no,
-    //                         'reference' => $item->book->book_name.' '.$item->chapter->chapter_no.':'.$item->statement_no
-    //                     ];
-    //                 });
+    //             if ($bookResults->isNotEmpty()) {
+    //                 $bookIds = $bookResults->pluck('book_id');
+    //                 $color_bible_verse_results = HolyStatement::whereIn('book_id', $bookIds)
+    //                     ->get()
+    //                     ->map(fn($item) => $this->userRepo->formatBibleVerse($item));
+    //             } else {
+    //                 $color_bible_verse_results = $this->userRepo->searchAndHighlight($searchTerm);
     //             }
-    //         }else if(count($searchParts) == 2) {
 
-    //             if(is_numeric($searchParts[1])){
+    //         } elseif (count($searchParts) === 2) {
 
-    //                 $bookSearchTerm = $searchParts[0];
-    //                 $chapterSearchTerm = $searchParts[1];
+    //             $bookSearchTerm = strlen($searchParts[0]) > 2 ? substr($searchParts[0], 0, -2) : $searchParts[0];
+    //             $chapterSearchTerm = $searchParts[1];
 
-    //                 // $book_results = collect(Book::search($bookSearchTerm)
-    //                 //                     ->orderBy('book_id')->get());
+    //             $bookResults = Book::search($bookSearchTerm)
+    //                 ->orderBy('book_id')
+    //                 ->get()
+    //                 ->filter(fn($item) => stripos($item->book_name, $bookSearchTerm) !== false);
 
-    //                 // $book_results = $book_results->filter(function ($item) use ($bookSearchTerm){
-    //                 //     return stripos($item->book_name, $bookSearchTerm) !== false;
-    //                 // });
+    //             if ($bookResults->isNotEmpty()) {
 
-    //                 $bookSearchTerm = strlen($bookSearchTerm) > 2 ? substr($bookSearchTerm, 0, -2)
-    //                 : $bookSearchTerm; 
-    //                 $book_results = collect(Book::search($bookSearchTerm)
-    //                     ->orderBy('book_id')->get());
+    //                 $bookIds = $bookResults->pluck('book_id');
 
-    //                 $book_results = $book_results->filter(function ($item) use ($bookSearchTerm) {
-    //                     return stripos($item->book_name, $bookSearchTerm) !== false;
-    //                 });
-
-    //                 if($book_results->isNotEmpty()) {
-    //                     $book_ids = $book_results->pluck('book_id');
-
-    //                     $chapter_results = Chapter::whereIn('book_id', $book_ids)
+    //                 if (is_numeric($chapterSearchTerm)) {
+    //                     $chapterResults = Chapter::whereIn('book_id', $bookIds)
     //                         ->where('chapter_no', $chapterSearchTerm)
     //                         ->get();
 
-    //                     if($chapter_results->isNotEmpty()) {
-    //                         $chapter_ids = $chapter_results->pluck('chapter_id');
+    //                     $chapterIds = $chapterResults->pluck('chapter_id');
 
-    //                         $color_bible_verse_results = HolyStatement::whereIn('chapter_id', 
-    //                             $chapter_ids)->get();
+    //                     $color_bible_verse_results = HolyStatement::whereIn('chapter_id', $chapterIds)
+    //                         ->get()
+    //                         ->map(fn($item) => $this->userRepo->formatBibleVerse($item));
 
-    //                         $color_bible_verse_results = $color_bible_verse_results->map(function ($item) {
-    //                             $sentences = preg_split('/(?<=[.?!])\s+/', $item->statement_text, -1, PREG_SPLIT_NO_EMPTY);
-    //                             $snippet = implode(' ', array_slice($sentences, 0, 2));
-
-    //                             return [
-    //                                 'type' => 'Bible Verse',
-    //                                 'result' => $snippet,
-    //                                 'id' => $item->statement_id,
-    //                                 'book_id' => $item->book_id,
-    //                                 'chapter_id' => $item->chapter_id,
-    //                                 'chapter_no' => $item->chapter->chapter_no,
-    //                                 'reference' => $item->book->book_name . ' ' . $item->chapter->chapter_no . ':' . $item->statement_no
-    //                             ];
-    //                         });
-    //                     }else{
-
-    //                         $color_bible_verse_results = HolyStatement::whereIn('book_id', $book_ids)
-    //                                 ->get();
-
-    //                         $color_bible_verse_results = $color_bible_verse_results
-    //                             ->map(function ($item) {
-
-    //                             $sentences = preg_split('/(?<=[.?!])\s+/', $item->statement_text, -1, PREG_SPLIT_NO_EMPTY);
-    //                             $snippet = implode(' ', array_slice($sentences, 0, 2));
-                                
-    //                             return [
-    //                                 'type' => 'Bible Verse',
-    //                                 'result' => $snippet,
-    //                                 'id' => $item->statement_id,
-    //                                 'book_id' => $item->book_id,
-    //                                 'chapter_id' => $item->chapter_id,
-    //                                 'chapter_no' => $item->chapter->chapter_no,
-    //                                 'reference' => $item->book->book_name.' '.$item->chapter->chapter_no.':'.$item->statement_no
-    //                             ];
-    //                         });
-    //                     }
-    //                 }else{
-
-    //                     $bible_verse_results = collect(HolyStatement::search($searchTerm)
-    //                                         ->orderBy('statement_id')->get());
-
-    //                     $color_bible_verse_results = $bible_verse_results->filter(function ($item) use ($searchTerm){
-    //                         return stripos($item->statement_text, $searchTerm) !== false;
-    //                     })->map(function ($item) use ($searchTerm) {
-
-    //                         $contextWords = 8;
-    //                         preg_match('/(?:\S+\s+){0,' . $contextWords . '}\S*' . preg_quote($searchTerm, '/') . '\S*(?:\s+\S+){0,' . $contextWords . '}/i', $item->statement_text, $matches);
-    //                         $highlighted_text = isset($matches[0]) ? preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $matches[0]) . '.....' : $item->statement_text;
-    //                         return [
-    //                             'type' => 'Bible Verse',
-    //                             'result' => $highlighted_text,
-    //                             'id' => $item->statement_id,
-    //                             'book_id' => $item->book_id,
-    //                             'chapter_id' => $item->chapter_id,
-    //                             'chapter_no' => $item->chapter->chapter_no,
-    //                             'reference' => $item->book->book_name.' '.$item->chapter->chapter_no.':'.$item->statement_no
-    //                         ];
-    //                     });
-    //                 }    
-    //             }else{
-
-    //                 $bookSearchTerm = $searchParts[0];
-
-    //                 // $book_results = collect(Book::search($bookSearchTerm)
-    //                 //                     ->orderBy('book_id')->get());
-
-    //                 // $book_results = $book_results->filter(function ($item) use ($bookSearchTerm){
-    //                 //     return stripos($item->book_name, $bookSearchTerm) !== false;
-    //                 // });
-
-    //                 $bookSearchTerm = strlen($bookSearchTerm) > 2 ? substr($bookSearchTerm, 0, -2)
-    //                 : $bookSearchTerm; 
-    //                 $book_results = collect(Book::search($bookSearchTerm)
-    //                     ->orderBy('book_id')->get());
-
-    //                 $book_results = $book_results->filter(function ($item) use ($bookSearchTerm) {
-    //                     return stripos($item->book_name, $bookSearchTerm) !== false;
-    //                 });
-
-    //                 if($book_results->isNotEmpty()) {
-    //                     $book_ids = $book_results->pluck('book_id');
+    //                 } else {
 
     //                     $pattern = '/^\d+\s*:\s*\d+$/';
-    //                     $bookchapterSearchTerm = $searchParts[1];
-    //                     $book_chpater_valid = preg_match($pattern, $bookchapterSearchTerm);
 
-    //                     list($first, $second) = explode(':', str_replace(' ', '', $bookchapterSearchTerm));
-    //                     if ($book_chpater_valid && is_numeric($first) && is_numeric($second)) {
+    //                     if (preg_match($pattern, $chapterSearchTerm)) {
 
-    //                         $color_bible_verse_results = HolyStatement::
-    //                                     whereIn('book_id', $book_ids)
-    //                                     ->where('chapter_no', $first)
-    //                                     ->where('statement_no', $second)
-    //                                     ->get();
+    //                         [$chapterNo, $statementNo] = array_map('intval', explode(':', str_replace(' ', '', $chapterSearchTerm)));
 
-    //                             $color_bible_verse_results = $color_bible_verse_results
-    //                                 ->map(function ($item) {
-
-    //                                 $sentences = preg_split('/(?<=[.?!])\s+/', $item->statement_text, -1, PREG_SPLIT_NO_EMPTY);
-    //                                 $snippet = implode(' ', array_slice($sentences, 0, 2));
-                                    
-    //                                 return [
-    //                                     'type' => 'Bible Verse',
-    //                                     'result' => $snippet,
-    //                                     'id' => $item->statement_id,
-    //                                     'book_id' => $item->book_id,
-    //                                     'chapter_id' => $item->chapter_id,
-    //                                     'chapter_no' => $item->chapter->chapter_no,
-    //                                     'reference' => $item->book->book_name.' '.$item->chapter->chapter_no.':'.$item->statement_no
-    //                                 ];
-    //                             });
+    //                         $color_bible_verse_results = HolyStatement::whereIn('book_id', $bookIds)
+    //                             ->where('chapter_no', $chapterNo)
+    //                             ->where('statement_no', $statementNo)
+    //                             ->get()
+    //                             ->map(fn($item) => $this->userRepo->formatBibleVerse($item));
     //                     }
-    //                 }else{
-
-    //                     $bible_verse_results = collect(HolyStatement::search($searchTerm)
-    //                                         ->orderBy('statement_id')->get());
-
-    //                     $color_bible_verse_results = $bible_verse_results->filter(function ($item) use ($searchTerm){
-    //                         return stripos($item->statement_text, $searchTerm) !== false;
-    //                     })->map(function ($item) use ($searchTerm) {
-
-    //                         $contextWords = 8;
-    //                         preg_match('/(?:\S+\s+){0,' . $contextWords . '}\S*' . preg_quote($searchTerm, '/') . '\S*(?:\s+\S+){0,' . $contextWords . '}/i', $item->statement_text, $matches);
-    //                         $highlighted_text = isset($matches[0]) ? preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $matches[0]) . '.....' : $item->statement_text;
-    //                         return [
-    //                             'type' => 'Bible Verse',
-    //                             'result' => $highlighted_text,
-    //                             'id' => $item->statement_id,
-    //                             'book_id' => $item->book_id,
-    //                             'chapter_id' => $item->chapter_id,
-    //                             'chapter_no' => $item->chapter->chapter_no,
-    //                             'reference' => $item->book->book_name.' '.$item->chapter->chapter_no.':'.$item->statement_no
-    //                         ];
-    //                     });
     //                 }
+    //             } else {
+    //                 $color_bible_verse_results = $this->userRepo->searchAndHighlight($searchTerm);
     //             }
-    //         }else{
 
-    //             $bible_verse_results = collect(HolyStatement::search($searchTerm)
-    //                                 ->orderBy('statement_id')->get());
-
-    //             $color_bible_verse_results = $bible_verse_results->filter(function ($item) use ($searchTerm){
-    //                 return stripos($item->statement_text, $searchTerm) !== false;
-    //             })->map(function ($item) use ($searchTerm) {
-
-    //                 $contextWords = 8;
-    //                 preg_match('/(?:\S+\s+){0,' . $contextWords . '}\S*' . preg_quote($searchTerm, '/') . '\S*(?:\s+\S+){0,' . $contextWords . '}/i', $item->statement_text, $matches);
-    //                 $highlighted_text = isset($matches[0]) ? preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $matches[0]) . '.....' : $item->statement_text;
-    //                 return [
-    //                     'type' => 'Bible Verse',
-    //                     'result' => $highlighted_text,
-    //                     'id' => $item->statement_id,
-    //                     'book_id' => $item->book_id,
-    //                     'chapter_id' => $item->chapter_id,
-    //                     'chapter_no' => $item->chapter->chapter_no,
-    //                     'reference' => $item->book->book_name.' '.$item->chapter->chapter_no.':'.$item->statement_no
-    //                 ];
-    //             });
+    //         } else {
+    //             $color_bible_verse_results = $this->userRepo->searchAndHighlight($searchTerm);
     //         }
         
 
     //         if($type==1){
                 
+
     //             //-----------User Notes--------------//
+
 
     //             $logged_user=Auth::user();
 
@@ -865,30 +898,9 @@ class UserController extends Controller
     //                 ];
     //             });
                 
+
     //             //-----------Got Questions--------------//
 
-    //             // $gq_results = collect(GotQuestion::search($searchTerm)
-    //             //                     ->where('status', 1)->orderBy('id')->get());
-
-    //             // $color_qg_results = $gq_results->filter(function ($item) use ($searchTerm) {
-    //             //     return stripos($item->question, $searchTerm) !== false || stripos($item->answer, $searchTerm) !== false;
-    //             // })->map(function ($item) use ($searchTerm) {
-                    
-    //             //     $contextWords = 8;
-
-    //             //     if (stripos($item->question, $searchTerm) !== false) {
-    //             //         preg_match('/(?:\S+\s+){0,' . $contextWords . '}\S*' . preg_quote($searchTerm, '/') . '\S*(?:\s+\S+){0,' . $contextWords . '}/i', $item->question, $matches);
-    //             //         $highlighted_text = isset($matches[0]) ? preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $matches[0]) . '.....' : $item->question;
-    //             //     } else {
-    //             //         preg_match('/(?:\S+\s+){0,' . $contextWords . '}\S*' . preg_quote($searchTerm, '/') . '\S*(?:\s+\S+){0,' . $contextWords . '}/i', $item->answer, $matches);
-    //             //         $highlighted_text = isset($matches[0]) ? preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $matches[0]) . '.....' : $item->answer;
-    //             //     }
-    //             //     return [
-    //             //         'type' => 'Got Questions',
-    //             //         'id' => $item->id,
-    //             //         'result' => $highlighted_text
-    //             //     ];
-    //             // });
 
     //             $gq_results = collect(GotQuestion::search($searchTerm)
     //                                 ->where('status', 1)->orderBy('id')->get());
@@ -918,14 +930,8 @@ class UserController extends Controller
     //                 ];
     //             });
 
+
     //             //-----------Course --------------//
-
-    //             // $course_results = collect(Course::search($searchTerm)
-    //             //                     ->orderBy('id')->get());
-
-    //             // $course_results = $course_results->filter(function ($item) use ($searchTerm){
-    //             //     return stripos($item->course_name, $searchTerm) !== false || stripos($item->course_creator, $searchTerm) !== false || stripos($item->description, $searchTerm) !== false;
-    //             // });
 
 
     //             $user_id = Auth::user()->id;
@@ -961,14 +967,8 @@ class UserController extends Controller
     //                 ];
     //             });
 
+
     //             //-----------Batch --------------//
-
-    //             // $batch_results = collect(Batch::search($searchTerm)
-    //             //                     ->orderBy('id')->get());
-
-    //             // $batch_results = $batch_results->filter(function ($item) use ($searchTerm){
-    //             //     return stripos($item->batch_name, $searchTerm) !== false;
-    //             // });
 
 
     //             $batch_results = Batch::from(with(new Batch)->getTable() . ' as a')
