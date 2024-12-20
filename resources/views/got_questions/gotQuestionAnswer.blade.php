@@ -8,7 +8,7 @@
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/cascade.css') }}">
 @endsection
 @section('breadcrumb-title')
-<h3>Got Questions</h3>
+<h3>Gospel Questions</h3>
 @endsection
 
 @section('content')

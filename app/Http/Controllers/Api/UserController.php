@@ -622,7 +622,7 @@ class UserController extends Controller
                     ];
                 });
                 
-                //-----------Got Questions--------------//
+                //-----------Gospel Questions--------------//
 
                 // $gq_results = collect(GotQuestion::search($searchTerm)
                 //                     ->where('status', 1)->orderBy('id')->get());
@@ -669,7 +669,7 @@ class UserController extends Controller
                         $highlighted_text = isset($matches[0]) ? preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $matches[0]) . '.....' : strip_tags($item->answer);
                     }
                     return [
-                        'type' => 'Got Questions',
+                        'type' => 'Gospel Questions',
                         'id' => $item->id,
                         'result' => $highlighted_text
                     ];

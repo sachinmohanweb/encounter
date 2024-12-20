@@ -54,7 +54,7 @@
                     </div>
                     <div class="col-md-4">
                         <a class="purchase-btn btn btn-primary btn-hover-effect f-w-500" 
-                        href="{{ asset('/storage/excel_formats/encounter_daily_bible_verse.xlsx') }}" >Download Excel Format</a>
+                        href="{{ asset('/storage/excel_formats/EncounterDailyBibleVerse.xlsx') }}" >Download Excel Format</a>
                     </div>
                 </div>
             </div>

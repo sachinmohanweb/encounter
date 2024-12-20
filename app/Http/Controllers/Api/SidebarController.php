@@ -62,7 +62,7 @@ class SidebarController extends Controller
             $got_questions=$got_questions->paginate($perPage=$per_pg,[],'',$page = $pg_no);
 
             if(empty($got_questions)) {
-                $return['result']=  "Empty blood group list ";
+                $return['result']=  "Empty gospel question ";
                 return $this->outputer->code(422)->error($return)->json();
             }
 
@@ -108,7 +108,7 @@ class SidebarController extends Controller
             $got_question_cats=$got_question_cats->paginate($perPage=$per_pg,[],'',$page = $pg_no);
 
             if(empty($got_question_cats)) {
-                $return['result']=  "Empty blood group list ";
+                $return['result']=  "Empty category list ";
                 return $this->outputer->code(422)->error($return)->json();
             }
 
@@ -158,7 +158,7 @@ class SidebarController extends Controller
             $got_question_subcats=$got_question_subcats->paginate($perPage=$per_pg,[],'',$page = $pg_no);
 
             if(empty($got_question_subcats)) {
-                $return['result']=  "Empty blood group list ";
+                $return['result']=  "Empty sub category list ";
                 return $this->outputer->code(422)->error($return)->json();
             }
 

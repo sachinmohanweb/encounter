@@ -115,7 +115,7 @@
                             </svg>
                             <svg class="fill-icon">
                                 <use href="{{ asset('assets/svg/icon-sprite.svg#fill-user') }}"></use>
-                            </svg><span class="">Got Questions</span>
+                            </svg><span class="">Gospel Questions</span>
                         </a>
                         <ul class="sidebar-submenu">
                             <li><a href="{{route('admin.got-question')}}">Questions & Answers</a></li>

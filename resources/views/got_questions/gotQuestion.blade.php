@@ -21,7 +21,7 @@
 </style>
 @endsection
 @section('breadcrumb-title')
-<h3>Got Questions</h3>
+<h3>Gospel Questions</h3>
 @endsection
 
 @section('content')
