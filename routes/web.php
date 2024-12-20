@@ -115,6 +115,13 @@ Route::middleware('auth:admin')->group(function(){
             ->name('admin.bible.verse.status.change');
     Route::post('/get_bible_verse_theme_list', [BibleVerseController::class, 'BibleVerseTheme'])
             ->name('bible.verse.theme.list');
+
+    Route::get('importbibleverse', [BibleVerseController::class, 'ImportBibleVerse'])
+            ->name('admin.import.bible.verse');
+    Route::post('/store_bible_verse_imports', [BibleVerseController::class, 'StoreImportBibleVerse'])
+            ->name('admin.bible.verse.Import.store');
+    Route::post('import/progress/bibleverse'  ,[BibleVerseController::class,'import_progress_bible_verse'])
+            ->name('import.progress.bibleverse');
     
     Route::get('bibleversetheme', [BibleVerseController::class, 'BibleVerseThemeList'])
             ->name('admin.bible.verse.theme');

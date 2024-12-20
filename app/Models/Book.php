@@ -26,4 +26,8 @@ class Book extends Model
     {
         return $this->hasMany(Chapter::class,'book_id','book_id');
     }
+    public function testament()
+    {
+        return $this->belongsTo(Testament::class,'testament_id','testament_id');
+    }
 }

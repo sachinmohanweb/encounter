@@ -66,8 +66,23 @@
                             <span>Bible View</span>
                         </a>
                     </li>
-                
+
                     <li class="sidebar-list">
+                        <a class="sidebar-link sidebar-title"
+                            href="#">
+                            <svg class="stroke-icon">
+                                <use href="{{ asset('assets/svg/icon-sprite.svg#stroke-knowledgebase') }}"></use>
+                            </svg>
+                            <svg class="fill-icon">
+                                <use href="{{ asset('assets/svg/icon-sprite.svg#fill-knowledgebase') }}"></use>
+                            </svg><span class="">Daily Bible Verse</span></a>
+                        <ul class="sidebar-submenu">
+                            <li><a href="{{ route('admin.daily.bible.verse') }}">Bible Verse List</a></li>
+                            <li><a href="{{ route('admin.import.bible.verse') }}">Import Bible Verses</a></li>
+                        </ul>
+                    </li>
+                
+                   <!--  <li class="sidebar-list">
                         <a class="sidebar-link sidebar-title link-nav" 
                         href="{{route('admin.daily.bible.verse')}}">
                             <svg class="stroke-icon">
@@ -78,7 +93,7 @@
                             </svg>
                             <span>Daily Bible Verse</span>
                         </a>
-                    </li>
+                    </li> -->
 
                     <!-- <li class="sidebar-list">
                         <a class="sidebar-link sidebar-title link-nav" href="">

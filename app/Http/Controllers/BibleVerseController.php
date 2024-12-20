@@ -8,6 +8,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 
 use DB;
+use Excel;
+use Cache;
 use Session;
 use Exception;
 
@@ -18,6 +20,8 @@ use App\Models\Testament;
 use App\Models\HolyStatement;
 use App\Models\BibleVerseTheme;
 use App\Models\DailyBibleVerse;
+
+use App\Imports\DailyBibleVerseImport;
 
 class BibleVerseController extends Controller
 {
@@ -305,5 +309,27 @@ class BibleVerseController extends Controller
             $return['status'] = $e->getMessage();
         }
         return response()->json($return);
+    }
+
+    public function ImportBibleVerse() : View
+    {
+        return view('bible_verse.ImportBibleVerse',[]);
+    }
+
+    public function import_progress_bible_verse(Request $request)
+    {
+        $progress = Cache::get('import_progress_bible', 0);
+
+        return response()->json(['progress' => $progress]);
+    }
+
+    public function StoreImportBibleVerse(Request $request) : JsonResponse
+    {
+        $fileData=$request->file('excel_file');
+
+        $bible_verse_import = new DailyBibleVerseImport();
+        Excel::import($bible_verse_import, $fileData);
+        $output = $bible_verse_import->getImportResult();
+        return response()->json([$output]);
     }
 }
