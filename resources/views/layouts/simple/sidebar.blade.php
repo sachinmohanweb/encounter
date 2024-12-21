@@ -1,7 +1,8 @@
 <div class="sidebar-wrapper" sidebar-layout="stroke-svg">
     <div>
-        <div class="logo-wrapper"><a href="{{ route('admin.dashboard') }}"><img class="img-fluid for-light"
-                    src="{{ asset('assets/images/logo.png') }}" alt="" style="max-width: 115px;"><img class="img-fluid for-dark"
+        <div class="logo-wrapper" style="padding: 27px 35px !important"><a href="{{ route('admin.dashboard') }}"><img class="img-fluid for-light"
+                    src="{{ asset('assets/images/logo.png') }}" alt="" style="max-width: 150px;">
+                    <img class="img-fluid for-dark"
                     src="{{ asset('assets/images/logo.png') }}" alt=""></a>
             <div class="back-btn"><i class="fa fa-angle-left"></i></div>
             <div class="toggle-sidebar"><i class="status_toggle middle sidebar-toggle" data-feather="grid"> </i></div>

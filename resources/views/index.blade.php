@@ -6,6 +6,15 @@
 
 
 @section('style')
+<style type="text/css">
+      .show-hide span {
+         color: #813b0b;
+      }
+      .color_change{
+        background-color: #813b0b;
+        color: #fff;
+      }
+    </style>
 @endsection
 
 @section('content')
@@ -16,7 +25,11 @@
       <div class="col-12 p-0">
          <div class="login-card login-page" style="background: url(assets/images/banner/login.jpg) !important; background-position:center !important; background-size: 100% !important;">
             <div>
-               <div><a class="logo" href="{{ route('index') }}"><img class="img-fluid for-light" src="{{asset('assets/images/logo.png')}}" alt="looginpage" style="max-width:150px;"><img class="img-fluid for-dark" src="{{asset('assets/images/logo/logo.png')}}" alt="looginpage"></a></div>
+               <div><a class="logo" href="{{ route('index') }}">
+                  <img class="img-fluid for-light" src="{{asset('assets/images/logo.png')}}" alt="looginpage">
+                  <img class="img-fluid for-dark" src="{{asset('assets/images/logo1.png')}}" alt="looginpage" 
+                  style="max-width:150px;">
+               </a></div>
                <div class="login-main">
                   <form class="theme-form" action="{{ route('admin.login') }}" method="Post">
                      @csrf
@@ -49,10 +62,10 @@
                         <input class="form-control" type="password" required="" placeholder="*********" 
                         name="password" id="password">
                         <div class="show-hide">
-                           <span class="show" id="ShowPassword"></span></div>
+                           <span class="show color_change1" id="ShowPassword"></span></div>
                      </div>
                      <div class="form-group mt-4 d-flex justify-content-center">
-                        <button class="btn btn-primary btn-block" type="submit">Sign in</button>
+                        <button class="btn btn-block color_change" type="submit" >Sign in</button>
                      </div>
                     
                   </form>
