@@ -27,8 +27,8 @@
             <div>
                <div><a class="logo" href="{{ route('index') }}">
                   <img class="img-fluid for-light" src="{{asset('assets/images/logo.png')}}" alt="looginpage">
-                  <img class="img-fluid for-dark" src="{{asset('assets/images/logo1.png')}}" alt="looginpage" 
-                  style="max-width:150px;">
+                  <!-- <img class="img-fluid for-dark" src="{{asset('assets/images/logo1.png')}}" alt="looginpage" 
+                  style="max-width:150px;"> -->
                </a></div>
                <div class="login-main">
                   <form class="theme-form" action="{{ route('admin.login') }}" method="Post">
