@@ -225,10 +225,11 @@ class BibleDbController extends Controller
             $statement->update($inputData);
             DB::commit();
 
-            $statement->searchable();
+            //$statement->searchable();
 
-            return redirect()->route('admin.read.bible.view.verse', ['chapter_id' => $statement['chapter_id']])
-                            ->with('success',"Success! Verse has been successfully updated.");
+            return redirect()
+                    ->route('admin.read.bible.view.verse', ['chapter_id' => $statement['chapter_id']])
+                    ->with('success',"Success! Verse has been successfully updated.");
         }catch (Exception $e) {
 
             DB::rollBack();
