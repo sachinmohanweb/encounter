@@ -46,7 +46,7 @@ class User extends Authenticatable
     public function getUserNameAttribute()
     {
         $user = User::where('id',$this->id)->first();
-        if ($user) {
+        if(!empty($user)) {
             return trim($user->first_name . ' ' . $user->last_name);
         }
         return null;
