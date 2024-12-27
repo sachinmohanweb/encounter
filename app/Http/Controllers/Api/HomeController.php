@@ -8,6 +8,8 @@ use Carbon\Carbon;
 use App\Helpers\Outputer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
+
 
 use App\Models\User;
 use App\Models\Book;
@@ -53,19 +55,40 @@ class HomeController extends Controller
 
 
             /*---------Daily Bible verse----------*/
+
+            $cacheKey = 'daily_bible_verse_' . $today_string;
             
-            $bible_verse = DailyBibleVerse::from(with(new DailyBibleVerse)->getTable(). ' as a')
-                        ->select('a.id', 'a.verse_id')
-                        ->whereRaw("DATE_FORMAT(a.date, '%Y-%m-%d') = ?", [$today_string])
-                        ->where('status', 1)
-                        ->first();
-            if (!$bible_verse) {
-                $bible_verse = DailyBibleVerse::from(with(new DailyBibleVerse)->getTable(). ' as a')
-                            ->select('a.id','a.verse_id')
+            // $bible_verse = DailyBibleVerse::from(with(new DailyBibleVerse)->getTable(). ' as a')
+            //             ->select('a.id', 'a.verse_id')
+            //             ->whereRaw("DATE_FORMAT(a.date, '%Y-%m-%d') = ?", [$today_string])
+            //             ->where('status', 1)
+            //             ->first();
+            // if (!$bible_verse) {
+            //     $bible_verse = DailyBibleVerse::from(with(new DailyBibleVerse)->getTable(). ' as a')
+            //                 ->select('a.id','a.verse_id')
+            //                 ->where('status', 1)
+            //                 ->inRandomOrder()
+            //                 ->first();
+            // }
+
+            $bible_verse = Cache::remember($cacheKey, now()->endOfDay(), function () use ($today_string) {
+
+                $verse = DailyBibleVerse::from(with(new DailyBibleVerse)->getTable() . ' as a')
+                            ->select('a.id', 'a.verse_id')
+                            ->whereRaw("DATE_FORMAT(a.date, '%Y-%m-%d') = ?", [$today_string])
                             ->where('status', 1)
-                            ->inRandomOrder()
                             ->first();
-            }
+                if (!$verse) {
+                    $verse = DailyBibleVerse::from(with(new DailyBibleVerse)->getTable() . ' as a')
+                                ->select('a.id', 'a.verse_id')
+                                ->where('status', 1)
+                                ->inRandomOrder()
+                                ->first();
+                }
+
+                return $verse;
+            });
+
             if($bible_verse) {
                 $statement = HolyStatement::where('statement_id',$bible_verse->verse_id)->first();
                 $bible_verse->data1 = $statement->statement_text;
@@ -73,6 +96,8 @@ class HomeController extends Controller
                 
                 $bible_verse->makeHidden(['bible_name','testament_name','book_name','chapter_name','verse_no','theme_name']);
             }
+
+
             
             /*---------Courses----------*/
 

@@ -707,7 +707,7 @@ class SidebarController extends Controller
 
                 [ 'category' => "Tags", 'list' => $user_tags ],
 
-                [ 'category' => 'Highlghts', 'list' => $user_colors ] 
+                [ 'category' => 'Highlights', 'list' => $user_colors ] 
             ];
 
             return $this->outputer->code(200)
