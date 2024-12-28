@@ -12,6 +12,7 @@ class Outputer
 	protected $count;
 	protected $metadata = [];
 	protected $BibleVerse = [];
+	protected $HomeBanner = [];
 	protected $LoginUser = [];
 	protected $code = 200;
 	protected $success = true;
@@ -38,6 +39,11 @@ class Outputer
 	public function BibleVerse($BibleVerse)
 	{
 	    $this->BibleVerse = $BibleVerse;
+	    return $this;
+	}
+	public function HomeBanner($HomeBanner)
+	{
+	    $this->HomeBanner = $HomeBanner;
 	    return $this;
 	}
 	public function LoginUser($LoginUser)
@@ -136,6 +142,9 @@ class Outputer
 			$res->data = $this->data;
 			if (!empty($this->BibleVerse)) {
 					$res->BibleVerse = $this->BibleVerse;
+			}
+			if (!empty($this->HomeBanner)) {
+					$res->HomeBanner = $this->HomeBanner;
 			}
 			if (!empty($this->LoginUser)) {
 					$res->LoginUser = $this->LoginUser;
