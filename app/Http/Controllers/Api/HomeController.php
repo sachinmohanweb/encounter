@@ -99,7 +99,7 @@ class HomeController extends Controller
 
                 return $item;
             });
-            
+
             /*---------Courses----------*/
 
             $courses = Course::from(with(new Course)->getTable() . ' as a')
@@ -809,7 +809,9 @@ class HomeController extends Controller
 
             $book_id = $request['book_id'];
 
-            $chapters = Chapter::where('book_id',$book_id)->where('chapter_name', 'NOT LIKE', 'ആമുഖം')->get();
+            $chapters = Chapter::where('book_id',$book_id)
+                        //->where('chapter_name', 'NOT LIKE', 'ആമുഖം')
+                        ->get();
 
             $chapters->transform(function ($item, $key) {
 
@@ -818,6 +820,10 @@ class HomeController extends Controller
                 
                 $statements = $item->statements()->get(['statement_id','statement_no','statement_text']);
                 $item->statements = $statements;
+
+                // if ($item->chapter_no == 0) {
+                //     $item->chapter_no = 'ആമുഖം';
+                // }
 
                 return $item;
             });
@@ -1092,9 +1098,12 @@ class HomeController extends Controller
     public function Notifications(Request $request){
 
         try {
+            $userId = auth()->id();
+
+            $clearedNotifications = Cache::get("user_{$userId}_cleared_notifications", []);
 
             $notifications = Notification::select('id','title','type','redirection','description',
-                                'data')->get();
+                                'data')->whereNotIn('id', $clearedNotifications)->get();
 
             $notifications = $notifications->map(function ($notify) {
                     
@@ -1113,6 +1122,74 @@ class HomeController extends Controller
         }catch (\Exception $e) {
 
             $return['result']=$e->getMessage();
+            return $this->outputer->code(422)->error($return)->json();
+        }
+    }
+
+    public function clearNotification(Request $request)
+    {
+        try {
+            $userId = auth()->id();
+            $notificationId  = $request->id;
+
+            $clearedNotifications = Cache::get("user_{$userId}_cleared_notifications", []);
+
+            if (in_array($notificationId, $clearedNotifications)) {
+                $return['messsage']  =  'Failed.Notification already cleared';
+            }
+
+            $clearedNotifications[] = $notificationId;
+
+            Cache::put("user_{$userId}_cleared_notifications", $clearedNotifications);
+
+            $return['messsage']  =  'Success.Notification cleared';
+
+            return $this->outputer->code(200)->success($return)->json();
+
+        }catch (Exception $e) {
+
+            DB::rollBack();
+            $return['status'] = $e->getMessage();
+            return $this->outputer->code(422)->error($return)->json();
+
+        }
+    }
+
+    public function clearAllNotifications(Request $request)
+    {
+        try {
+            $userId = auth()->id();
+
+            $allNotificationIds = Notification::pluck('id')->toArray();
+
+            Cache::put("user_{$userId}_cleared_notifications", $allNotificationIds);
+
+             $return['messsage']  =  'Success.All Notification cleared';
+
+            return $this->outputer->code(200)->success($return)->json();
+
+        }catch (Exception $e) {
+
+            DB::rollBack();
+            $return['status'] = $e->getMessage();
+            return $this->outputer->code(422)->error($return)->json();
+        }
+    }
+
+    public function NotificationCacheClean(Request $request)
+    {
+        try {
+            $userId = auth()->id();
+            Cache::forget("user_{$userId}_cleared_notifications");
+
+             $return['messsage']  =  'Success.All Notification cache cleared';
+
+            return $this->outputer->code(200)->success($return)->json();
+
+        }catch (Exception $e) {
+
+            DB::rollBack();
+            $return['status'] = $e->getMessage();
             return $this->outputer->code(422)->error($return)->json();
         }
     }
