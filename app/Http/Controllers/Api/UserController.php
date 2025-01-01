@@ -51,6 +51,10 @@ class UserController extends Controller
             $inputData['first_name'] = $request['first_name'];
             $inputData['email'] = $request['email'];
 
+            if($request['timezone']){
+                $inputData['timezone'] = $request['timezone'];
+            }
+
             $user = User::create($inputData);
             DB::commit();
 
@@ -196,6 +200,11 @@ class UserController extends Controller
             $user = User::find(Auth::user()->id);
 
             $user->refresh_token = $request->refresh_token;
+
+            if($request['timezone']){
+                $user->timezone = $request['timezone'];
+            }
+            
             $user->save();
 
             DB::commit();

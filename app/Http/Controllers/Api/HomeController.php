@@ -1220,51 +1220,70 @@ class HomeController extends Controller
 
     public function TestApi(){
 
-        $user_lms = UserLMS::from(with(new UserLMS)->getTable() . ' as ulms')
-                ->join(with(new Batch)->getTable() . ' as b', 'b.id', 'ulms.batch_id')
-                ->select('ulms.*','b.id as batch_id','b.start_date as batch_start_date')
-                ->where('ulms.status', 1)
-                ->where('ulms.completed_status','!=',3)
-                ->where('b.status', 1)
-                ->whereDate('b.start_date', '<', now())
-                ->get();
+        $currentUtcTime = Carbon::now('UTC');
 
-        foreach($user_lms as $key=>$value){
+        $users = User::whereNotNull('refresh_token')->whereNotNull('timezone')->get();
 
-            $courses = Course::from(with(new Course)->getTable() . ' as c')
-                ->join(with(new CourseContent)->getTable() . ' as cc', 'c.id', '=', 'cc.course_id')
-                ->select('cc.*', 'c.id as course_id')
-                ->where('c.id',$value->course_id)
-                ->orderBy('cc.day', 'desc')
-                ->limit(1)->first();
+        if ($users->isEmpty()) {
+            //Log::channel('notification_log')->info("No users found for notifications at " . now());
+            return;
+        }
 
-            if($courses){
-                $user_readings = UserDailyReading::where('user_lms_id',$value->id)
-                                ->orderBy('day', 'desc')
-                                ->limit(1)->first();
-                if($user_readings){
+        foreach ($users as $user) {
 
-                    if($user_readings->day < $courses->day) {
-                        $readingDate = Carbon::parse($user_readings->date_of_reading);
-                        $today = Carbon::now();
-                        if ($today->diffInDays($readingDate) >= 3) {
 
-                            // notify you didnt read course for past  3 days pleadse continue
-                        }
-                    }
+            $userTimeZone = $user->timezone ?? 'UTC';
 
-                }else{
-                    $batch = Batch::where('id',$value->batch_id)->first();
-                    $startDate = Carbon::parse($batch->start_date);
-                    $today = Carbon::now();
-                    if ($today->diffInDays($startDate) >= 3) {
+            $userCurrentTime = $currentUtcTime->copy()->setTimezone($userTimeZone);
+            if($user->id==1){
+                dd($userTimeZone,$userCurrentTime);
+            }
 
-                        // notify didnt satrted course yet
+            if ($userCurrentTime->hour === 17 && $userCurrentTime->minute === 13) {
 
-                    }                    
+                $batches = Batch::where('status', 1)
+                    ->whereBetween('last_date', [
+                        Carbon::now('UTC')->setTimezone($userTimeZone)->startOfDay()->timezone('UTC'),
+                        Carbon::now('UTC')->setTimezone($userTimeZone)->addDays(2)->endOfDay()->timezone('UTC')
+                    ])
+                    ->get()
+                    ->map(function ($batch) {
+                        $today = Carbon::now()->startOfDay();
+                        $lastDate = Carbon::parse($batch->last_date)->endOfDay();
+                        $batch->days_left = $today->diffInDays($lastDate)+1 ;
+                        return $batch;
+                    });
+
+                if ($batches->isEmpty()) {
+                    //Log::channel('notification_log')->info("No upcoming batches for user ID {$user->id}.");
+                    continue;
+                }
+
+                foreach ($batches as $batch) {
+                    $pushData = [
+                        'tokens' => [$user->refresh_token],
+                        'title' => $batch->days_left === 1
+                            ? 'Hurry up! Today is the last day for enrollment – ' . $batch->course->course_name
+                            : 'Reminder: Only ' . $batch->days_left . ' Days Left for Enrollment – ' . $batch->course->course_name,
+                        'body' => 'Enroll now in our next batch of ' . $batch->course->course_name . ' starting ' . $batch->start_date .
+                            '. Last date for enrollment: ' . $batch->last_date . '. Don’t miss out',
+                        'route' => 'NewBatch',
+                        'id' => $batch->id,
+                        'category' => 'NewBatch',
+                        'data1' => $batch->course->course_name,
+                        'data2' => $batch->start_date,
+                        'data3' => $batch->last_date,
+                        'data4' => null,
+                        'data5' => null,
+                        'image1' => null
+                    ];
+
+                    $pusher = new NotificationPusher();
+                    $pusher->push($pushData);
+
+                    Log::channel('notification_log')->info("Notification sent to user ID {$user->id} at " . now() . ". Data: " . json_encode($pushData));
                 }
             }
-                
         }
         
     }

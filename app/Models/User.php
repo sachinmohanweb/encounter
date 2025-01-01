@@ -29,6 +29,7 @@ class User extends Authenticatable
         'browser',
         'last_accessed',
         'email',
+        'timezone',
         'status',
         'country_code',
         'phone',
