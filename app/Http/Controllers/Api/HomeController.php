@@ -821,9 +821,9 @@ class HomeController extends Controller
                 $statements = $item->statements()->get(['statement_id','statement_no','statement_text']);
                 $item->statements = $statements;
 
-                // if ($item->chapter_no == 0) {
-                //     $item->chapter_no = 'ആമുഖം';
-                // }
+                if ($item->chapter_no == 0) {
+                    $item->chapter_no = 'ആമുഖം';
+                }
 
                 return $item;
             });
