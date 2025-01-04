@@ -28,107 +28,99 @@ class NotifyCoursesInactivityForThreeDays extends Command
     public function handle()
     {
 
-        $user_lms = UserLMS::from(with(new UserLMS)->getTable() . ' as ulms')
-                ->join(with(new Batch)->getTable() . ' as b', 'b.id', 'ulms.batch_id')
-                ->select('ulms.*','b.id as batch_id','b.start_date as batch_start_date')
-                ->where('ulms.status', 1)
-                ->where('ulms.completed_status','!=',3)
-                ->where('b.status', 1)
-                ->whereDate('b.start_date', '<', now())
-                ->get();
+        $userLms = UserLMS::from(with(new UserLMS)->getTable() . ' as ulms')
+            ->join(with(new Batch)->getTable() . ' as b', 'b.id', 'ulms.batch_id')
+            ->select('ulms.*', 'b.id as batch_id', 'b.start_date as batch_start_date')
+            ->where('ulms.status', 1)
+            ->where('ulms.completed_status', '!=', 3)
+            ->where('b.status', 1)
+            ->whereDate('b.start_date', '<',  now())
+            //->where('ulms.user_id',1)
+            ->get();
 
-        foreach($user_lms as $key=>$value){
+        foreach ($userLms as $value) {
+            $user = User::find($value->user_id);
+            $userTimeZone = $user->timezone ?? 'UTC';
+            $localCurrentTime = Carbon::now($userTimeZone)->format('H:i');
+            $desiredTime = '20:00';
+
+            if ($localCurrentTime !== $desiredTime) {
+                continue;
+            }
 
             $courses = Course::from(with(new Course)->getTable() . ' as c')
                 ->join(with(new CourseContent)->getTable() . ' as cc', 'c.id', '=', 'cc.course_id')
                 ->select('cc.*', 'c.id as course_id')
-                ->where('c.id',$value->course_id)
+                ->where('c.id', $value->course_id)
                 ->orderBy('cc.day', 'desc')
                 ->limit(1)->first();
 
-            if($courses){
-                $user_readings = UserDailyReading::where('user_lms_id',$value->id)
-                                ->orderBy('day', 'desc')
-                                ->limit(1)->first();
+            if ($courses) {
+                $userReadings = UserDailyReading::where('user_lms_id', $value->id)
+                    ->orderBy('day', 'desc')
+                    ->limit(1)->first();
 
-                $batch_details = Batch::find($value->batch_id);
+                $batchDetails = Batch::find($value->batch_id);
 
-                if($user_readings){
+                if ($userReadings) {
+                    $readingDate = Carbon::parse($userReadings->date_of_reading, 'UTC')
+                                    ->setTimezone($userTimeZone);
+                    $today = Carbon::now($userTimeZone);
 
-                    if($user_readings->day < $courses->day) {
-                        $readingDate = Carbon::parse($user_readings->date_of_reading);
-                        $today = Carbon::now();
-                        if ($today->diffInDays($readingDate) >= 3) {
-
-                            // notify you didnt read course for past  3 days pleadse continue
-
-                            $push_data              = []; 
-                            $push_data['tokens']    =  User::whereNotNull('refresh_token')
-                                                       ->where('id',$value->user_id)
-                                                       //->where('id',1)
-                                                       ->pluck('refresh_token')->toArray();
-
-                            $push_data['title']     =   'We Miss You at course - '.$batch_details->course->course_name;
-
-                            $push_data['body']      =   'Its been a few days since you last visited.'.PHP_EOL.' Jump back in and continue your journey to success!';
-
-                            $push_data['route']         =   'CourseInactivity';
-                            $push_data['id']            =   $value->batch_id;
-                            $push_data['category']      =   'CourseInactivity';
-
-                            $push_data['data1']         =   $batch_details->course->course_name;
-                            $push_data['data2']         =   $batch_details->start_date;
-                            $push_data['data3']         =   $batch_details->last_date;
-                            $push_data['data4']         =   null;
-                            $push_data['data5']         =   null;
-                            $push_data['image1']        =   null;
-
-                            $pusher = new NotificationPusher();
-                            $pusher->push($push_data);
-
-                            Log::channel('notification_log')->info("======>>>>>Notifications for user inactive in course- ". now()."  ======>>>>>\n" . json_encode($push_data['tokens']));
-
-                        }
+                    if ($today->diffInDays($readingDate) >= 3) {
+                        // Notify user inactivity for 3 days
+                        $this->sendNotification($value, $batchDetails, 'inactivity', $userTimeZone);
                     }
+                } else {
+                    $startDate = Carbon::parse($batchDetails->start_date, 'UTC')
+                                    ->setTimezone($userTimeZone);
+                    $today = Carbon::now($userTimeZone);
 
-                }else{
-                    $batch = Batch::where('id',$value->batch_id)->first();
-                    $startDate = Carbon::parse($batch->start_date);
-                    $today = Carbon::now();
                     if ($today->diffInDays($startDate) >= 3) {
-
-                        // notify didnt satrted course yet
-
-                        $push_data              = []; 
-                        $push_data['tokens']    =  User::whereNotNull('refresh_token')
-                                                   ->where('id',$value->user_id)
-                                                   ->pluck('refresh_token')->toArray();
-
-                        $push_data['title']     =   'Your Learning Journey Awaits!';
-
-                        $push_data['body']      =   'You’re all set to start course '.$batch_details->course->course_name.'.'.PHP_EOL.' Get a head start and dive into your first lesson now.';
-
-                        $push_data['route']         =   'CourseInactivity';
-                        $push_data['id']            =   $value->batch_id;
-                        $push_data['category']      =   'CourseInactivity';
-
-                        $push_data['data1']         =   $batch_details->course->course_name;
-                        $push_data['data2']         =   $batch_details->start_date;
-                        $push_data['data3']         =   $batch_details->last_date;
-                        $push_data['data4']         =   null;
-                        $push_data['data5']         =   null;
-                        $push_data['image1']        =   null;
-
-                        $pusher = new NotificationPusher();
-                        $pusher->push($push_data);
-
-                        Log::channel('notification_log')->info("======>>>>>Notifications for user who didnt started courses yet.- ". now()."  ======>>>>>\n" . json_encode($push_data['tokens']));
-
-                    }                    
+                        // Notify user has not started course yet
+                        $this->sendNotification($value, $batchDetails, 'not_started', $userTimeZone);
+                    }
                 }
             }
-                
+        }   
+    }
+
+    private function sendNotification($userLms, $batchDetails, $type, $userTimeZone)
+    {
+        $pushData = [];
+        $pushData['tokens'] = User::whereNotNull('refresh_token')
+            ->where('id', $userLms->user_id)
+            ->pluck('refresh_token')
+            ->toArray();
+
+        if ($type === 'inactivity') {
+            $pushData['title'] = 'We Miss You at batch - ' .$batchDetails->batch_name.' : ' . $batchDetails->course->course_name;
+            $pushData['body'] = 'It’s been a few days since you last visited.' . PHP_EOL . 'Jump back in and continue your journey to success!';
+        } elseif ($type === 'not_started') {
+            $pushData['title'] = 'Your Learning Journey Awaits!';
+            $pushData['body'] = 'You’re all set to start course  - ' .$batchDetails->batch_name.' : ' . $batchDetails->course->course_name . '.' . PHP_EOL . 'Get a head start and dive into your first lesson now.';
         }
 
+        $pushData['route'] = 'CourseInactivity';
+        $pushData['id'] = $userLms->batch_id;
+        $pushData['category'] = 'CourseInactivity';
+        $pushData['data1'] = $batchDetails->course->course_name;
+        $pushData['data2'] = Carbon::parse($batchDetails->start_date, 'UTC')->setTimezone($userTimeZone)->toDateTimeString();
+        $pushData['data3'] = Carbon::parse($batchDetails->last_date, 'UTC')->setTimezone($userTimeZone)->toDateTimeString();
+        $pushData['data4'] = null;
+        $pushData['data5'] = null;
+        $pushData['image1'] = null;
+
+        $pusher = new NotificationPusher();
+        $pusher->push($pushData);
+
+        if ($type === 'inactivity') {
+            Log::channel('notification_log')->info("======>>>>>Notifications for user inactive in course - ".
+                $userLms->batch_id.'-'. $batchDetails->batch_name.' - '.now().' - User : '.$userLms->user_id."  ======>>>>>\n");
+        }else{
+            Log::channel('notification_log')->info("======>>>>>Notifications for user who didnt started courses yet.- ".$userLms->batch_id.'-'. $batchDetails->batch_name.' - '.now().' - User : '.$userLms->user_id."  ======>>>>>\n");
+        }
     }
+
+
 }
