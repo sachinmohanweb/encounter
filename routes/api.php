@@ -21,6 +21,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('logout',[UserController::class, 'logoutuser']);
     
     Route::get('search',[UserController::class, 'SearchResults']);
+    Route::post('v2/search',[UserController::class, 'SearchResultsTwo']);
 
     Route::get('completed_courses', [HomeController::class, 'CompletedCourses']);
 
