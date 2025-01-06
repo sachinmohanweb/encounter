@@ -8,6 +8,10 @@ use Illuminate\View\View;
 class HomeController extends Controller
 {
     
+    public function index() : View
+    {
+        return view('homepage',[]);
+    }
     public function admin_index() : View
     {
         return view('index',[]);

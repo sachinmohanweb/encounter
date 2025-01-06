@@ -15,6 +15,7 @@ use App\Http\Controllers\BibleDbController;
 use App\Http\Controllers\UserQNAController;
 use App\Http\Controllers\AppBannerController;
 
+Route::get('/', [HomeController::class, 'index'])->name('hom_page');
 Route::get('admin', [HomeController::class, 'admin_index'])->name('index');
 Route::post('/login', [UserController::class, 'admin_login'])->name('admin.login');
 
