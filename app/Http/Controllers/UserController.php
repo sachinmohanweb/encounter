@@ -93,7 +93,7 @@ class UserController extends Controller
      
         $request->session()->regenerateToken();
      
-        return redirect()->route('admin.dashboard')
+        return redirect()->route('hom_page')
                     ->with('success', 'You have been successfully logged out.');
     }
 

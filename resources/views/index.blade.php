@@ -8,10 +8,10 @@
 @section('style')
 <style type="text/css">
       .show-hide span {
-         color: #813b0b;
+         color: #226eb2;
       }
       .color_change{
-        background-color: #813b0b;
+        background-color: #226eb2;
         color: #fff;
       }
     </style>

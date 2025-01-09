@@ -14,6 +14,7 @@
      <link rel="stylesheet" href="{{asset('home_index/css/vegas.min.css')}}">
      <link rel="stylesheet" href="{{asset('home_index/css/font-awesome.min.css')}}">
      <link rel="stylesheet" href="{{asset('home_index/css/templatemo-style.css')}}">
+     <link rel="icon" href="{{asset('assets/images/favicon.png')}}" type="image/x-icon">
 
 </head>
 <body>
