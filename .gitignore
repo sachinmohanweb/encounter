@@ -6,4 +6,5 @@ vendor
 storage/encounter-47cbe-firebase-adminsdk-8hvxd-1317c2d38a.json
 config/tntsearch_not_used.php
 
-public/storage/
+public/storage
+config/filesystems.php
