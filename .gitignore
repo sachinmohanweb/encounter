@@ -11,3 +11,4 @@ config/filesystems.php
 public/home_index/js/custom.js
 resources/views/layouts/simple/css.blade.php
 resources/views/layouts/authentication/css.blade.php
+composer.lock
