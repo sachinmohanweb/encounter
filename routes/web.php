@@ -135,6 +135,15 @@ Route::middleware('auth:admin')->group(function(){
     Route::post('deletebibleversetheme', [BibleVerseController::class, 'DeleteBibleVerseTheme'])
             ->name('admin.delete.BibleVerseTheme');
 
+    Route::get('daily_verse_bg', [BibleVerseController::class, 'DailyVerseBg'])
+            ->name('admin.daily_verse_bg.list');
+    Route::post('store_daily_verse_bg', [BibleVerseController::class, 'StoreDailyVerseBg'])
+            ->name('admin.add.daily_verse_bg');
+    Route::post('select_daily_verse_bg', [BibleVerseController::class, 'SelectDailyVerseBg'])
+            ->name('admin.select.daily_verse_bg');
+    Route::post('delete_daily_verse_bg', [BibleVerseController::class, 'DeleteDailyVerseBg'])
+            ->name('admin.delete.daily_verse_bg');
+
     Route::get('courselist', [CourseController::class, 'CourseList'])->name('admin.course.list');
     Route::get('addcourse', [CourseController::class, 'AddCourse'])->name('admin.add.course');
     Route::post('savecourse', [CourseController::class, 'SaveCourse'])->name('admin.save.course');

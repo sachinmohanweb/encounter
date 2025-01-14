@@ -79,6 +79,7 @@
                             </svg><span class="">Daily Bible Verse</span></a>
                         <ul class="sidebar-submenu">
                             <li><a href="{{ route('admin.daily.bible.verse') }}">Bible Verse List</a></li>
+                            <li><a href="{{ route('admin.daily_verse_bg.list') }}">Bible Verse Images</a></li>
                             <li><a href="{{ route('admin.import.bible.verse') }}">Import Bible Verses</a></li>
                         </ul>
                     </li>

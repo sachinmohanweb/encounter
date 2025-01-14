@@ -449,3 +449,13 @@ CREATE TABLE `app_banners` (
 -- 31/12/24----
 
 ALTER TABLE `users` ADD `timezone` VARCHAR(256) NULL DEFAULT NULL AFTER `password`;
+
+-- 13/01/24----
+
+CREATE TABLE `bible_verse_images` (
+	`id` INT NOT NULL AUTO_INCREMENT , 
+	`title` VARCHAR(256) NOT NULL , 
+	`path` VARCHAR(256) NOT NULL , 
+	`status` INT NOT NULL DEFAULT '1' , 
+	`created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , 
+	`updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`id`));

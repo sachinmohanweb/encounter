@@ -19,6 +19,7 @@ use App\Models\Chapter;
 use App\Models\Testament;
 use App\Models\HolyStatement;
 use App\Models\BibleVerseTheme;
+use App\Models\BibleVerseImage;
 use App\Models\DailyBibleVerse;
 
 use App\Imports\DailyBibleVerseImport;
@@ -299,6 +300,99 @@ class BibleVerseController extends Controller
                     DB::commit();
                     $return['status'] = "success";  
                 }
+            }else{
+                $return['status'] = 'failed';
+            }
+
+         }catch (Exception $e) {
+
+            DB::rollBack();
+            $return['status'] = $e->getMessage();
+        }
+        return response()->json($return);
+    }
+
+    public function DailyVerseBg() : View
+    {
+        $images = BibleVerseImage::get();
+
+        return view('bible_verse.Imageslist',compact('images'));
+    }
+    
+    public function StoreDailyVerseBg(Request $request): RedirectResponse
+    {
+        DB::beginTransaction();
+        try {
+            $a =  $request->validate([
+                'title' => 'required',
+                'file' => 'required',
+            ]);
+
+            $inputData = $request->all();
+
+            if($request['file']){
+
+                $fileName ='bibleverseimage' . time() . '.' .$request['file']->extension();
+                $request->file->storeAs('verse_images', $fileName);
+                $inputData['path'] = 'storage/verse_images/'.$fileName;
+            }
+
+            $image = BibleVerseImage::create($inputData);
+            DB::commit();
+             
+            return redirect()->route('admin.daily_verse_bg.list')
+                ->with('success',"Success! New Verse Image has been successfully added.");
+        }catch (Exception $e) {
+
+            DB::rollBack();
+            $message = $e->getMessage();
+            return back()->withInput()->withErrors(['message' =>  $e->getMessage()]);;
+        }
+    }
+
+    public function SelectDailyVerseBg(Request $request): JsonResponse
+    {
+        DB::beginTransaction();
+        try {
+
+            $new_banner = BibleVerseImage::find($request['id']);
+
+            if($new_banner['status']=='Active'){
+                $new_banner->status=1;
+                $new_banner->save();
+            }else{
+                $old_banner = BibleVerseImage::where('status',2)->first();
+                if($old_banner){
+                    $old_banner->status=1;
+                    $old_banner->save();
+                }
+                $new_banner->status=2;
+                $new_banner->save();
+            }
+
+            DB::commit();
+
+            return response()
+                ->json(['success' => true ,'msg' => 'Bible Verse Image Selected ','status' =>$new_banner['status']]);
+
+        }catch (Exception $e) {
+
+            DB::rollBack();
+            $message = $e->getMessage();
+
+            return response()->json(['success' => false,'msg' => $e->getMessage()]);
+        }
+    }
+
+    public function DeleteDailyVerseBg(Request $request) : JsonResponse
+    {
+        DB::beginTransaction();
+        try{
+            $banner =BibleVerseImage::where('id',$request->id)->first();
+            if($banner){
+                $banner->delete();
+                DB::commit();
+                $return['status'] = "success";
             }else{
                 $return['status'] = 'failed';
             }
