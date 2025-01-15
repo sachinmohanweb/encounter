@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use DB;
 use Mail;
 use Auth;
+use Cache;
 use Artisan;
 use Carbon\Carbon;
 
@@ -328,10 +329,17 @@ class SidebarController extends Controller
 
             $user_id = Auth::user()->id;
 
-            $user_tags = Tag::select('id','tag_name')
-                        ->where('user_id',$user_id)
-                        ->where('status',1)
-                        ->get();
+            // $user_tags = Tag::select('id','tag_name')
+            //             ->where('user_id',$user_id)
+            //             ->where('status',1)
+            //             ->get();
+
+            $user_tags = Cache::remember("user_tags_$user_id", 300, function () use ($user_id) {
+                return Tag::select('id', 'tag_name')
+                    ->where('user_id', $user_id)
+                    ->where('status', 1)
+                    ->get();
+            });
 
             if(empty($user_tags)) {
                 $return['result']=  "Empty user tags ";
@@ -365,6 +373,15 @@ class SidebarController extends Controller
 
             $tag = Tag::create($inputData);
             DB::commit();
+
+            Cache::forget("user_tags_$user_id");
+
+            Cache::remember("user_tags_$user_id", 300, function () use ($user_id) {
+                return Tag::select('id', 'tag_name')
+                    ->where('user_id', $user_id)
+                    ->where('status', 1)
+                    ->get();
+            });
 
             $return['messsage']  =  'Success.Your Tag Saved';
             return $this->outputer->code(200)->success($return)->json();
