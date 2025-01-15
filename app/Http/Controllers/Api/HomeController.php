@@ -834,7 +834,8 @@ class HomeController extends Controller
                 $book = Book::where('book_id',$item->book_id)->first();
                 $item->book_name = $book->book_name;
                 
-                $statements = $item->statements()->get(['statement_id','statement_no','statement_text']);
+                $statements = $item->statements()->get(['statement_id','statement_no','statement_heading',
+                    'statement_text']);
                 $item->statements = $statements;
 
                 if ($item->chapter_no == 0) {
