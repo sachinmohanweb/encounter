@@ -781,6 +781,8 @@ class UserController extends Controller
                 $merged_results = $color_bible_verse_results;
             }
 
+            $merged_results = $merged_results->values();
+
             $total_results = $merged_results->count();
 
             return $this->outputer->code(200)->metadata($total_results)
