@@ -77,21 +77,25 @@ class HomeController extends Controller
                 return $verse;
             });
 
-            $bgCacheKey = 'daily_bible_bg_image_' . $today_string;
 
-            $bgImage = Cache::remember($bgCacheKey, now()->endOfDay(), function () {
-                $bgImage = BibleVerseImage::where('status', 2)->first();
+            $bgImage = BibleVerseImage::where('status', 2)->first();
+            if (!$bgImage) {
+                $bgImage = BibleVerseImage::where('status', 1)->inRandomOrder()->first();
+
                 if (!$bgImage) {
-                    $bgImage = BibleVerseImage::where('status', 1)->inRandomOrder()->first();
+                    $path = 'assets/images/defualt_bg.jpg';
+                }else{
+                    $path = $bgImage->path;
                 }
-                return $bgImage;
-            });
+            }else{
+                $path = $bgImage->path;
+            }
 
             if($bible_verse) {
                 $statement = HolyStatement::where('statement_id',$bible_verse->verse_id)->first();
                 $bible_verse->data1 = $statement->statement_text;
                 $bible_verse->data2 = $statement->book->book_name.'  '.$statement->chapter->chapter_no.' : '.$statement->statement_no;
-                $bible_verse->data3 = asset('/') . $bgImage->path;
+                $bible_verse->data3 = asset('/') . $path;
                 
                 $bible_verse->makeHidden(['bible_name','testament_name','book_name','chapter_name','verse_no','theme_name']);
             }
