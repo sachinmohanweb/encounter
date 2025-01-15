@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateBibleVerseImagesTable extends Migration
+class UpdateStatusColumnInBibleVerseImagesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,8 @@ class CreateBibleVerseImagesTable extends Migration
      */
     public function up()
     {
-        Schema::create('bible_verse_images', function (Blueprint $table) {
-            $table->id();
-            $table->string('title');
-            $table->string('path');
-            $table->unsignedTinyInteger('status');
-            $table->timestamps();
+        Schema::table('bible_verse_images', function (Blueprint $table) {
+            $table->integer('status')->default(1)->change();
         });
     }
 
@@ -29,6 +25,8 @@ class CreateBibleVerseImagesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('bible_verse_images');
+        Schema::table('bible_verse_images', function (Blueprint $table) {
+            $table->unsignedTinyInteger('status')->change();
+        });
     }
 }
