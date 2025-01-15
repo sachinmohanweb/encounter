@@ -17,7 +17,7 @@ class CreateBibleVerseImagesTable extends Migration
             $table->id();
             $table->string('title');
             $table->string('path');
-            $table->unsignedTinyInteger('status');
+            $table->integer('status')->default(1); ;
             $table->timestamps();
         });
     }
