@@ -19,6 +19,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('myprofile',[UserController::class, 'myProfile']);
     Route::post('edit_profile',[UserController::class, 'editProfile']);
     Route::get('logout',[UserController::class, 'logoutuser']);
+    Route::get('delete_account',[UserController::class, 'DeleteAccount']);
     
     Route::get('search',[UserController::class, 'SearchResults']);
     Route::post('v2/search',[UserController::class, 'SearchResultsTwo']);

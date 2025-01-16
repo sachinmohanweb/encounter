@@ -66,8 +66,17 @@ class UserController extends Controller
         }catch (\Exception $e) {
 
             DB::rollBack();
-            $return['result']=$e->getMessage();
-            return $this->outputer->code(422)->error($return)->json();
+            // $return['result']=$e->getMessage();
+            // return $this->outputer->code(422)->error($return)->json();
+
+            $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => $e->getMessage()
+                    ]
+                ];
+            return $result;
         }
     }
 
@@ -78,8 +87,16 @@ class UserController extends Controller
         try {
             $user = $this->userRepo->checkUser($request->all());
             if(empty($user)) {
-                $return['result']=  "Invalid/Incorrect Email Address.";
-                return $this->outputer->code(422)->error($return)->json();
+                
+                $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => 'Invalid/Incorrect Email Address.'
+                    ]
+                ];
+                return $result;
+
             }else{
 
                 if($request['email'] == 'sachinmohanfff@gmail.com' || $request['email'] == 'sanufeliz@gmail.com'){
@@ -112,8 +129,15 @@ class UserController extends Controller
         }catch (\Exception $e) {
 
             DB::rollBack();
-            $return['result']=$e->getMessage();
-            return $this->outputer->code(422)->error($return)->json();
+
+            $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => $e->getMessage()
+                    ]
+                ];
+            return $result;
         }
     }
 
@@ -317,6 +341,29 @@ class UserController extends Controller
             DB::commit();
 
             $return['messsage']  =  'User Tokens deleted';
+            return $this->outputer->code(200)->success($return)->json();
+
+        }catch (\Exception $e) {
+
+            DB::rollBack();
+            $return['result']=$e->getMessage();
+            return $this->outputer->code(422)->error($return)->json();
+        }
+    }
+
+    public function DeleteAccount(){
+
+        DB::beginTransaction();
+
+        try {
+
+            $user=Auth::user();
+            
+            $user->status = 2;
+            $user->save();
+            DB::commit();
+
+            $return['messsage']  =  'Your account has been deleted successfully.';
             return $this->outputer->code(200)->success($return)->json();
 
         }catch (\Exception $e) {
