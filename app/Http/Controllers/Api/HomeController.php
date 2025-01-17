@@ -219,8 +219,15 @@ class HomeController extends Controller
             $courses->makeHidden(['bible_name']);
 
             if(empty($courses)) {
-                $return['result']=  "Empty course list ";
-                return $this->outputer->code(422)->error($return)->json();
+
+                $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => "Empty course list "
+                    ]
+                ];
+                return $result;
             }
 
             $mergedData = [
@@ -238,106 +245,16 @@ class HomeController extends Controller
 
         }catch (\Exception $e) {
 
-            $return['result']=$e->getMessage();
-            return $this->outputer->code(422)->error($return)->json();
+            $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => $e->getMessage()
+                    ]
+                ];
+            return $result;
         }
     }
-
-    // public function AllCourses(Request $request){
-    //     try {
-
-    //         $today= now();
-    //         $today_string = now()->toDateString();
-
-    //         $loggeed_user = Auth::user();
-
-    //         $courses = Course::from(with(new Course)->getTable(). ' as a')
-    //             ->join(with(new Batch)->getTable(). ' as b', 'a.id', 'b.course_id')
-    //             ->leftJoin('user_l_m_s as ul', function($join) use ($loggeed_user){
-    //                 $join->on('a.id', '=', 'ul.course_id')
-    //                      ->where('ul.user_id', '=', $loggeed_user['id']);
-    //             })
-    //             ->select(
-    //                 'a.id', 
-    //                 'a.course_name as data1', 
-    //                 'a.course_creator as data2', 
-    //                 'a.thumbnail as image',
-    //                 'b.id as batch_id', 
-    //                 'b.batch_name as data3', 
-    //                 'b.start_date', 
-    //                 'a.no_of_days'
-    //             )
-    //             ->where(function($query) use ($loggeed_user) {
-    //                 $query->whereNull('ul.id')
-    //                       ->where('b.end_date', '>', now()->subDay()->format('Y-m-d'))
-    //                       ->orWhereNotNull('ul.id');
-    //             })
-    //             ->where('a.status', 1)
-    //             ->where('b.status', 1);
-
-    //         if($request['search_word']){
-    //             $courses->where('a.course_name','like',$request['search_word'].'%')
-    //                     ->orwhere('a.course_creator','like',$request['search_word'].'%');
-    //         }
-
-    //          $courses=$courses->orderByRaw('CASE WHEN ul.id IS NULL THEN 0 ELSE 1 END')
-    //                         ->orderBy('ul.completed_status', 'asc') 
-    //                         ->get();
-
-    //         $courses->transform(function ($item, $key) use($loggeed_user) {
-
-    //             if($item->start_date >= now()->format('Y-m-d')){
-    //                 $item->data4 = 'New Batch';
-    //                 $item->data5 = 0 .' %';
-    //             }else{
-    //                 $item->data4 = '';
-    //                 $item->data5 = '';
-
-    //                 $user_lms = UserLMS::where('user_id',$loggeed_user['id'])->where('course_id',$item->id)->first();
-    //                 if($user_lms){
-    //                     $readings_count = UserDailyReading::where('user_lms_id',$user_lms['id'])->count();
-    //                     $percentage= ( $readings_count/$item['no_of_days'])*100;
-
-    //                     if($readings_count>0 && $readings_count<$item->no_of_days){
-    //                         $item->data4 = 'Ongoing';
-    //                         $item->data5 = $percentage.' %';
-    //                     }elseif($readings_count>0 && $readings_count==$item->no_of_days){
-    //                         $item->data4 = 'Completed';
-    //                         $item->data5 = $percentage.' %';
-    //                     }
-    //                 }else{
-    //                     $item->data4 = 'Non-enrolled';
-    //                     $item->data5 = '0 %';
-    //                 }
-
-    //             }
-
-
-    //             if ($item->image !== null) {
-    //                 $item->image = asset('/') . $item->image;
-    //             } else {
-    //                 $item->image = null;
-    //             }
-    //             return $item;
-    //         });
-    //         $courses->makeHidden([ 'bible_name']);
-
-    //         if(empty($courses)) {
-    //             $return['result']=  "Empty course list ";
-    //             return $this->outputer->code(422)->error($return)->json();
-    //         }
-
-    //         return $this->outputer->code(200)
-    //                     ->success($courses )
-    //                     ->json();
-
-    //     }catch (\Exception $e) {
-
-    //         $return['result']=$e->getMessage();
-    //         return $this->outputer->code(422)->error($return)->json();
-    //     }
-    // }
-
 
     public function CompletedCourses(Request $request){
         try {
@@ -390,8 +307,15 @@ class HomeController extends Controller
             $courses->makeHidden([ 'bible_name']);
 
             if(empty($courses)) {
-                $return['result']=  "Empty course list ";
-                return $this->outputer->code(422)->error($return)->json();
+                
+                $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => "Empty course list "
+                    ]
+                ];
+                return $result;
             }
 
             return $this->outputer->code(200)
@@ -400,8 +324,14 @@ class HomeController extends Controller
 
         }catch (\Exception $e) {
 
-            $return['result']=$e->getMessage();
-            return $this->outputer->code(422)->error($return)->json();
+            $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => $e->getMessage()
+                    ]
+                ];
+            return $result;
         }
     }
 
@@ -558,8 +488,15 @@ class HomeController extends Controller
             $courses->makeHidden([ 'bible_name']);
 
             if(empty($courses)) {
-                $return['result']=  "Empty course list ";
-                return $this->outputer->code(422)->error($return)->json();
+                
+                $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => "Empty course list "
+                    ]
+                ];
+                return $result;
             }
 
             return $this->outputer->code(200)
@@ -568,8 +505,14 @@ class HomeController extends Controller
 
         }catch (\Exception $e) {
 
-            $return['result']=$e->getMessage();
-            return $this->outputer->code(422)->error($return)->json();
+            $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => $e->getMessage()
+                    ]
+                ];
+            return $result;
         }
     }
 
@@ -600,8 +543,15 @@ class HomeController extends Controller
         }catch (\Exception $e) {
 
             DB::rollBack();
-            $return['result']=$e->getMessage();
-            return $this->outputer->code(422)->error($return)->json();
+
+            $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => $e->getMessage()
+                    ]
+                ];
+            return $result;
         }
     }
 
@@ -675,8 +625,14 @@ class HomeController extends Controller
 
         }catch (\Exception $e) {
 
-            $return['result']=$e->getMessage();
-            return $this->outputer->code(422)->error($return)->json();
+            $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => $e->getMessage()
+                    ]
+                ];
+            return $result;
         }
     }
 
@@ -699,8 +655,15 @@ class HomeController extends Controller
                 $already_marked = UserDailyReading::where('user_lms_id',$user_lms['id'])
                                 ->where('day',$request['day'])->first();
                 if($already_marked){
-                    $return['messsage']  =  'Failed.Already marked for this day.';
-                    return $this->outputer->code(422)->error($return)->json();
+
+                    $result = [
+                        "status" => "error",
+                        "metadata" => [],
+                        "data" => [
+                            "message" => 'Failed.Already marked for this day.'
+                        ]
+                    ];
+                    return $result;
 
                 }else{
 
@@ -733,16 +696,30 @@ class HomeController extends Controller
                     return $this->outputer->code(200)->success($return)->json();
                 }
             }else{
-                $return['messsage']  =  'Failed.Course days finished.';
-                return $this->outputer->code(422)->error($return)->json();
+
+                $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => 'Failed.Course days finished.'
+                    ]
+                ];
+                return $result;
             }
 
 
         }catch (\Exception $e) {
 
             DB::rollBack();
-            $return['result']=$e->getMessage();
-            return $this->outputer->code(422)->error($return)->json();
+
+            $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => $e->getMessage()
+                    ]
+                ];
+            return $result;
         }
     }
 
@@ -776,8 +753,14 @@ class HomeController extends Controller
 
         }catch (\Exception $e) {
 
-            $return['result']=$e->getMessage();
-            return $this->outputer->code(422)->error($return)->json();
+            $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => $e->getMessage()
+                    ]
+                ];
+            return $result;
         }
     }
 
@@ -814,8 +797,15 @@ class HomeController extends Controller
             return $this->outputer->code(200)->success($mergedData->values())->json();
 
         } catch (\Exception $e) {
-            $return['result'] = $e->getMessage();
-            return $this->outputer->code(422)->error($return)->json();
+
+            $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => $e->getMessage()
+                    ]
+                ];
+            return $result;
         }
     }
 
@@ -850,267 +840,16 @@ class HomeController extends Controller
 
         }catch (\Exception $e) {
 
-            $return['result']=$e->getMessage();
-            return $this->outputer->code(422)->error($return)->json();
+            $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => $e->getMessage()
+                    ]
+                ];
+            return $result;
         }
     }
-
-    // public function BibleSearch(Request $request)
-    // {
-    //     try {
-            
-    //         $searchTerm = $request->input('text');
-
-    //         Log::channel('search_log')->info("======>>>>>Search Parameters- ". now()." ======>>>>>\n" . json_encode($searchTerm));
-
-    //         //-----------Bible Verse--------------//
-
-    //         $searchParts = explode(' ', $searchTerm);
-
-    //         if(count($searchParts) == 1){
-
-    //             $book_results = collect(Book::search($searchTerm)
-    //                                 ->orderBy('book_id')->get());
-
-    //             $book_results = $book_results->filter(function ($item) use ($searchTerm){
-    //                 return stripos($item->book_name, $searchTerm) !== false;
-    //             });
-
-    //             if($book_results->isNotEmpty()) {
-    //                 $book_ids = $book_results->pluck('book_id');
-
-    //                 $color_bible_verse_results = HolyStatement::whereIn('book_id', $book_ids)->get();
-
-    //                 $color_bible_verse_results = $color_bible_verse_results->map(function ($item) {
-
-    //                     $sentences = preg_split('/(?<=[.?!])\s+/', $item->statement_text, -1, PREG_SPLIT_NO_EMPTY);
-    //                     $snippet = implode(' ', array_slice($sentences, 0, 2));
-                        
-    //                     return [
-    //                         'type' => 'Bible Verse',
-    //                         'result' => $snippet,
-    //                         'id' => $item->statement_id,
-    //                         'book_id' => $item->book_id,
-    //                         'chapter_id' => $item->chapter_id,
-    //                         'chapter_no' => $item->chapter->chapter_no,
-    //                         'reference' => $item->book->book_name.' '.$item->chapter->chapter_no.':'.$item->statement_no
-    //                     ];
-    //                 });
-    //             }else{
-
-    //                 $bible_verse_results = collect(HolyStatement::search($searchTerm)
-    //                                     ->orderBy('statement_id')->get());
-
-    //                 $color_bible_verse_results = $bible_verse_results->filter(function ($item) use ($searchTerm){
-    //                     return stripos($item->statement_text, $searchTerm) !== false;
-    //                 })->map(function ($item) use ($searchTerm) {
-
-    //                     $contextWords = 8;
-    //                     preg_match('/(?:\S+\s+){0,' . $contextWords . '}\S*' . preg_quote($searchTerm, '/') . '\S*(?:\s+\S+){0,' . $contextWords . '}/i', $item->statement_text, $matches);
-    //                     $highlighted_text = isset($matches[0]) ? preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $matches[0]) . '.....' : $item->statement_text;
-    //                     return [
-    //                         'type' => 'Bible Verse',
-    //                         'result' => $highlighted_text,
-    //                         'id' => $item->statement_id,
-    //                         'book_id' => $item->book_id,
-    //                         'chapter_id' => $item->chapter_id,
-    //                         'chapter_no' => $item->chapter->chapter_no,
-    //                         'reference' => $item->book->book_name.' '.$item->chapter->chapter_no.':'.$item->statement_no
-    //                     ];
-    //                 });
-    //             }
-    //         }else if(count($searchParts) == 2) {
-
-    //             if(is_numeric($searchParts[1])){
-
-    //                 $bookSearchTerm = $searchParts[0];
-    //                 $chapterSearchTerm = $searchParts[1];
-
-    //                 $book_results = collect(Book::search($bookSearchTerm)
-    //                                     ->orderBy('book_id')->get());
-
-    //                 $book_results = $book_results->filter(function ($item) use ($bookSearchTerm){
-    //                     return stripos($item->book_name, $bookSearchTerm) !== false;
-    //                 });
-
-    //                 if($book_results->isNotEmpty()) {
-    //                     $book_ids = $book_results->pluck('book_id');
-
-    //                     $chapter_results = Chapter::whereIn('book_id', $book_ids)
-    //                         ->where('chapter_no', $chapterSearchTerm)
-    //                         ->get();
-
-    //                     if($chapter_results->isNotEmpty()) {
-    //                         $chapter_ids = $chapter_results->pluck('chapter_id');
-
-    //                         $color_bible_verse_results = HolyStatement::whereIn('chapter_id', 
-    //                             $chapter_ids)->get();
-
-    //                         $color_bible_verse_results = $color_bible_verse_results->map(function ($item) {
-    //                             $sentences = preg_split('/(?<=[.?!])\s+/', $item->statement_text, -1, PREG_SPLIT_NO_EMPTY);
-    //                             $snippet = implode(' ', array_slice($sentences, 0, 2));
-
-    //                             return [
-    //                                 'type' => 'Bible Verse',
-    //                                 'result' => $snippet,
-    //                                 'id' => $item->statement_id,
-    //                                 'book_id' => $item->book_id,
-    //                                 'chapter_id' => $item->chapter_id,
-    //                                 'chapter_no' => $item->chapter->chapter_no,
-    //                                 'reference' => $item->book->book_name . ' ' . $item->chapter->chapter_no . ':' . $item->statement_no
-    //                             ];
-    //                         });
-    //                     }else{
-
-    //                         $color_bible_verse_results = HolyStatement::whereIn('book_id', $book_ids)
-    //                                 ->get();
-
-    //                         $color_bible_verse_results = $color_bible_verse_results
-    //                             ->map(function ($item) {
-
-    //                             $sentences = preg_split('/(?<=[.?!])\s+/', $item->statement_text, -1, PREG_SPLIT_NO_EMPTY);
-    //                             $snippet = implode(' ', array_slice($sentences, 0, 2));
-                                
-    //                             return [
-    //                                 'type' => 'Bible Verse',
-    //                                 'result' => $snippet,
-    //                                 'id' => $item->statement_id,
-    //                                 'book_id' => $item->book_id,
-    //                                 'chapter_id' => $item->chapter_id,
-    //                                 'chapter_no' => $item->chapter->chapter_no,
-    //                                 'reference' => $item->book->book_name.' '.$item->chapter->chapter_no.':'.$item->statement_no
-    //                             ];
-    //                         });
-    //                     }
-    //                 }else{
-
-    //                     $bible_verse_results = collect(HolyStatement::search($searchTerm)
-    //                                         ->orderBy('statement_id')->get());
-
-    //                     $color_bible_verse_results = $bible_verse_results->filter(function ($item) use ($searchTerm){
-    //                         return stripos($item->statement_text, $searchTerm) !== false;
-    //                     })->map(function ($item) use ($searchTerm) {
-
-    //                         $contextWords = 8;
-    //                         preg_match('/(?:\S+\s+){0,' . $contextWords . '}\S*' . preg_quote($searchTerm, '/') . '\S*(?:\s+\S+){0,' . $contextWords . '}/i', $item->statement_text, $matches);
-    //                         $highlighted_text = isset($matches[0]) ? preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $matches[0]) . '.....' : $item->statement_text;
-    //                         return [
-    //                             'type' => 'Bible Verse',
-    //                             'result' => $highlighted_text,
-    //                             'id' => $item->statement_id,
-    //                             'book_id' => $item->book_id,
-    //                             'chapter_id' => $item->chapter_id,
-    //                             'chapter_no' => $item->chapter->chapter_no,
-    //                             'reference' => $item->book->book_name.' '.$item->chapter->chapter_no.':'.$item->statement_no
-    //                         ];
-    //                     });
-    //                 }    
-    //             }else{
-
-    //                 $bookSearchTerm = $searchParts[0];
-
-    //                 $book_results = collect(Book::search($bookSearchTerm)
-    //                                     ->orderBy('book_id')->get());
-
-    //                 $book_results = $book_results->filter(function ($item) use ($bookSearchTerm){
-    //                     return stripos($item->book_name, $bookSearchTerm) !== false;
-    //                 });
-
-    //                 if($book_results->isNotEmpty()) {
-    //                     $book_ids = $book_results->pluck('book_id');
-
-    //                     $pattern = '/^\d+\s*:\s*\d+$/';
-    //                     $bookchapterSearchTerm = $searchParts[1];
-    //                     $book_chpater_valid = preg_match($pattern, $bookchapterSearchTerm);
-
-    //                     list($first, $second) = explode(':', str_replace(' ', '', $bookchapterSearchTerm));
-    //                     if ($book_chpater_valid && is_numeric($first) && is_numeric($second)) {
-
-    //                         $color_bible_verse_results = HolyStatement::
-    //                                     whereIn('book_id', $book_ids)
-    //                                     ->where('chapter_no', $first)
-    //                                     ->where('statement_no', $second)
-    //                                     ->get();
-
-    //                             $color_bible_verse_results = $color_bible_verse_results
-    //                                 ->map(function ($item) {
-
-    //                                 $sentences = preg_split('/(?<=[.?!])\s+/', $item->statement_text, -1, PREG_SPLIT_NO_EMPTY);
-    //                                 $snippet = implode(' ', array_slice($sentences, 0, 2));
-                                    
-    //                                 return [
-    //                                     'type' => 'Bible Verse',
-    //                                     'result' => $snippet,
-    //                                     'id' => $item->statement_id,
-    //                                     'book_id' => $item->book_id,
-    //                                     'chapter_id' => $item->chapter_id,
-    //                                     'chapter_no' => $item->chapter->chapter_no,
-    //                                     'reference' => $item->book->book_name.' '.$item->chapter->chapter_no.':'.$item->statement_no
-    //                                 ];
-    //                             });
-    //                     }
-    //                 }else{
-
-    //                     $bible_verse_results = collect(HolyStatement::search($searchTerm)
-    //                                         ->orderBy('statement_id')->get());
-
-    //                     $color_bible_verse_results = $bible_verse_results->filter(function ($item) use ($searchTerm){
-    //                         return stripos($item->statement_text, $searchTerm) !== false;
-    //                     })->map(function ($item) use ($searchTerm) {
-
-    //                         $contextWords = 8;
-    //                         preg_match('/(?:\S+\s+){0,' . $contextWords . '}\S*' . preg_quote($searchTerm, '/') . '\S*(?:\s+\S+){0,' . $contextWords . '}/i', $item->statement_text, $matches);
-    //                         $highlighted_text = isset($matches[0]) ? preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $matches[0]) . '.....' : $item->statement_text;
-    //                         return [
-    //                             'type' => 'Bible Verse',
-    //                             'result' => $highlighted_text,
-    //                             'id' => $item->statement_id,
-    //                             'book_id' => $item->book_id,
-    //                             'chapter_id' => $item->chapter_id,
-    //                             'chapter_no' => $item->chapter->chapter_no,
-    //                             'reference' => $item->book->book_name.' '.$item->chapter->chapter_no.':'.$item->statement_no
-    //                         ];
-    //                     });
-    //                 }
-    //             }
-    //         }else{
-
-    //             $bible_verse_results = collect(HolyStatement::search($searchTerm)
-    //                                 ->orderBy('statement_id')->get());
-
-    //             $color_bible_verse_results = $bible_verse_results->filter(function ($item) use ($searchTerm){
-    //                 return stripos($item->statement_text, $searchTerm) !== false;
-    //             })->map(function ($item) use ($searchTerm) {
-
-    //                 $contextWords = 8;
-    //                 preg_match('/(?:\S+\s+){0,' . $contextWords . '}\S*' . preg_quote($searchTerm, '/') . '\S*(?:\s+\S+){0,' . $contextWords . '}/i', $item->statement_text, $matches);
-    //                 $highlighted_text = isset($matches[0]) ? preg_replace("/($searchTerm)/i", '<mark>$1</mark>', $matches[0]) . '.....' : $item->statement_text;
-    //                 return [
-    //                     'type' => 'Bible Verse',
-    //                     'result' => $highlighted_text,
-    //                     'id' => $item->statement_id,
-    //                     'book_id' => $item->book_id,
-    //                     'chapter_id' => $item->chapter_id,
-    //                     'chapter_no' => $item->chapter->chapter_no,
-    //                     'reference' => $item->book->book_name.' '.$item->chapter->chapter_no.':'.$item->statement_no
-    //                 ];
-    //             });
-    //         }
-
-    //         $total_results = $color_bible_verse_results->count();
-
-    //         return $this->outputer->code(200)->metadata($total_results)
-    //                                 ->success($color_bible_verse_results)->json();
-
-
-    //     }catch (\Exception $e) {
-
-    //         DB::rollBack();
-    //         $return['result']=$e->getMessage();
-    //         return $this->outputer->code(422)->error($return)->json();
-    //     }
-    // }
-
 
     public function Notifications(Request $request){
 
@@ -1138,8 +877,14 @@ class HomeController extends Controller
 
         }catch (\Exception $e) {
 
-            $return['result']=$e->getMessage();
-            return $this->outputer->code(422)->error($return)->json();
+            $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => $e->getMessage()
+                    ]
+                ];
+            return $result;
         }
     }
 
@@ -1166,8 +911,15 @@ class HomeController extends Controller
         }catch (Exception $e) {
 
             DB::rollBack();
-            $return['status'] = $e->getMessage();
-            return $this->outputer->code(422)->error($return)->json();
+
+            $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => $e->getMessage()
+                    ]
+                ];
+            return $result;
 
         }
     }
@@ -1188,8 +940,15 @@ class HomeController extends Controller
         }catch (Exception $e) {
 
             DB::rollBack();
-            $return['status'] = $e->getMessage();
-            return $this->outputer->code(422)->error($return)->json();
+
+            $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => $e->getMessage()
+                    ]
+                ];
+            return $result;
         }
     }
 
@@ -1206,8 +965,15 @@ class HomeController extends Controller
         }catch (Exception $e) {
 
             DB::rollBack();
-            $return['status'] = $e->getMessage();
-            return $this->outputer->code(422)->error($return)->json();
+
+            $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => $e->getMessage()
+                    ]
+                ];
+            return $result;
         }
     }
 
@@ -1230,8 +996,14 @@ class HomeController extends Controller
 
         }catch (\Exception $e) {
 
-            $return['result']=$e->getMessage();
-            return $this->outputer->code(422)->error($return)->json();
+            $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => $e->getMessage()
+                    ]
+                ];
+            return $result;
         }
     }
 

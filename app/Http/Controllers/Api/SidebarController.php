@@ -63,8 +63,15 @@ class SidebarController extends Controller
             $got_questions=$got_questions->paginate($perPage=$per_pg,[],'',$page = $pg_no);
 
             if(empty($got_questions)) {
-                $return['result']=  "Empty gospel question ";
-                return $this->outputer->code(422)->error($return)->json();
+                
+                $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" =>"Empty gospel question "
+                    ]
+                ];
+            return $result;
             }
 
             $metadata = array(
@@ -83,8 +90,14 @@ class SidebarController extends Controller
 
         }catch (\Exception $e) {
 
-            $return['result']=$e->getMessage();
-            return $this->outputer->code(422)->error($return)->json();
+            $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => $e->getMessage()
+                    ]
+                ];
+            return $result;
         }
     }
 
@@ -109,8 +122,16 @@ class SidebarController extends Controller
             $got_question_cats=$got_question_cats->paginate($perPage=$per_pg,[],'',$page = $pg_no);
 
             if(empty($got_question_cats)) {
-                $return['result']=  "Empty category list ";
-                return $this->outputer->code(422)->error($return)->json();
+                
+                $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => "Empty category list "
+                    ]
+                ];
+                return $result;
+
             }
 
             $metadata = array(
@@ -129,8 +150,14 @@ class SidebarController extends Controller
 
         }catch (\Exception $e) {
 
-            $return['result']=$e->getMessage();
-            return $this->outputer->code(422)->error($return)->json();
+           $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => $e->getMessage()
+                    ]
+                ];
+            return $result;
         }
     }
 
@@ -159,8 +186,15 @@ class SidebarController extends Controller
             $got_question_subcats=$got_question_subcats->paginate($perPage=$per_pg,[],'',$page = $pg_no);
 
             if(empty($got_question_subcats)) {
-                $return['result']=  "Empty sub category list ";
-                return $this->outputer->code(422)->error($return)->json();
+                
+                $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => "Empty sub category list "
+                    ]
+                ];
+                return $result;
             }
 
             $metadata = array(
@@ -179,8 +213,14 @@ class SidebarController extends Controller
 
         }catch (\Exception $e) {
 
-            $return['result']=$e->getMessage();
-            return $this->outputer->code(422)->error($return)->json();
+           $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => $e->getMessage()
+                    ]
+                ];
+            return $result;
         }
     }
 
@@ -210,8 +250,15 @@ class SidebarController extends Controller
             $user_asked_qna=$user_asked_qna->paginate($perPage=$per_pg,[],'',$page = $pg_no);
 
             if(empty($user_asked_qna)) {
-                $return['result']=  "Empty blood group list ";
-                return $this->outputer->code(422)->error($return)->json();
+                
+                $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => "Empty blood group list "
+                    ]
+                ];
+                return $result;
             }
 
             $metadata = array(
@@ -230,8 +277,14 @@ class SidebarController extends Controller
 
         }catch (\Exception $e) {
 
-            $return['result']=$e->getMessage();
-            return $this->outputer->code(422)->error($return)->json();
+            $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => $e->getMessage()
+                    ]
+                ];
+            return $result;
         }
     }
 
@@ -260,8 +313,14 @@ class SidebarController extends Controller
         }catch (\Exception $e) {
 
             DB::rollBack();
-            $return['result']=$e->getMessage();
-            return $this->outputer->code(422)->error($return)->json();
+            $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => $e->getMessage()
+                    ]
+                ];
+            return $result;
         }
     }
 
@@ -277,8 +336,15 @@ class SidebarController extends Controller
                         ->get();
 
             if(empty($user_notes)) {
-                $return['result']=  "Empty user notes ";
-                return $this->outputer->code(422)->error($return)->json();
+
+                $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => "Empty user notes "
+                    ]
+                ];
+                return $result;
             }
 
             return $this->outputer->code(200)
@@ -286,8 +352,14 @@ class SidebarController extends Controller
 
         }catch (\Exception $e) {
 
-            $return['result']=$e->getMessage();
-            return $this->outputer->code(422)->error($return)->json();
+            $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => $e->getMessage()
+                    ]
+                ];
+            return $result;
         }
     }
 
@@ -318,8 +390,14 @@ class SidebarController extends Controller
         }catch (\Exception $e) {
 
             DB::rollBack();
-            $return['result']=$e->getMessage();
-            return $this->outputer->code(422)->error($return)->json();
+            $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => $e->getMessage()
+                    ]
+                ];
+            return $result;
         }
     }
 
@@ -342,8 +420,15 @@ class SidebarController extends Controller
             });
 
             if(empty($user_tags)) {
-                $return['result']=  "Empty user tags ";
-                return $this->outputer->code(422)->error($return)->json();
+                
+                $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => "Empty user tags "
+                    ]
+                ];
+                return $result;
             }
 
             return $this->outputer->code(200)
@@ -351,8 +436,14 @@ class SidebarController extends Controller
 
         }catch (\Exception $e) {
 
-            $return['result']=$e->getMessage();
-            return $this->outputer->code(422)->error($return)->json();
+            $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => $e->getMessage()
+                    ]
+                ];
+            return $result;
         }
     }
 
@@ -390,8 +481,14 @@ class SidebarController extends Controller
         }catch (\Exception $e) {
 
             DB::rollBack();
-            $return['result']=$e->getMessage();
-            return $this->outputer->code(422)->error($return)->json();
+            $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => $e->getMessage()
+                    ]
+                ];
+            return $result;
         }
     }
 
@@ -427,8 +524,14 @@ class SidebarController extends Controller
          }catch (Exception $e) {
 
             DB::rollBack();
-            $return['status'] = $e->getMessage();
-            return $this->outputer->code(422)->error($return)->json();
+            $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => $e->getMessage()
+                    ]
+                ];
+            return $result;
 
         }
     }
@@ -446,8 +549,15 @@ class SidebarController extends Controller
                         ->orderBy('statement_id')
                         ->get()->makeHidden(['type_name','user_name']);
             if(empty($user_notes)) {
-                $return['result']=  "Empty notes ";
-                return $this->outputer->code(422)->error($return)->json();
+               
+                $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => "Empty notes "
+                    ]
+                ];
+                return $result;
             }
             $user_notes->transform(function ($item, $key) {
 
@@ -468,8 +578,15 @@ class SidebarController extends Controller
                         ->orderBy('statement_id')
                         ->get()->makeHidden(['type_name','user_name']);
             if(empty($user_tags)) {
-                $return['result']=  "Empty bookmarks ";
-                return $this->outputer->code(422)->error($return)->json();
+                
+                $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => "Empty bookmarks "
+                    ]
+                ];
+                return $result;
             }
             $user_tags->transform(function ($item, $key) {
 
@@ -493,8 +610,15 @@ class SidebarController extends Controller
                         ->orderBy('statement_id')
                         ->get()->makeHidden(['type_name','user_name']);
             if(empty($user_colors)) {
-                $return['result']=  "Empty color markings ";
-                return $this->outputer->code(422)->error($return)->json();
+                
+                $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => "Empty color markings "
+                    ]
+                ];
+                return $result;
             }
             $user_colors->transform(function ($item, $key) {
 
@@ -522,8 +646,14 @@ class SidebarController extends Controller
 
         }catch (\Exception $e) {
 
-            $return['result']=$e->getMessage();
-            return $this->outputer->code(9+422)->error($return)->json();
+            $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => $e->getMessage()
+                    ]
+                ];
+            return $result;
         }
     }
 
@@ -733,8 +863,14 @@ class SidebarController extends Controller
 
         }catch (\Exception $e) {
 
-            $return['result']=$e->getMessage();
-            return $this->outputer->code(9+422)->error($return)->json();
+            $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => $e->getMessage()
+                    ]
+                ];
+            return $result;
         }
     }
 
@@ -781,8 +917,14 @@ class SidebarController extends Controller
         }catch (\Exception $e) {
 
             DB::rollBack();
-            $return['result']=$e->getMessage();
-            return $this->outputer->code(422)->error($return)->json();
+            $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => $e->getMessage()
+                    ]
+                ];
+            return $result;
         }
     }
 
@@ -820,8 +962,14 @@ class SidebarController extends Controller
          }catch (Exception $e) {
 
             DB::rollBack();
-            $return['status'] = $e->getMessage();
-            return $this->outputer->code(422)->error($return)->json();
+            $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => $e->getMessage()
+                    ]
+                ];
+            return $result;
 
         }
     }
