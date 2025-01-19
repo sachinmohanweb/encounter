@@ -233,7 +233,7 @@ class SidebarController extends Controller
 
             $user_id = Auth::user()->id;
 
-            $user_asked_qna = UserQNA::select('*',DB::raw('DATE_FORMAT(created_at, "%b %d,%Y") as date_of_question'))
+            $user_asked_qna = UserQNA::select('*',DB::raw('DATE_FORMAT(created_at, "%b %d,%Y") as date_of_question'),DB::raw('DATE_FORMAT(updated_at, "%b %d,%Y") as date_of_updation'))
                     ->where('user_id',$user_id)
                     //->where('status',1)
                     ;
@@ -378,12 +378,20 @@ class SidebarController extends Controller
 
             $inputData['user_id'] = $user_id;
             $inputData['note_text'] =$request['note_text'];
-            $inputData['tag_id'] = $request['tag_id'];
 
-            $note = UserCustomNote::create($inputData);
+            $tagIds = explode(',', $request['tag_id']);
+            foreach ($tagIds as $tagId) {
+                $tagId = trim($tagId);
+                $inputData['tag_id'] = $tagId;
+                UserCustomNote::create($inputData);
+            }
+
+            //$inputData['tag_id'] = $request['tag_id'];
+            //$note = UserCustomNote::create($inputData);
+
             DB::commit();
 
-            $return['messsage']  =  'Success.Your Note added';
+            $return['message'] = 'Success. Your notes with tags have been added.';
             return $this->outputer->code(200)->success($return)->json();
 
 
@@ -509,15 +517,25 @@ class SidebarController extends Controller
                     if(!$gQ){
                         $tag->delete();
                         DB::commit();
-                        $return['messsage']  =  'Success.Your Tag Removed';
+
+                        Cache::forget("user_tags_$user_id");
+
+                        Cache::remember("user_tags_$user_id", 300, function () use ($user_id) {
+                            return Tag::select('id', 'tag_name')
+                                ->where('user_id', $user_id)
+                                ->where('status', 1)
+                                ->get();
+                        });
+
+                        $return['messsage']  =  'Success. Your tag has been removed.';
                     }else{
-                        $return['messsage']  =  'Failed.Tag deletion not allowed';
+                        $return['message'] = 'Failed. Tag deletion not allowed due to existing notes.';
                     }
                 }else{
-                    $return['messsage']  =  'Failed.Tag deletion not allowed';
+                    $return['message'] = 'Failed. Tag deletion not allowed due to Bible marking association.';
                 }
             }else{
-                $return['messsage']  =  'Failed.Your Tag Not Removed';
+                $return['message'] = 'Failed. Tag not found or already removed.';
             }
             return $this->outputer->code(200)->success($return)->json();
 

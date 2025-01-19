@@ -10,19 +10,12 @@
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/animate.css') }}">
 @endsection
 
-@section('breadcrumb-title')
-    <h3>Default</h3>
-@endsection
 
-@section('breadcrumb-items')
-    <li class="breadcrumb-item">Dashboard</li>
-    <li class="breadcrumb-item active">Default</li>
-@endsection
 
 @section('content')
 <div class="container-fluid">
 	<div class="row widget-grid">
-	  <div class="col-xxl-4 col-sm-6 box-col-6">
+	  <div class="col-xxl-12 col-sm-12 box-col-12">
 		<div class="card profile-box">
 		  <div class="card-body">
 			<div class="media">
@@ -62,7 +55,7 @@
 		  </div>
 		</div>
 	  </div>
-	  <!-- <div class="col-xxl-auto col-xl-3 col-sm-6 box-col-6"> 
+	  <div class="col-xxl-auto col-xl-3 col-sm-6 box-col-6"> 
 		<div class="row"> 
 		  <div class="col-xl-12"> 
 			<div class="card widget-1">
@@ -79,32 +72,10 @@
 					</div>
 				  </div>
 				  <div> 
-					<h4>10,000</h4><span class="f-light">Purchase</span>
+					<h4>0</h4><span class="f-light">Users</span>
 				  </div>
 				</div>
 				<div class="font-secondary f-w-500"><i class="icon-arrow-up icon-rotate me-1"></i><span>+50%</span></div>
-			  </div>
-			</div>
-			<div class="col-xl-12"> 
-			  <div class="card widget-1">
-				<div class="card-body"> 
-				  <div class="widget-content">
-					<div class="widget-round primary">
-					  <div class="bg-round">
-						<svg class="svg-fill">
-						  <use href="{{ asset('assets/svg/icon-sprite.svg#tag') }}"> </use>
-						</svg>
-						<svg class="half-circle svg-fill">
-						  <use href="{{ asset('assets/svg/icon-sprite.svg#halfcircle') }}"></use>
-						</svg>
-					  </div>
-					</div>
-					<div> 
-					  <h4>4,200</h4><span class="f-light">Sales</span>
-					</div>
-				  </div>
-				  <div class="font-primary f-w-500"><i class="icon-arrow-up icon-rotate me-1"></i><span>+70%</span></div>
-				</div>
 			  </div>
 			</div>
 		  </div>
@@ -127,14 +98,48 @@
 					</div>
 				  </div>
 				  <div> 
-					<h4>7000</h4><span class="f-light">Sales return</span>
+					<h4>0</h4><span class="f-light">Courses</span>
 				  </div>
 				</div>
 				<div class="font-warning f-w-500"><i class="icon-arrow-down icon-rotate me-1"></i><span>-20%</span></div>
 			  </div>
 			</div>
-			<div class="col-xl-12"> 
-			  <div class="card widget-1">
+			
+		  </div>
+		</div>
+	  </div>
+
+	  <div class="col-xxl-auto col-xl-3 col-sm-6 box-col-6"> 
+		<div class="row"> 
+		  <div class="col-xl-12"> 
+			<div class="card widget-1">
+				<div class="card-body"> 
+				  <div class="widget-content">
+					<div class="widget-round primary">
+					  <div class="bg-round">
+						<svg class="svg-fill">
+						  <use href="{{ asset('assets/svg/icon-sprite.svg#tag') }}"> </use>
+						</svg>
+						<svg class="half-circle svg-fill">
+						  <use href="{{ asset('assets/svg/icon-sprite.svg#halfcircle') }}"></use>
+						</svg>
+					  </div>
+					</div>
+					<div> 
+					  <h4>0</h4><span class="f-light">Gospel Questions</span>
+					</div>
+				  </div>
+				  <div class="font-primary f-w-500"><i class="icon-arrow-up icon-rotate me-1"></i><span>+70%</span></div>
+				</div>
+			  </div>
+		  </div>
+		</div>
+	  </div>
+
+	  <div class="col-xxl-auto col-xl-3 col-sm-6 box-col-6"> 
+		<div class="row"> 
+		  <div class="col-xl-12"> 
+			<div class="card widget-1">
 				<div class="card-body"> 
 				  <div class="widget-content">
 					<div class="widget-round success">
@@ -148,52 +153,25 @@
 					  </div>
 					</div>
 					<div> 
-					  <h4>5700</h4><span class="f-light">Purchase rate</span>
+					  <h4>0</h4><span class="f-light">Bible Verses</span>
 					</div>
 				  </div>
 				  <div class="font-success f-w-500"><i class="icon-arrow-up icon-rotate me-1"></i><span>+70%</span></div>
 				</div>
 			  </div>
 			</div>
-		  </div>
 		</div>
 	  </div>
-	  <div class="col-xxl-auto col-xl-12 col-sm-6 box-col-6">
-		<div class="row"> 
-		  <div class="col-xxl-12 col-xl-6 box-col-12">
-			<div class="card widget-1 widget-with-chart">
-			  <div class="card-body"> 
-				<div> 
-				  <h4 class="mb-1">1,80k</h4><span class="f-light">Orders</span>
-				</div>
-				<div class="order-chart"> 
-				  <div id="orderchart"></div>
-				</div>
-			  </div>
-			</div>
-		  </div>
-		  <div class="col-xxl-12 col-xl-6 box-col-12">
-			<div class="card widget-1 widget-with-chart">
-			  <div class="card-body"> 
-				<div> 
-				  <h4 class="mb-1">6,90k</h4><span class="f-light">Profit</span>
-				</div>
-				<div class="profit-chart"> 
-				  <div id="profitchart"></div>
-				</div>
-			  </div>
-			</div>
-		  </div>
-		</div>
-	  </div>
-	  <div class="col-xxl-8 col-lg-12 box-col-12">
+	 
+
+	  <!-- <div class="col-xxl-8 col-lg-12 box-col-12">
 		<div class="card">
 		  <div class="card-header card-no-border"> 
 			<h5>Overall balance</h5>
 		  </div>
 		  <div class="card-body pt-0">
 			<div class="row m-0 overall-card">
-			  <div class="col-xl-9 col-md-12 col-sm-7 p-0">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+			  <div class="col-xl-9 col-md-12 col-sm-7 p-0">                                                               
 				<div class="chart-right">
 				  <div class="row">
 					<div class="col-xl-12">
@@ -536,7 +514,7 @@
 			</div>
 		  </div>
 		</div>
-	  </div> -->
+	  </div>-->
 	</div>
   </div>
     <script type="text/javascript">

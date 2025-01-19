@@ -826,6 +826,10 @@ class HomeController extends Controller
                 
                 $statements = $item->statements()->get(['statement_id','statement_no','statement_heading',
                     'statement_text']);
+                foreach ($statements as $statement) {
+                    $statement->statement_text = str_replace('<br>', "\n", $statement->statement_text);
+                    $statement->statement_text = strip_tags($statement->statement_text);
+                }
                 $item->statements = $statements;
 
                 if ($item->chapter_no == 0) {

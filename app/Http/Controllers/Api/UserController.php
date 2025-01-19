@@ -479,7 +479,9 @@ class UserController extends Controller
                             'book_id' => $item->book_id,
                             'chapter_id' => $item->chapter_id,
                             'chapter_no' => $item->chapter->chapter_no,
-                            'reference' => $item->book->book_name.' '.$item->chapter->chapter_no.':'.$item->statement_no
+                            'reference' => $item->book->book_name.' '.$item->chapter->chapter_no.':'.$item->statement_no,
+                            'data1' => null,
+                            'data2' => null
                         ];
                     });
                 }else{
@@ -501,7 +503,9 @@ class UserController extends Controller
                             'book_id' => $item->book_id,
                             'chapter_id' => $item->chapter_id,
                             'chapter_no' => $item->chapter->chapter_no,
-                            'reference' => $item->book->book_name.' '.$item->chapter->chapter_no.':'.$item->statement_no
+                            'reference' => $item->book->book_name.' '.$item->chapter->chapter_no.':'.$item->statement_no,
+                            'data1' => null,
+                            'data2' => null
                         ];
                     });
                 }
@@ -552,7 +556,9 @@ class UserController extends Controller
                                     'book_id' => $item->book_id,
                                     'chapter_id' => $item->chapter_id,
                                     'chapter_no' => $item->chapter->chapter_no,
-                                    'reference' => $item->book->book_name . ' ' . $item->chapter->chapter_no . ':' . $item->statement_no
+                                    'reference' => $item->book->book_name . ' ' . $item->chapter->chapter_no . ':' . $item->statement_no,
+                                    'data1' => null,
+                                    'data2' => null
                                 ];
                             });
                         }else{
@@ -573,7 +579,9 @@ class UserController extends Controller
                                     'book_id' => $item->book_id,
                                     'chapter_id' => $item->chapter_id,
                                     'chapter_no' => $item->chapter->chapter_no,
-                                    'reference' => $item->book->book_name.' '.$item->chapter->chapter_no.':'.$item->statement_no
+                                    'reference' => $item->book->book_name.' '.$item->chapter->chapter_no.':'.$item->statement_no,
+                                    'data1' => null,
+                                    'data2' => null
                                 ];
                             });
                         }
@@ -596,7 +604,9 @@ class UserController extends Controller
                                 'book_id' => $item->book_id,
                                 'chapter_id' => $item->chapter_id,
                                 'chapter_no' => $item->chapter->chapter_no,
-                                'reference' => $item->book->book_name.' '.$item->chapter->chapter_no.':'.$item->statement_no
+                                'reference' => $item->book->book_name.' '.$item->chapter->chapter_no.':'.$item->statement_no,
+                                'data1' => null,
+                                'data2' => null
                             ];
                         });
                     }    
@@ -649,7 +659,9 @@ class UserController extends Controller
                                         'book_id' => $item->book_id,
                                         'chapter_id' => $item->chapter_id,
                                         'chapter_no' => $item->chapter->chapter_no,
-                                        'reference' => $item->book->book_name.' '.$item->chapter->chapter_no.':'.$item->statement_no
+                                        'reference' => $item->book->book_name.' '.$item->chapter->chapter_no.':'.$item->statement_no,
+                                        'data1' => null,
+                                        'data2' => null
                                     ];
                                 });
                         }
@@ -672,7 +684,9 @@ class UserController extends Controller
                                 'book_id' => $item->book_id,
                                 'chapter_id' => $item->chapter_id,
                                 'chapter_no' => $item->chapter->chapter_no,
-                                'reference' => $item->book->book_name.' '.$item->chapter->chapter_no.':'.$item->statement_no
+                                'reference' => $item->book->book_name.' '.$item->chapter->chapter_no.':'.$item->statement_no,
+                                'data1' => null,
+                                'data2' => null
                             ];
                         });
                     }
@@ -696,7 +710,9 @@ class UserController extends Controller
                         'book_id' => $item->book_id,
                         'chapter_id' => $item->chapter_id,
                         'chapter_no' => $item->chapter->chapter_no,
-                        'reference' => $item->book->book_name.' '.$item->chapter->chapter_no.':'.$item->statement_no
+                        'reference' => $item->book->book_name.' '.$item->chapter->chapter_no.':'.$item->statement_no,
+                        'data1' => null,
+                        'data2' => null
                     ];
                 });
             }
@@ -723,7 +739,9 @@ class UserController extends Controller
                     return [
                         'type' => 'User Notes',
                         'id' => $item->id,
-                        'result' => $highlighted_text
+                        'result' => $highlighted_text,
+                        'data1' => null,
+                        'data2' => null
                     ];
                 });
                 
@@ -776,7 +794,9 @@ class UserController extends Controller
                     return [
                         'type' => 'Gospel Questions',
                         'id' => $item->id,
-                        'result' => $highlighted_text
+                        'result' => $highlighted_text,
+                        'data1' => $item->category_id,
+                        'data2' => $item->sub_category_id
                     ];
                 });
 
@@ -820,6 +840,8 @@ class UserController extends Controller
                         'type' => 'Courses',
                         'result' => $item->course_name,
                         'id' => $item->batch_id,
+                        'data1' => null,
+                        'data2' => null
                     ];
                 });
 
@@ -859,7 +881,9 @@ class UserController extends Controller
                     return [
                         'type' => 'Batch',
                         'result' => $item->batch_name,
-                        'id' => $item->batch_id
+                        'id' => $item->batch_id,
+                        'data1' => null,
+                        'data2' => null
                     ];
                 });
 
