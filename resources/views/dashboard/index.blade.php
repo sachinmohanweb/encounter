@@ -56,6 +56,7 @@
 		</div>
 	  </div>
 	  <div class="col-xxl-auto col-xl-3 col-sm-6 box-col-6"> 
+	  	<a href="{{route('admin.user-profile')}}">
 		<div class="row"> 
 		  <div class="col-xl-12"> 
 			<div class="card widget-1">
@@ -64,7 +65,7 @@
 				  <div class="widget-round secondary">
 					<div class="bg-round">
 					  <svg class="svg-fill">
-						<use href="{{ asset('assets/svg/icon-sprite.svg#cart') }}"> </use>
+						<use href="{{ asset('assets/svg/icon-sprite.svg#stroke-user') }}"> </use>
 					  </svg>
 					  <svg class="half-circle svg-fill">
 						<use href="{{ asset('assets/svg/icon-sprite.svg#halfcircle') }}"></use>
@@ -72,7 +73,7 @@
 					</div>
 				  </div>
 				  <div> 
-					<h4>0</h4><span class="f-light">Users</span>
+					<h4>{{$users}}</h4><span class="f-light">Users</span>
 				  </div>
 				</div>
 				<div class="font-secondary f-w-500"><i class="icon-arrow-up icon-rotate me-1"></i><span>+50%</span></div>
@@ -80,8 +81,10 @@
 			</div>
 		  </div>
 		</div>
+		</a>
 	  </div>
-	  <div class="col-xxl-auto col-xl-3 col-sm-6 box-col-6"> 
+	  <div class="col-xxl-auto col-xl-3 col-sm-6 box-col-6">
+	  	<a href="{{route('admin.course.list')}}"> 
 		<div class="row"> 
 		  <div class="col-xl-12"> 
 			<div class="card widget-1">
@@ -90,7 +93,7 @@
 				  <div class="widget-round warning">
 					<div class="bg-round">
 					  <svg class="svg-fill">
-						<use href="{{ asset('assets/svg/icon-sprite.svg#return-box') }}"> </use>
+						<use href="{{ asset('assets/svg/icon-sprite.svg#stroke-blog') }}"> </use>
 					  </svg>
 					  <svg class="half-circle svg-fill">
 						<use href="{{ asset('assets/svg/icon-sprite.svg#halfcircle') }}"></use>
@@ -98,7 +101,7 @@
 					</div>
 				  </div>
 				  <div> 
-					<h4>0</h4><span class="f-light">Courses</span>
+					<h4>{{$course_batches}}</h4><span class="f-light">Course Batches</span>
 				  </div>
 				</div>
 				<div class="font-warning f-w-500"><i class="icon-arrow-down icon-rotate me-1"></i><span>-20%</span></div>
@@ -107,9 +110,11 @@
 			
 		  </div>
 		</div>
+		</a>
 	  </div>
 
 	  <div class="col-xxl-auto col-xl-3 col-sm-6 box-col-6"> 
+	  	<a href="{{route('admin.got-question')}}">
 		<div class="row"> 
 		  <div class="col-xl-12"> 
 			<div class="card widget-1">
@@ -126,7 +131,7 @@
 					  </div>
 					</div>
 					<div> 
-					  <h4>0</h4><span class="f-light">Gospel Questions</span>
+					  <h4>{{$gq_questions}}</h4><span class="f-light">Gospel Questions</span>
 					</div>
 				  </div>
 				  <div class="font-primary f-w-500"><i class="icon-arrow-up icon-rotate me-1"></i><span>+70%</span></div>
@@ -134,9 +139,11 @@
 			  </div>
 		  </div>
 		</div>
+		</a>
 	  </div>
 
 	  <div class="col-xxl-auto col-xl-3 col-sm-6 box-col-6"> 
+	  	<a href="{{route('admin.daily.bible.verse')}}">
 		<div class="row"> 
 		  <div class="col-xl-12"> 
 			<div class="card widget-1">
@@ -145,7 +152,7 @@
 					<div class="widget-round success">
 					  <div class="bg-round">
 						<svg class="svg-fill">
-						  <use href="{{ asset('assets/svg/icon-sprite.svg#rate') }}"> </use>
+						  <use href="{{ asset('assets/svg/icon-sprite.svg#notification') }}"> </use>
 						</svg>
 						<svg class="half-circle svg-fill">
 						  <use href="{{ asset('assets/svg/icon-sprite.svg#halfcircle') }}"></use>
@@ -153,7 +160,7 @@
 					  </div>
 					</div>
 					<div> 
-					  <h4>0</h4><span class="f-light">Bible Verses</span>
+					  <h4>{{$daily_verse}}</h4><span class="f-light">Bible daily Verses</span>
 					</div>
 				  </div>
 				  <div class="font-success f-w-500"><i class="icon-arrow-up icon-rotate me-1"></i><span>+70%</span></div>
@@ -161,6 +168,7 @@
 			  </div>
 			</div>
 		</div>
+		</a>
 	  </div>
 	 
 
