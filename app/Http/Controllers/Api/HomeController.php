@@ -425,14 +425,16 @@ class HomeController extends Controller
                                             ->orderBy('day');
                         if ($type ==1) {
                             
-                            // $largest_day_completed =UserDailyReading::where('user_lms_id',$user_lms['id'])
-                            //                         ->max('day');
+                            $largest_day_completed =UserDailyReading::where('user_lms_id',$user_lms['id'])
+                                                    ->max('day');
+                            if($largest_day_completed) {
+                                if($user_lms['completed_status']!=3){
+                                    $course_content->where('day', '>', $largest_day_completed)->limit(5);
+                                }    
+                            }else{
+                                $course_content->where('day', '>', 0)->limit(5);
 
-                            // if($largest_day_completed) {
-                            //     if($user_lms['completed_status']!=3){
-                            //         $course_content->where('day', '>', $largest_day_completed)->limit(5);
-                            //     }    
-                            // }
+                            }
                             $read_days = UserDailyReading::where('user_lms_id', $user_lms['id'])
                                         ->pluck('day')->toArray();
 
