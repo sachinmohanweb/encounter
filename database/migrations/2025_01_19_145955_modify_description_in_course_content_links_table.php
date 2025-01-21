@@ -15,8 +15,8 @@ class ModifyDescriptionInCourseContentLinksTable extends Migration
     {
         Schema::table('course_content_links', function (Blueprint $table) {
             $table->text('description')
-                ->charset('utf8mb4')
-                ->collation('utf8mb4_unicode_ci')
+                //->charset('utf8mb4')
+                //->collation('utf8mb4_unicode_ci')
                 ->nullable()
                 ->default(null)
                 ->change();
