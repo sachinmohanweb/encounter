@@ -87,7 +87,7 @@
                         </div>
                         <div class="row g-3 mb-3">
                            <div class="form-group">
-                              <label for="">Image File<span style="color:red">*</span></label>
+                              <label for="">Image File<span style="color:red">* Image size must be 400 * 180 pixels for optimal display</span></label>
                               <input type="file" placeholder="Image File" name="file" class="form-control" required>
                            </div>
                         </div>
