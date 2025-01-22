@@ -183,7 +183,9 @@ class SidebarController extends Controller
             if($request['per_page']){
                $per_pg=$page=$request['per_page'];
             }
-            $got_question_subcats=$got_question_subcats->paginate($perPage=$per_pg,[],'',$page = $pg_no);
+            $got_question_subcats=$got_question_subcats
+                ->orderByRaw('CAST(SUBSTRING_INDEX(name, " ", -1) AS UNSIGNED)')
+                ->paginate($perPage=$per_pg,[],'',$page = $pg_no);
 
             if(empty($got_question_subcats)) {
                 
