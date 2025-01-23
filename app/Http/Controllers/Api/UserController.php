@@ -151,10 +151,12 @@ class UserController extends Controller
                 ->where('otp', $request->otp)
                 ->where('otp_used', false)
                 ->first();
+
             if ($otp) {
 
                 if (Carbon::now()->lt($otp->otp_expiry)) {
-                   
+                    $otp->otp_used = true;
+                    $otp->save();
 
                     $user = User::where('email',$request->email)->first();
                     
@@ -171,7 +173,6 @@ class UserController extends Controller
                         } else {
                             $device_type = 'Other';
                         }
-                        $device_type = 'Other';
 
                         $user->device_id = 'device_id';
                         $user->refresh_token = $request->refresh_token;
@@ -182,6 +183,7 @@ class UserController extends Controller
                     }
 
                     $token = $user->createToken('encounter-bible-app')->plainTextToken;
+
                     $otp->otp_used = true;
                     $otp->save();
 
