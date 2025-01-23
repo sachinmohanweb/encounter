@@ -191,8 +191,7 @@ class UserController extends Controller
                     $return['token']  = $token;
                     $return['user']  =  $user;
                     
-dd($return);
-                    Log::info($return);
+                    //Log::info($return);
 
                     return $this->outputer->code(200)->success($return)->json();
                 }else{
