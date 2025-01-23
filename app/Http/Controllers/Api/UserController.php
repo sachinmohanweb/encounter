@@ -164,26 +164,25 @@ class UserController extends Controller
 
                         $userAgent = request()->header('User-Agent');
 
-                        // if (stripos($userAgent, 'Android') !== false) {
-                        //     $device_type = 'Android';
-                        // } elseif (stripos($userAgent, 'iPhone') !== false || stripos($userAgent, 'iPad') !== false) {
-                        //     $device_type = 'iOS';
-                        // } else {
-                        //     $device_type = 'Other';
-                        // }
+                        if (stripos($userAgent, 'Android') !== false) {
+                            $device_type = 'Android';
+                        } elseif (stripos($userAgent, 'iPhone') !== false || stripos($userAgent, 'iPad') !== false) {
+                            $device_type = 'iOS';
+                        } else {
+                            $device_type = 'Other';
+                        }
                         $device_type = 'Other';
 
                         $user->device_id = 'device_id';
                         $user->refresh_token = $request->refresh_token;
-                        //$user->ip = request()->ip();
-                        $user->ip = '12345';
+                        $user->ip = request()->ip();
                         $user->device_type = $device_type;
 
                         $user->save();
                     }
 
                     $token = $user->createToken('encounter-bible-app')->plainTextToken;
-
+dd($otp);
                     $otp->otp_used = true;
                     $otp->save();
 
