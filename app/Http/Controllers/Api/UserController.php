@@ -182,7 +182,6 @@ class UserController extends Controller
                     }
 
                     $token = $user->createToken('encounter-bible-app')->plainTextToken;
-dd($otp);
                     $otp->otp_used = true;
                     $otp->save();
 
@@ -192,6 +191,7 @@ dd($otp);
                     $return['token']  = $token;
                     $return['user']  =  $user;
                     
+dd($return);
                     Log::info($return);
 
                     return $this->outputer->code(200)->success($return)->json();
