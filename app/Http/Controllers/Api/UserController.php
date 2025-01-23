@@ -160,10 +160,10 @@ class UserController extends Controller
                     
                     Auth::guard('users')->login($user);
 
-dd($user);
                     if($request->refresh_token){
 
                         $userAgent = request()->header('User-Agent');
+dd($userAgent);
 
                         if (stripos($userAgent, 'Android') !== false) {
                             $device_type = 'Android';
