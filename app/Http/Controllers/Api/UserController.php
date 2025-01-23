@@ -162,8 +162,8 @@ class UserController extends Controller
 
                     if($request->refresh_token){
 
+dd($user,request()->header('User-Agent'));
                         $userAgent = request()->header('User-Agent');
-dd($userAgent);
 
                         if (stripos($userAgent, 'Android') !== false) {
                             $device_type = 'Android';
