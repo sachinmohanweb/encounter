@@ -151,7 +151,7 @@ class UserController extends Controller
                 ->where('otp', $request->otp)
                 ->where('otp_used', false)
                 ->first();
-
+dd($otp);
             if ($otp) {
 
                 if (Carbon::now()->lt($otp->otp_expiry)) {
