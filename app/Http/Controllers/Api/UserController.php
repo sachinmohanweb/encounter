@@ -151,7 +151,6 @@ class UserController extends Controller
                 ->where('otp', $request->otp)
                 ->where('otp_used', false)
                 ->first();
-dd($otp);
             if ($otp) {
 
                 if (Carbon::now()->lt($otp->otp_expiry)) {
@@ -161,6 +160,7 @@ dd($otp);
                     
                     Auth::guard('users')->login($user);
 
+dd($user);
                     if($request->refresh_token){
 
                         $userAgent = request()->header('User-Agent');
