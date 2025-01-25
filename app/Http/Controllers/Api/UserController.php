@@ -155,8 +155,8 @@ class UserController extends Controller
             if ($otp) {
 
                 if (Carbon::now()->lt($otp->otp_expiry)) {
-                    $otp->otp_used = true;
-                    $otp->save();
+                    // $otp->otp_used = true;
+                    // $otp->save();
 
                     $user = User::where('email',$request->email)->first();
                     
