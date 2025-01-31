@@ -983,6 +983,30 @@ class HomeController extends Controller
         }
     }
 
+    public function DailyVerseCCacheClean(Request $request)
+    {
+        try {
+            $date = date('Y-m-d');
+            Cache::forget("daily_bible_verse_{$date}");
+             $return['messsage']  =  'Success.daily verse cache cleared';
+
+            return $this->outputer->code(200)->success($return)->json();
+
+        }catch (Exception $e) {
+
+            DB::rollBack();
+
+            $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => $e->getMessage()
+                    ]
+                ];
+            return $result;
+        }
+    }
+
     public function AppBanners(Request $request){
 
         try {

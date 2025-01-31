@@ -59,6 +59,8 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::post('clear/notification', [HomeController::class, 'clearNotification']);
     Route::post('clear_all/notifications', [HomeController::class, 'clearAllNotifications']);
     Route::post('notification_cache_clean', [HomeController::class, 'NotificationCacheClean']);
+    Route::post('daily_verse_cache_clean', [HomeController::class, 'DailyVerseCCacheClean']);
+
 
     Route::get('app_banners', [HomeController::class, 'AppBanners']);
 
