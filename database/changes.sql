@@ -464,3 +464,65 @@ CREATE TABLE `bible_verse_images` (
 -- 19/01/24----
 
 ALTER TABLE `course_content_links` CHANGE `description` `description` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL;
+
+
+-- 01/02/25 Indexing----
+
+ALTER TABLE courses 
+ADD INDEX idx_status (status);
+
+
+ALTER TABLE course_contents 
+ADD INDEX idx_course_id (course_id), 
+ADD INDEX idx_day (day), 
+ADD INDEX idx_status (status);
+
+
+ALTER TABLE batches 
+ADD INDEX idx_course_id (course_id), 
+ADD INDEX idx_start_date (start_date), 
+ADD INDEX idx_end_date (end_date), 
+ADD INDEX idx_last_date (last_date), 
+ADD INDEX idx_status (status);
+
+
+ALTER TABLE course_day_verses 
+ADD INDEX idx_course_content_id (course_content_id), 
+ADD INDEX idx_testament (testament), 
+ADD INDEX idx_book_chapter (book, chapter);
+
+ALTER TABLE course_content_links 
+ADD INDEX idx_course_content_id (course_content_id), 
+ADD INDEX idx_type (type);
+
+
+ALTER TABLE user_l_m_s 
+ADD INDEX idx_user_id (user_id), 
+ADD INDEX idx_course_id (course_id), 
+ADD INDEX idx_batch_id (batch_id), 
+ADD INDEX idx_start_date (start_date), 
+ADD INDEX idx_end_date (end_date), 
+ADD INDEX idx_completed_status (completed_status), 
+ADD INDEX idx_status (status);
+
+
+ALTER TABLE user_qna 
+ADD INDEX idx_user_id (user_id), 
+ADD INDEX idx_status (status);
+
+
+ALTER TABLE user_bible_markings 
+ADD INDEX idx_user_id (user_id), 
+ADD INDEX idx_statement_id (statement_id), 
+ADD INDEX idx_type (type), 
+ADD INDEX idx_status (status);
+
+
+ALTER TABLE user_custom_notes 
+ADD INDEX idx_user_id (user_id), 
+ADD INDEX idx_tag_id (tag_id), 
+ADD INDEX idx_status (status);
+
+ALTER TABLE tags 
+ADD INDEX idx_user_id (user_id), 
+ADD INDEX idx_status (status);
