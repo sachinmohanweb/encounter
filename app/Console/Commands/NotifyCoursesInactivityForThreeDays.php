@@ -111,14 +111,16 @@ class NotifyCoursesInactivityForThreeDays extends Command
         $pushData['data5'] = null;
         $pushData['image1'] = null;
 
-        $pusher = new NotificationPusher();
-        $pusher->push($pushData);
+        if (!empty($push_data['tokens'])) {
+            $pusher = new NotificationPusher();
+            $pusher->push($pushData);
 
-        if ($type === 'inactivity') {
-            Log::channel('notification_log')->info("======>>>>>Notifications for user inactive in course - ".
-                $userLms->batch_id.'-'. $batchDetails->batch_name.' - '.now().' - User : '.$userLms->user_id."  ======>>>>>\n");
-        }else{
-            Log::channel('notification_log')->info("======>>>>>Notifications for user who didnt started courses yet.- ".$userLms->batch_id.'-'. $batchDetails->batch_name.' - '.now().' - User : '.$userLms->user_id."  ======>>>>>\n");
+            if ($type === 'inactivity') {
+                Log::channel('notification_log')->info("======>>>>>Notifications for user inactive in course - ".
+                    $userLms->batch_id.'-'. $batchDetails->batch_name.' - '.now().' - User : '.$userLms->user_id."  ======>>>>>\n");
+            }else{
+                Log::channel('notification_log')->info("======>>>>>Notifications for user who didnt started courses yet.- ".$userLms->batch_id.'-'. $batchDetails->batch_name.' - '.now().' - User : '.$userLms->user_id."  ======>>>>>\n");
+            }
         }
     }
 

@@ -118,8 +118,10 @@ class NotificationController extends Controller
             $push_data['data5']         =   null;
             $push_data['image1']        =   null;
 
-            $pusher = new NotificationPusher();
-            $pusher->push($push_data);
+            if (!empty($push_data['tokens'])) {
+                $pusher = new NotificationPusher();
+                $pusher->push($push_data);
+            }
 
             return redirect()->route('admin.notification.list')
                             ->with('success',"Success! Notification has been successfully added.");

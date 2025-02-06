@@ -516,7 +516,8 @@ class CourseController extends Controller
             $push_data = [];
 
             $push_data['tokens']    =  User::whereNotNull('refresh_token')
-                                            ->pluck('refresh_token')->toArray();
+                                            ->pluck('refresh_token')
+                                            ->toArray();
 
             $push_data['title']         =   'New Batch Date Alert: Dont Miss Out!';
             $push_data['body']          =   'Enroll now in our next batch of '.$batch->course->course_name                             .' starting '.$batch->start_date.'.'.PHP_EOL.'Last date for enrollment: '.$batch->last_date.'. Don’t miss out';
@@ -532,8 +533,10 @@ class CourseController extends Controller
             $push_data['data5']         =   null;
             $push_data['image1']        =   null;
 
-            $pusher = new NotificationPusher();
-            $pusher->push($push_data);
+            if (!empty($push_data['tokens'])) {
+                $pusher = new NotificationPusher();
+                $pusher->push($push_data);
+            }
              
             return redirect()->route('admin.course.details',['id' => $request['course_id']])
                             ->with('success',"Success! New Batch has been successfully added.");

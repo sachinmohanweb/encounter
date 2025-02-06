@@ -41,9 +41,9 @@ class NotifyUpcomingCoursesEnrollment extends Command
                     ])
                     ->get()
                     ->map(function ($batch) {
-                        $today = Carbon::now()->startOfDay();
+                        $today = Carbon::now()->setTimezone($userTimeZone)->startOfDay();
                         $lastDate = Carbon::parse($batch->last_date)->endOfDay();
-                        $batch->days_left = $today->diffInDays($lastDate)+1 ;
+                        $batch->days_left = $today->diffInDays($lastDate) ;
                         return $batch;
                     });
 
@@ -70,11 +70,12 @@ class NotifyUpcomingCoursesEnrollment extends Command
                         'data5' => null,
                         'image1' => null
                     ];
+                    if (!empty($push_data['tokens'])) {
+                        $pusher = new NotificationPusher();
+                        $pusher->push($pushData);
 
-                    $pusher = new NotificationPusher();
-                    $pusher->push($pushData);
-
-                    Log::channel('notification_log')->info("Notification sent to user ID {$user->id} at " . now() . ". Data: " . json_encode($pushData));
+                        Log::channel('notification_log')->info("Notification sent to user ID {$user->id} at " . now() . ". Data: " . json_encode($pushData));
+                    }
                 }
             }
         }

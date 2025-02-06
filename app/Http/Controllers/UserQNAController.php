@@ -84,8 +84,10 @@ class UserQNAController extends Controller
             $push_data['data5']         =   null;
             $push_data['image1']        =   null;
 
-            $pusher = new NotificationPusher();
-            $pusher->push($push_data);
+            if (!empty($push_data['tokens'])) {
+                $pusher = new NotificationPusher();
+                $pusher->push($push_data);
+            }
 
 
             return redirect()->route('admin.user_qna.details',['id' => $request->user_qna_id])

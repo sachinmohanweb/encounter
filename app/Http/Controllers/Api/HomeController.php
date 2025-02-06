@@ -1134,8 +1134,11 @@ class HomeController extends Controller
         $pushData['data5'] = null;
         $pushData['image1'] = null;
 
-        $pusher = new NotificationPusher();
-        $pusher->push($pushData);
+        if (!empty($push_data['tokens'])) {
+            $pusher = new NotificationPusher();
+            $pusher->push($pushData);
 
-        Log::channel('notification_log')->info("======>>>>>Notifications sent for user - " . now() . "  ======>>>>>\n" . json_encode($pushData['tokens']));    }
+            Log::channel('notification_log')->info("======>>>>>Notifications sent for user - " . now() . "  ======>>>>>\n" . json_encode($pushData['tokens']));    
+        }
+    }
 }
