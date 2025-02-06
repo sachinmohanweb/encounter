@@ -11,18 +11,14 @@ class UserRepository {
         
     }
 
-    function checkUser($data){
+    function checkUser($data) {
+        $user = User::where('email', $data['email'])->first();  // Find user by email
 
-        $user=User::where('email',$data['email'])->where('status',1)->first();
-        
-        if($user)
-        {
+        if ($user) {
             return $user;
-
-        }else{
-
-            return '';
-        }   
+        } else {
+            return null;  // Return null if user doesn't exist
+        }
     }
 
     function formatBibleVerse($item)

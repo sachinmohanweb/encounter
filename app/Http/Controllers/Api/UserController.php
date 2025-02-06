@@ -85,47 +85,57 @@ class UserController extends Controller
         DB::beginTransaction();
 
         try {
+            
             $user = $this->userRepo->checkUser($request->all());
-            if(empty($user)) {
-                
+            
+           if (empty($user)) {
+                // Email not registered
                 $result = [
                     "status" => "error",
                     "metadata" => [],
                     "data" => [
-                        "message" => 'Invalid/Incorrect Email Address.'
+                        "message" => "This email is not registered. Please sign up first."
                     ]
                 ];
                 return $result;
-
-            }else{
-
-                //if($request['email'] == 'sachinmohanfff@gmail.com' || $request['email'] == 'sanufeliz@gmail.com'){
-                if($request['email'] == 'sachinmohanfff@gmail.com'){
-                    $otp = 1234;
-                }else{
-                    $otp = mt_rand(1000, 9999);
-                }
-
-                $inputData['email'] = $request['email'];
-                $inputData['otp'] = $otp;
-                $inputData['otp_expiry'] = Carbon::now()->addMinutes(5);
-
-                EmailVerification::create($inputData);
-                DB::commit();
-
-                $user = User::where('email',$request->input('email'))->first();
-
-                
-                $mailData = [
-                    'user' => $user,
-                    'otp' => $otp,
+            } elseif ($user->status == 2) {
+                // User is blocked
+                $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => "Your account has been blocked. Please contact support."
+                    ]
                 ];
-
-                Mail::to($request->input('email'))->send(new UserVerificationMail($mailData));
-
-                $return['messsage']  =  'OTP sent to your email';
-                return $this->outputer->code(200)->success($return)->json();
+                return $result;
             }
+
+
+            if($request['email'] == 'sachinmohanfff@gmail.com'){
+                $otp = 1234;
+            }else{
+                $otp = mt_rand(1000, 9999);
+            }
+
+            $inputData['email'] = $request['email'];
+            $inputData['otp'] = $otp;
+            $inputData['otp_expiry'] = Carbon::now()->addMinutes(5);
+
+            EmailVerification::create($inputData);
+            DB::commit();
+
+            $user = User::where('email',$request->input('email'))->first();
+
+            
+            $mailData = [
+                'user' => $user,
+                'otp' => $otp,
+            ];
+
+            Mail::to($request->input('email'))->send(new UserVerificationMail($mailData));
+
+            $return['messsage']  =  'OTP sent to your email';
+            return $this->outputer->code(200)->success($return)->json();
 
         }catch (\Exception $e) {
 
