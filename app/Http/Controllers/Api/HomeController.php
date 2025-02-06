@@ -39,14 +39,32 @@ class HomeController extends Controller
     public function Home(Request $request){
         try {
 
-            $today= now();
+            //$today= now();
             //$today_string = now()->toDateString();
-            $today_string = $today->format('Y-m-d');
+            //$today_string = $today->format('Y-m-d');
+
+            //$cacheKey = 'daily_bible_verse_' . $today_string;
+            // $bible_verse = Cache::remember($cacheKey, now()->endOfDay(), function () use ($today_string) {
+            //     $verse = DailyBibleVerse::from(with(new DailyBibleVerse)->getTable() . ' as a')
+            //                 ->select('a.id', 'a.verse_id')
+            //                 ->whereRaw("DATE_FORMAT(a.date, '%Y-%m-%d') = ?", [$today_string])
+            //                 ->where('status', 1)
+            //                 ->first();
+            //     if (!$verse) {
+            //         $verse = DailyBibleVerse::from(with(new DailyBibleVerse)->getTable() . ' as a')
+            //                     ->select('a.id', 'a.verse_id')
+            //                     ->where('status', 1)
+            //                     ->inRandomOrder()
+            //                     ->first();
+            //     }
+            //     return $verse;
+            // });
 
 
             /*--------Authenticated User---------*/
 
-            $login_user = User::select('id','image')->where('id',Auth::user()->id)->first();
+            $login_user = User::select('id','image','timezone')->where('id',Auth::user()->id)->first();
+            $userTimezone = $login_user->timezone ?? 'UTC';
 
             if($login_user->image !== 'null') {
                 $login_user->image = asset('/') . $login_user->image;
@@ -54,29 +72,21 @@ class HomeController extends Controller
                 $login_user->image = asset('/').'assets/images/user/user-dp.png';
             }
 
+            $today_string = Carbon::now($userTimezone)->format('Y-m-d');
+
 
             /*---------Daily Bible verse----------*/
 
+
             $cacheKey = 'daily_bible_verse_' . $today_string;
-            
-            $bible_verse = Cache::remember($cacheKey, now()->endOfDay(), function () use ($today_string) {
 
-                $verse = DailyBibleVerse::from(with(new DailyBibleVerse)->getTable() . ' as a')
-                            ->select('a.id', 'a.verse_id')
-                            ->whereRaw("DATE_FORMAT(a.date, '%Y-%m-%d') = ?", [$today_string])
-                            ->where('status', 1)
-                            ->first();
-                if (!$verse) {
-                    $verse = DailyBibleVerse::from(with(new DailyBibleVerse)->getTable() . ' as a')
-                                ->select('a.id', 'a.verse_id')
-                                ->where('status', 1)
-                                ->inRandomOrder()
-                                ->first();
-                }
-
-                return $verse;
-            });
-
+            $bible_verse = Cache::remember($cacheKey, Carbon::now($userTimezone)->endOfDay(), 
+                function () use ($today_string) {
+                    return DailyBibleVerse::select('id', 'verse_id')
+                        ->whereDate('date', $today_string)
+                        ->where('status', 1)
+                        ->first() ?? DailyBibleVerse::where('status', 1)->inRandomOrder()->first();
+                });
 
             $bgImage = BibleVerseImage::where('status', 2)->first();
             if (!$bgImage) {
