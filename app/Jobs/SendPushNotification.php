@@ -18,17 +18,11 @@ class SendPushNotification implements ShouldQueue
 
     public $pushData;
 
-    /**
-     * Create a new job instance.
-     */
     public function __construct(array $pushData)
     {
         $this->pushData = $pushData;
     }
 
-    /**
-     * Execute the job.
-     */
     public function handle()
     {
 

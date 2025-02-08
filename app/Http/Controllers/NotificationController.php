@@ -17,9 +17,7 @@ use App\Models\Notification;
 use App\Models\NotificationType;
 
 //use App\Notifications\NotificationPusher; 
-
 use App\Jobs\SendPushNotification;
-
 
 class NotificationController extends Controller
 {
@@ -124,9 +122,7 @@ class NotificationController extends Controller
             if (!empty($push_data['tokens'])) {
                 // $pusher = new NotificationPusher();
                 // $pusher->push($push_data);
-
                 SendPushNotification::dispatch($push_data)->onQueue('push-notifications');
-
             }
 
             return redirect()->route('admin.notification.list')
