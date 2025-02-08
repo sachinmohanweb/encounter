@@ -125,7 +125,7 @@ class NotificationController extends Controller
                 // $pusher = new NotificationPusher();
                 // $pusher->push($push_data);
 
-                SendPushNotification::dispatch($pushData)->onQueue('push-notifications');
+                SsendPushNotification::dispatch($pushData)->onQueue('push-notifications');
 
             }
 
