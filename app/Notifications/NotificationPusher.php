@@ -37,7 +37,7 @@ class NotificationPusher
         $data5       = $msg['data5'];
         $image1      = $msg['image1'];
 
-        $imageUrl = "https://santhom.intellyze.in/public/assets/images/logo/logo.svg";
+        $imageUrl = "https://encounterbiblestudy.com/public/assets/images/logo.png";
         
         Log::info('data: ', $msg['tokens']);
 

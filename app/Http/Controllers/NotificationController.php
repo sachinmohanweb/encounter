@@ -16,7 +16,10 @@ use App\Models\User;
 use App\Models\Notification;
 use App\Models\NotificationType;
 
-use App\Notifications\NotificationPusher; 
+//use App\Notifications\NotificationPusher; 
+
+use App\Jobs\SendPushNotification;
+
 
 class NotificationController extends Controller
 {
@@ -119,8 +122,11 @@ class NotificationController extends Controller
             $push_data['image1']        =   null;
 
             if (!empty($push_data['tokens'])) {
-                $pusher = new NotificationPusher();
-                $pusher->push($push_data);
+                // $pusher = new NotificationPusher();
+                // $pusher->push($push_data);
+
+                SendPushNotification::dispatch($pushData)->onQueue('push-notifications');
+
             }
 
             return redirect()->route('admin.notification.list')
