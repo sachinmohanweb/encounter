@@ -32,8 +32,13 @@ class SendPushNotification implements ShouldQueue
     public function handle()
     {
 
-        Log::channel('notification_log')->info("======>>>>>Notifications Job Call ".$this->pushData."  ======>>>>>\n");
-        $pusher = new NotificationPusher();
-        $pusher->push($this->pushData);
+        Log::info("Job Started. Data: " . json_encode($this->pushData));
+        try {
+            $pusher = new NotificationPusher();
+            $pusher->push($this->pushData);
+            Log::info("Push Notification Sent Successfully.");
+        } catch (\Exception $e) {
+            Log::error("Job Failed: " . $e->getMessage());
+        }
     }
 }
