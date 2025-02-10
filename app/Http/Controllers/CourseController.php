@@ -26,6 +26,7 @@ use App\Models\Testament;
 use App\Models\HolyStatement;
 
 use App\Notifications\NotificationPusher; 
+use App\Jobs\SendPushNotification;
 
 class CourseController extends Controller
 {
@@ -534,8 +535,12 @@ class CourseController extends Controller
             $push_data['image1']        =   null;
 
             if (!empty($push_data['tokens'])) {
-                $pusher = new NotificationPusher();
-                $pusher->push($push_data);
+                if(env('QUEUE_CONNECTION') === 'sync') {
+                    $pusher = new NotificationPusher();
+                    $pusher->push($push_data);
+                }else{
+                    SendPushNotification::dispatch($push_data)->onQueue('push-notifications');
+                }
             }
              
             return redirect()->route('admin.course.details',['id' => $request['course_id']])

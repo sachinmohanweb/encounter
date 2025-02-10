@@ -15,6 +15,7 @@ use App\Models\User;
 use App\Models\UserQNA;
 
 use App\Notifications\NotificationPusher; 
+use App\Jobs\SendPushNotification;
 
 class UserQNAController extends Controller
 {
@@ -85,8 +86,12 @@ class UserQNAController extends Controller
             $push_data['image1']        =   null;
 
             if (!empty($push_data['tokens'])) {
-                $pusher = new NotificationPusher();
-                $pusher->push($push_data);
+                if(env('QUEUE_CONNECTION') === 'sync') {
+                    $pusher = new NotificationPusher();
+                    $pusher->push($push_data);
+                }else{
+                    SendPushNotification::dispatch($push_data)->onQueue('push-notifications');
+                }
             }
 
 
