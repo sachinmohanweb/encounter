@@ -111,7 +111,7 @@ class UserController extends Controller
             }
 
 
-            if($request['email'] == 'sachinmohanfff@gmail.com' || $request['email'] == ' sanufeliz@gmail.com'){
+            if($request['email'] == 'sachinmohanfff@gmail.com' || $request['email'] == 'sanufeliz@gmail.com'){
                 $otp = 1234;
             }else{
                 $otp = mt_rand(1000, 9999);

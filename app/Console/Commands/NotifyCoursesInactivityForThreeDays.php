@@ -16,6 +16,7 @@ use Carbon\Carbon;
 
 
 use App\Notifications\NotificationPusher; 
+use App\Jobs\SendPushNotification;
 
 
 class NotifyCoursesInactivityForThreeDays extends Command
@@ -35,7 +36,7 @@ class NotifyCoursesInactivityForThreeDays extends Command
             ->where('ulms.completed_status', '!=', 3)
             ->where('b.status', 1)
             ->whereDate('b.start_date', '<',  now())
-            //->where('ulms.user_id',1)
+            ->where('ulms.user_id',1)
             ->get();
 
         foreach ($userLms as $value) {
@@ -44,9 +45,9 @@ class NotifyCoursesInactivityForThreeDays extends Command
             $localCurrentTime = Carbon::now($userTimeZone)->format('H:i');
             $desiredTime = '20:00';
 
-            if ($localCurrentTime !== $desiredTime) {
-                continue;
-            }
+            // if ($localCurrentTime !== $desiredTime) {
+            //     continue;
+            // }
 
             $courses = Course::from(with(new Course)->getTable() . ' as c')
                 ->join(with(new CourseContent)->getTable() . ' as cc', 'c.id', '=', 'cc.course_id')
@@ -111,9 +112,15 @@ class NotifyCoursesInactivityForThreeDays extends Command
         $pushData['data5'] = null;
         $pushData['image1'] = null;
 
-        if (!empty($push_data['tokens'])) {
-            $pusher = new NotificationPusher();
-            $pusher->push($pushData);
+        if (!empty($pushData['tokens'])) {
+
+            if(env('QUEUE_CONNECTION') === 'sync') {
+                $pusher = new NotificationPusher();
+                $pusher->push($pushData);
+            }else{
+                Log::channel('notification_log')->info("======>>>>>old Notifications  - ".$pushData."  ======>>>>>\n");
+                SendPushNotification::dispatch($pushData)->onQueue('push-notifications');
+            }   
 
             if ($type === 'inactivity') {
                 Log::channel('notification_log')->info("======>>>>>Notifications for user inactive in course - ".

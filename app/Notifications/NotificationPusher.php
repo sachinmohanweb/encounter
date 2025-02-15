@@ -52,13 +52,13 @@ class NotificationPusher
                             'data' => [
                                 'click_action'      => $route,
                                 'table_id'          => (string) $id,
-                                'category'          => $category,
-                                'data1'             => $data1,
-                                'data2'             => $data2,
-                                'data3'             => $data3,
-                                'data4'             => $data4,
-                                'data5'             => $data5,
-                                'image1'            => $image1,
+                                'category'          => (string) $category,
+                                'data1'             => (string) $data1,
+                                'data2'             => (string) $data2,
+                                'data3'             => (string) $data3,
+                                'data4'             => (string) $data4,
+                                'data5'             => (string) $data5,
+                                'image1'            => (string) $image1,
                             ]
                         ]);
 

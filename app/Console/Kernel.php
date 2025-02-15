@@ -12,7 +12,7 @@ class Kernel extends ConsoleKernel
     {
 
         $schedule->command('app:notify-upcoming-courses-enrollment-left-days')->everyMinute();
-        $schedule->command('app:notify-course-inactivity-for-three-days')->everyMinute();
+        $schedule->command('app:notify-course-inactivity-for-three-days-new')->everyMinute();
     }
 
     protected function commands()

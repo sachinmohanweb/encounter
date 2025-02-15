@@ -52,4 +52,10 @@ class User extends Authenticatable
         }
         return null;
     }
+
+    public function userLms()
+    {
+        return $this->hasMany(UserLMS::class, 'user_id');
+    }
+
 }
