@@ -71,7 +71,7 @@ class UserQNAController extends Controller
                                             ->whereNotNull('refresh_token')
                                             ->pluck('refresh_token')->toArray();
 
-            $push_data['title']         =   'User QNA Anser Updated';
+            $push_data['title']         =   'User QNA Answer Updated';
             $push_data['body']          =   'Question :  '.$User_QNA->question ;
 
             $push_data['route']         =   'UserQNA';

@@ -11,7 +11,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
 
-        $schedule->command('app:notify-upcoming-courses-enrollment-left-days')->everyMinute();
+        $schedule->command('app:notify-upcoming-courses-enrollment-left-days-new')->everyMinute();
         $schedule->command('app:notify-course-inactivity-for-three-days-new')->everyMinute();
     }
 
