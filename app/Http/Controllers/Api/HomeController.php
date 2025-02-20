@@ -209,7 +209,7 @@ class HomeController extends Controller
                             $order_weight = 2;
                         }
                     }else{
-                        $item->data4 = 'Non-enrolled';
+                        $item->data4 = 'Enrol Now';
                         $item->data5 = '0 %';
                         $order_weight = 2;
                     }

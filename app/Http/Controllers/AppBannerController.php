@@ -28,7 +28,7 @@ class AppBannerController extends Controller
         try {
             $a =  $request->validate([
                 'title' => 'required',
-                'file' => 'required',
+                'file' => 'required|file|max:500',
             ]);
 
             $inputData = $request->all();

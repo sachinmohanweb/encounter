@@ -1,9 +1,9 @@
 $(document).ready(function () {
   var engine, remoteHost, template, empty;
 
-  $.support.cors = true;
+//  $.support.cors = true;
 
-  remoteHost = 'https://typeahead-js-twitter-api-proxy.herokuapp.com';
+  //remoteHost = 'https://typeahead-js-twitter-api-proxy.herokuapp.com';
   template = Handlebars.compile($(".result-template").html());
   empty = Handlebars.compile($(".empty-template").html());
 
