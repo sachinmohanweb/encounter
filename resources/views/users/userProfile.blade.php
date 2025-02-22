@@ -28,11 +28,11 @@
                            <th>Gender</th>
                            <th>Age</th>
                            <th>Location</th>
-                           <th>Device Type</th>
+                           <!-- <th>Device Type</th>
                            <th>IP</th>
                            <th>App Usage</th>
                            <th>Browser</th>
-                           <th>Last Accessed Date&Time</th>
+                           <th>Last Accessed Date&Time</th> -->
                            <th>Status</th>
                         </tr>
                      </thead>
@@ -83,11 +83,11 @@
               { data: 'gender', name: 'gender' },
               { data: 'age', name: 'age' },
               { data: 'location', name: 'location' },
-              { data: 'device_type', name: 'device_type' },
-              { data: 'ip', name: 'ip' },
-              { data: 'app_usage', name: 'app_usage' },
-              { data: 'browser', name: 'browser' },
-              { data: 'last_accessed', name: 'last_accessed' },
+              // { data: 'device_type', name: 'device_type' },
+              // { data: 'ip', name: 'ip' },
+              // { data: 'app_usage', name: 'app_usage' },
+              // { data: 'browser', name: 'browser' },
+              // { data: 'last_accessed', name: 'last_accessed' },
               { data: 'action', name: 'action', orderable: false},
           ],
       });

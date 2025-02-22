@@ -426,7 +426,10 @@ class HomeController extends Controller
                         //$item->completion_percentage = ($total_course_completed_days/$item->no_of_days)*100; 
                         $item->completion_percentage = $user_lms['progress']; 
 
-                        $current_day_number = Carbon::today()->diffInDays(Carbon::parse($item->start_date)) + 1; 
+                        //$current_day_number = Carbon::today()->diffInDays(Carbon::parse($item->start_date)) + 1; 
+                        $userTimezone = auth()->user()->timezone ?? 'Pacific/Auckland';
+                        $current_day_number = Carbon::today($userTimezone)
+                                                ->diffInDays(Carbon::parse($item->start_date,$userTimezone)) + 1; 
 
                         $course_content = CourseContent::select('day','id as course_content_id','course_id')
                                             ->where('course_id',$item->id)
