@@ -80,77 +80,151 @@ class UserController extends Controller
         }
     }
 
-    public function loginUser(Request $request){
+    // public function loginUser(Request $request){
 
+    //     DB::beginTransaction();
+
+    //     try {
+            
+    //         $user = $this->userRepo->checkUser($request->all());
+            
+    //        if (empty($user)) {
+    //             // Email not registered
+    //             $result = [
+    //                 "status" => "error",
+    //                 "metadata" => [],
+    //                 "data" => [
+    //                     "message" => "This email is not registered. Please sign up first."
+    //                 ]
+    //             ];
+    //             return $result;
+    //         } elseif ($user->status == 2) {
+    //             // User is blocked
+    //             $result = [
+    //                 "status" => "error",
+    //                 "metadata" => [],
+    //                 "data" => [
+    //                     "message" => "Your account has been blocked. Please contact support."
+    //                 ]
+    //             ];
+    //             return $result;
+    //         }
+
+
+    //         if($request['email'] == 'sachinmohanfff@gmail.com' || $request['email'] == 'sanufeliz@gmail.com'){
+    //             $otp = 1234;
+    //         }else{
+    //             $otp = mt_rand(1000, 9999);
+    //         }
+
+    //         $inputData['email'] = $request['email'];
+    //         $inputData['otp'] = $otp;
+    //         $inputData['otp_expiry'] = Carbon::now()->addMinutes(5);
+
+    //         EmailVerification::create($inputData);
+    //         DB::commit();
+
+    //         $user = User::where('email',$request->input('email'))->first();
+
+            
+    //         $mailData = [
+    //             'user' => $user,
+    //             'otp' => $otp,
+    //         ];
+
+    //         Mail::to($request->input('email'))->send(new UserVerificationMail($mailData));
+
+    //         $return['messsage']  =  'OTP sent to your email';
+    //         return $this->outputer->code(200)->success($return)->json();
+
+    //     }catch (\Exception $e) {
+
+    //         DB::rollBack();
+
+    //         $result = [
+    //                 "status" => "error",
+    //                 "metadata" => [],
+    //                 "data" => [
+    //                     "message" => $e->getMessage()
+    //                 ]
+    //             ];
+    //         return $result;
+    //     }
+    // }
+
+    public function loginUser(Request $request)
+    {
         DB::beginTransaction();
 
         try {
-            
             $user = $this->userRepo->checkUser($request->all());
-            
-           if (empty($user)) {
+
+            if (empty($user)) {
+
                 // Email not registered
-                $result = [
+                
+                return [
                     "status" => "error",
                     "metadata" => [],
                     "data" => [
                         "message" => "This email is not registered. Please sign up first."
                     ]
                 ];
-                return $result;
-            } elseif ($user->status == 2) {
-                // User is blocked
-                $result = [
-                    "status" => "error",
-                    "metadata" => [],
-                    "data" => [
-                        "message" => "Your account has been blocked. Please contact support."
-                    ]
-                ];
-                return $result;
+            }
+            $user_was_blocked = false;
+
+            if ($user->status == 2) {
+                
+                // Reactivate blocked user
+                
+                $user->status = 1;
+                $user->save();
+                
+                $user_was_blocked = true;
             }
 
+            // Generate OTP
 
-            if($request['email'] == 'sachinmohanfff@gmail.com' || $request['email'] == 'sanufeliz@gmail.com'){
-                $otp = 1234;
-            }else{
-                $otp = mt_rand(1000, 9999);
-            }
+            $otp = ($request['email'] == 'sachinmohanfff@gmail.com' || $request['email'] == 'sanufeliz@gmail.com') 
+                    ? 1234 
+                    : mt_rand(1000, 9999);
 
-            $inputData['email'] = $request['email'];
-            $inputData['otp'] = $otp;
-            $inputData['otp_expiry'] = Carbon::now()->addMinutes(5);
+            $inputData = [
+                'email' => $request['email'],
+                'otp' => $otp,
+                'otp_expiry' => Carbon::now()->addMinutes(5),
+            ];
 
             EmailVerification::create($inputData);
             DB::commit();
 
-            $user = User::where('email',$request->input('email'))->first();
-
-            
+            // Send OTP email
             $mailData = [
                 'user' => $user,
                 'otp' => $otp,
             ];
-
             Mail::to($request->input('email'))->send(new UserVerificationMail($mailData));
 
-            $return['messsage']  =  'OTP sent to your email';
-            return $this->outputer->code(200)->success($return)->json();
+            $message = ($user->status == 1 && $user->wasChanged('status')) 
+                ? 'Your account has been Reactivated. Please check your mail for the OTP.' 
+                : 'Please check your mail for the OTP.';
 
-        }catch (\Exception $e) {
+            $user_status = ($user->status == 1 && $user->wasChanged('status')) ? 'Reactivated' : 'Active';
 
+            return $this->outputer->code(200)->success(['user_status' => $user_status,'message' => $message])->json();
+
+        } catch (\Exception $e) {
             DB::rollBack();
-
-            $result = [
-                    "status" => "error",
-                    "metadata" => [],
-                    "data" => [
-                        "message" => $e->getMessage()
-                    ]
-                ];
-            return $result;
+            return [
+                "status" => "error",
+                "metadata" => [],
+                "data" => [
+                    "message" => $e->getMessage()
+                ]
+            ];
         }
     }
+
 
     public function VerifyOtp(Request $request){
 
@@ -161,6 +235,7 @@ class UserController extends Controller
             $otp = EmailVerification::where('email', $request->email)
                 ->where('otp', $request->otp)
                 ->where('otp_used', false)
+                ->orderBy('id','desc')
                 ->first();
 
             if ($otp) {
