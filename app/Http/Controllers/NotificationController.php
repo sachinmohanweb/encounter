@@ -105,7 +105,7 @@ class NotificationController extends Controller
             $push_data['tokens']    =  User::whereNotNull('refresh_token')
                                             ->pluck('refresh_token')->toArray();
 
-            $push_data['title']         =   'Don’t miss out';
+            $push_data['title']         =   'Don’t miss out!';
             $push_data['body']          =   'New Notification:'.$Notification['title'];
 
             $push_data['route']         =   'NewNotification';

@@ -66,10 +66,9 @@ class SendUpcomingCourseLastDateNotification implements ShouldQueue
                     $pushData = [
                         'tokens' => [$user->refresh_token],
                         'title' => $batch->days_left === 1
-                            ? 'Hurry up! Today is the last day for enrollment – ' . $batch->course->course_name
-                            : 'Reminder: Only ' . $batch->days_left . ' Days Left for Enrollment – ' . $batch->course->course_name,
-                        'body' => 'Enroll now in our next batch of ' . $batch->course->course_name . ' starting ' . $batch->start_date .
-                            '. Last date for enrollment: ' . $batch->last_date . '. Don’t miss out',
+                            ? 'Hurry up! Today is the last day for enrolment – ' . $batch->course->course_name
+                            : 'Reminder: Only ' . $batch->days_left . ' Days Left for Enrolment – ' . $batch->course->course_name,
+                        'body' => 'Enroll now in our next batch of ' . $batch->course->course_name . ' starting ' . $batch->start_date,
                         'route' => 'NewBatch',
                         'id' => $batch->id,
                         'category' => 'NewBatch',

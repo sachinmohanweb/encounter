@@ -520,8 +520,8 @@ class CourseController extends Controller
                                             ->pluck('refresh_token')
                                             ->toArray();
 
-            $push_data['title']         =   'New Batch Date Alert: Dont Miss Out!';
-            $push_data['body']          =   'Enroll now in our next batch of '.$batch->course->course_name                             .' starting '.$batch->start_date.'.'.PHP_EOL.'Last date for enrollment: '.$batch->last_date.'. Don’t miss out';
+            $push_data['title']         =   'New Batch Date Alert: Don’t Miss Out on This Blessing!';
+            $push_data['body']          =   'Enrol now in our next batch of '.$batch->course->course_name                             .' starting '.$batch->start_date.'.'.PHP_EOL.'Last date for enrolment: '.$batch->last_date.'.';
 
             $push_data['route']         =   'NewBatch';
             $push_data['id']            =   $batch['id'];

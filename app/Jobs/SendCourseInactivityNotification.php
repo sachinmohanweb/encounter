@@ -109,11 +109,11 @@ class SendCourseInactivityNotification implements ShouldQueue
 
         if ($type === 'inactivity') {
             $notification['title'] = 'We Miss You at ' . $batch->batch_name . ': ' . $course->course_name;
-            $notification['body'] = "It’s been a few days since you last visited.\nJump back in and continue your journey to success!";
+            $notification['body'] = "It’s been a few days since you last visited.\nJump right back in and grow in faith!";
 
         } elseif ($type === 'not_started') {
-            $notification['title'] = 'Your Learning Journey Awaits!';
-            $notification['body'] = "You’re all set to start course - " . $batch->batch_name . ': ' . $course->course_name . ".\nGet a head start and dive into your first lesson now.";
+            $notification['title'] = 'The Word of God Awaits You!';
+            $notification['body'] = "You’re all set to start the course - " . $batch->batch_name . ': ' . $course->course_name . ".\nDive into your first lesson now.";
         }
 
 
