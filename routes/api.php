@@ -13,6 +13,21 @@ Route::post('verify_otp',[UserController::class, 'VerifyOtp']);
 
 Route::post('signup',[UserController::class, 'Signup']);
 
+Route::get('web/home', [HomeController::class, 'WebHome']);
+Route::get('web/course_details', [HomeController::class, 'WebCourseDetails']);
+
+//Route::post('web/search',[UserController::class, 'WebSearchResults']);
+
+Route::get('web/bible_study' , [HomeController::class, 'WebBibleStudy']);
+Route::get('web/bible_study_chapters' , [HomeController::class, 'WebBibleStudyChapters']);
+
+Route::get('web/notifications' , [HomeController::class, 'WebNotifications']);
+
+
+Route::get('got_questions',[SidebarController::class, 'GotQuestions']);
+Route::get('got_question_categories',[SidebarController::class, 'GotQuestionCategories']);
+Route::get('got_question_sub_categories',[SidebarController::class, 'GotQuestionSubCategories']);
+
 Route::middleware('auth:sanctum')->group(function(){
 
     Route::post('update_token',[UserController::class, 'updateToken']);
@@ -22,13 +37,9 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('delete_account',[UserController::class, 'DeleteAccount']);
     
     Route::get('search',[UserController::class, 'SearchResults']);
-    Route::post('v2/search',[UserController::class, 'SearchResultsTwo']);
+    //Route::post('v2/search',[UserController::class, 'SearchResultsTwo']);
 
     Route::get('completed_courses', [HomeController::class, 'CompletedCourses']);
-
-    Route::get('got_questions',[SidebarController::class, 'GotQuestions']);
-    Route::get('got_question_categories',[SidebarController::class, 'GotQuestionCategories']);
-    Route::get('got_question_sub_categories',[SidebarController::class, 'GotQuestionSubCategories']);
 
     Route::get('asked_questions',[SidebarController::class, 'AskedQuestions']);
     Route::post('ask_a_question',[SidebarController::class, 'AskAQuestion']);
@@ -40,7 +51,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::post('add_tag',[SidebarController::class, 'AddTag']);
     Route::delete('delete_tag',[SidebarController::class, 'DeleteTag']);
 
-    Route::get('my_bible_markings',[SidebarController::class, 'MyBibleMarkings']);
+    //Route::get('my_bible_markings',[SidebarController::class, 'MyBibleMarkings']);
     Route::get('v2/my_bible_markings',[SidebarController::class, 'MyBibleMarkingsV2']);
     Route::post('add_bible_marking',[SidebarController::class, 'AddBibleMarking']);
     Route::delete('delete_bible_marking',[SidebarController::class, 'DeleteBibleMarking']);
@@ -51,7 +62,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('course_day_content',[HomeController::class, 'CourseDayContent']);
     Route::post('mark_as_read',[HomeController::class, 'MarkAsRead']);
 
-    Route::get('bible_study' , [HomeController::class, 'BibleStudy']);
+    // Route::get('bible_study' , [HomeController::class, 'BibleStudy']);
     Route::get('v2/bible_study' , [HomeController::class, 'BibleStudyV2']);
     Route::get('bible_study_chapters' , [HomeController::class, 'BibleStudyChapters']);
 

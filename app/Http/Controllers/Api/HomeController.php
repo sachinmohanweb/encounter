@@ -266,6 +266,181 @@ class HomeController extends Controller
         }
     }
 
+    public function WebHome(Request $request){
+        try {
+
+            /*--------Authenticated User---------*/
+
+            $userTimezone = 'UTC';
+
+            $login_user = (object) [
+                'user_id' => Null,
+                'image' => asset('assets/images/user/user-dp.png')
+            ];
+
+            $today_string = Carbon::now($userTimezone)->format('Y-m-d');
+
+
+            /*---------Daily Bible verse----------*/
+
+
+            $cacheKey = 'daily_bible_verse_' . $today_string;
+
+            $bible_verse = Cache::remember($cacheKey, Carbon::now($userTimezone)->endOfDay(), 
+                function () use ($today_string) {
+                    return DailyBibleVerse::select('id', 'verse_id')
+                        ->whereDate('date', $today_string)
+                        ->where('status', 1)
+                        ->first() ?? DailyBibleVerse::where('status', 1)->inRandomOrder()->first();
+                });
+
+            $bgImage = BibleVerseImage::where('status', 2)->first();
+            if (!$bgImage) {
+                $bgImage = BibleVerseImage::where('status', 1)->inRandomOrder()->first();
+
+                if (!$bgImage) {
+                    $path = 'assets/images/defualt_bg.jpg';
+                }else{
+                    $path = $bgImage->path;
+                }
+            }else{
+                $path = $bgImage->path;
+            }
+
+            if($bible_verse) {
+                $statement = HolyStatement::where('statement_id',$bible_verse->verse_id)->first();
+                $bible_verse->data1 = $statement->statement_text;
+                $bible_verse->data2 = $statement->book->book_name.'  '.$statement->chapter->chapter_no.' : '.$statement->statement_no;
+                $bible_verse->data3 = asset('/') . $path;
+                
+                $bible_verse->makeHidden(['bible_name','testament_name','book_name','chapter_name','verse_no','theme_name']);
+            }
+
+            /*---------Home Banner----------*/
+
+            $banners = AppBanner::select('title','path','status')
+                            ->where('status', 2)
+                            ->get();
+            $banners->transform(function ($item){
+
+                if ($item->path !== null) {
+                    $item->path = asset('/') . $item->path;
+                } else {
+                    $item->path = null;
+                }
+
+                return $item;
+            });
+
+            /*---------Courses----------*/
+
+            $courses = Course::from(with(new Course)->getTable() . ' as a')
+                ->join(with(new Batch)->getTable() . ' as b', 'a.id', 'b.course_id')
+                ->join(with(new CourseContent)->getTable() . ' as cc', 'a.id', '=', 'cc.course_id')
+                ->join(with(new CourseDayVerse)->getTable() . ' as cdv', 'cc.id', '=', 'cdv.course_content_id')
+                ->select(
+                    'a.id',
+                    'a.course_name as data1',
+                    'a.course_creator as data2',
+                    'a.thumbnail as image',
+                    'b.id as batch_id',
+                    'b.batch_name as data3',
+                    'b.start_date',
+                    'a.no_of_days'
+                )
+                ->where(function ($query) {
+                    $query->where(function ($subQuery) {
+                              $subQuery->where('b.last_date', '>=', now()->format('Y-m-d'));
+                          });
+                })
+                ->where('a.status', 1)
+                ->where('b.status', 1)
+                ->where('cc.status', 1)
+                ->where('cdv.status', 1)
+                ->groupBy('a.id','a.course_name','a.course_creator','a.thumbnail','b.id','b.batch_name','b.start_date','a.no_of_days');
+
+            if ($request['search_word']) {
+                $courses->where(function ($query) use ($request) {
+                    $query->where('a.course_name', 'like', $request['search_word'] . '%')
+                        ->orWhere('a.course_creator', 'like', $request['search_word'] . '%');
+                });
+            }
+
+            if ($request['length']) {
+                $courses->take($request['length']);
+            }
+
+            $courses = $courses->get();
+
+            $courses->transform(function ($item) use ($login_user) {
+                $item->data4 = '';
+                $item->data5 = '';
+                $order_weight = 0;
+
+
+                if($item->start_date > now()->format('Y-m-d')) {
+                    $item->data4 = 'Upcoming';
+                    $item->data5 = '0 %';
+                    $order_weight = 3;
+
+                }else {
+                    
+                    $item->data4 = 'Enrol Now';
+                    $item->data5 = '0 %';
+                    $order_weight = 2;
+                }
+
+                if ($item->image !== null) {
+                    $item->image = asset('/') . $item->image;
+                } else {
+                    $item->image = null;
+                }
+                $item->order_weight = $order_weight;
+                return $item;
+            });
+
+            $courses = $courses->sortBy('order_weight')->values();
+
+            $courses->makeHidden(['bible_name']);
+
+            if(empty($courses)) {
+
+                $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => "Empty course list "
+                    ]
+                ];
+                return $result;
+            }
+
+            $mergedData = [
+
+                [ 'category' => 'Bible Study', 'list' => $courses ]
+                 
+            ];
+
+            return $this->outputer->code(200)
+                        ->success($mergedData )
+                        ->BibleVerse($bible_verse)
+                        ->HomeBanner($banners)
+                        ->LoginUser($login_user)
+                        ->json();
+
+        }catch (\Exception $e) {
+
+            $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => $e->getMessage()
+                    ]
+                ];
+            return $result;
+        }
+    }
+
     public function CompletedCourses(Request $request){
         try {
 
@@ -531,6 +706,112 @@ class HomeController extends Controller
         }
     }
 
+    public function WebCourseDetails(Request $request){
+        try {
+
+            $userTimezone = 'UTC';
+
+            $login_user = (object) [
+                'user_id' => Null,
+                'image' => asset('assets/images/user/user-dp.png')
+            ];
+
+            $type = $request->input('type');
+
+            $courses = Course::from(with(new Course)->getTable(). ' as a')
+                        ->join(with(new Batch)->getTable(). ' as b' , 'a.id','b.course_id')
+                        ->select('a.id','a.course_name','a.no_of_days','a.description','a.thumbnail',
+                            'a.course_creator','a.creator_image','a.creator_designation',
+                            'a.intro_video','a.intro_audio','a.intro_video_thumb','b.id as batch_id','b.batch_name','b.start_date','b.end_date','b.last_date',
+                            DB::raw('DATE_FORMAT(b.start_date, "%b %d,%Y") as start_date'),
+                            DB::raw('DATE_FORMAT(b.end_date, "%b %d,%Y") as end_date'),
+                            DB::raw('DATE_FORMAT(b.last_date, "%b %d,%Y") as last_date')
+                        )
+                        ->where('b.id',$request['batch_id'])
+                        ->get();
+
+            $courses->transform(function ($item) use ($type) {
+
+                if ($item->thumbnail !== null) {
+                    $item->thumbnail = asset('/') . $item->thumbnail;
+                } else {
+                    $item->thumbnail = null;
+                }
+
+                if ($item->creator_image !== null) {
+                    $item->creator_image = asset('/') . $item->creator_image;
+                } else {
+                    $item->creator_image = null;
+                }
+
+                if ($item->intro_video_thumb !== null) {
+                    $item->intro_video_thumb = asset('/') . $item->intro_video_thumb;
+                } else {
+                    $item->intro_video_thumb = null;
+                }
+                
+                $today = now()->startOfDay();
+                $courseStartDate = Carbon::parse($item->start_date)->startOfDay();
+
+                
+                if($today->gte($courseStartDate)) {
+                    $item->course_start_status = 'started'; 
+                }else {
+                    $item->course_start_status = 'not_started';
+                }
+
+                $last_course_content = CourseContent::select('day', 'created_at')->where('course_id', $item->id)
+                                    ->whereHas('CourseDayVerse')
+                                    ->orderBy('updated_at', 'desc')
+                                    ->first();
+                if($last_course_content) {
+
+                    $formattedCreatedAt = Carbon::parse($last_course_content['created_at'])->format('M d, Y');
+                    $item->last_updated_data = $last_course_content['day'].' day content at '.$formattedCreatedAt;
+                }
+                
+                $item->last_updated_data = '';
+                $item->completion_percentage = 0; 
+                $item->user_enrolled = false;
+                $item->user_lms_id = '';
+                $item->course_content = [];
+                $item->allow_day_verse_read = false;
+
+                return $item;
+            });
+
+            $courses->makeHidden([ 'bible_name']);
+
+            if(empty($courses)) {
+                
+                $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => "Empty course list "
+                    ]
+                ];
+                return $result;
+            }
+
+            return $this->outputer->code(200)
+                        ->success($courses )
+                        ->LoginUser($login_user)
+                        ->json();
+
+        }catch (\Exception $e) {
+
+            $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => $e->getMessage()
+                    ]
+                ];
+            return $result;
+        }
+    }
+
     public function EnrollBatch(Request $request){
         
         DB::beginTransaction();
@@ -738,46 +1019,46 @@ class HomeController extends Controller
         }
     }
 
-    public function BibleStudy(Request $request){
+    // public function BibleStudy(Request $request){
 
-        try {
+    //     try {
 
-            $testament_id = $request['testament_id'];
+    //         $testament_id = $request['testament_id'];
 
-            $testament = Testament::with('books.chapters')->where('testament_id',$testament_id)->first();
+    //         $testament = Testament::with('books.chapters')->where('testament_id',$testament_id)->first();
 
-            $books = $testament->books->map(function ($book) {
+    //         $books = $testament->books->map(function ($book) {
 
-                $bookImg = BookImage::where('book_id',$book->book_id)->first();
+    //             $bookImg = BookImage::where('book_id',$book->book_id)->first();
                 
-                if($bookImg !== null) {
-                    $book_image= asset('/') . $bookImg['image'];
-                }else{
-                    $book_image= asset('/').'assets/images/logo.png';
-                }
+    //             if($bookImg !== null) {
+    //                 $book_image= asset('/') . $bookImg['image'];
+    //             }else{
+    //                 $book_image= asset('/').'assets/images/logo.png';
+    //             }
 
-                return [
-                    'book_id' => $book->book_id,
-                    'book_name' => $book->book_name,
-                    'book_image' => $book_image,
-                    'total_chapters' => $book->chapters->count()-1
-                ];
-            });
+    //             return [
+    //                 'book_id' => $book->book_id,
+    //                 'book_name' => $book->book_name,
+    //                 'book_image' => $book_image,
+    //                 'total_chapters' => $book->chapters->count()-1
+    //             ];
+    //         });
             
-            return $this->outputer->code(200)->success($books)->json();
+    //         return $this->outputer->code(200)->success($books)->json();
 
-        }catch (\Exception $e) {
+    //     }catch (\Exception $e) {
 
-            $result = [
-                    "status" => "error",
-                    "metadata" => [],
-                    "data" => [
-                        "message" => $e->getMessage()
-                    ]
-                ];
-            return $result;
-        }
-    }
+    //         $result = [
+    //                 "status" => "error",
+    //                 "metadata" => [],
+    //                 "data" => [
+    //                     "message" => $e->getMessage()
+    //                 ]
+    //             ];
+    //         return $result;
+    //     }
+    // }
 
     public function BibleStudyV2(Request $request){
     
@@ -810,6 +1091,58 @@ class HomeController extends Controller
             });
 
             return $this->outputer->code(200)->success($mergedData->values())->json();
+
+        } catch (\Exception $e) {
+
+            $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => $e->getMessage()
+                    ]
+                ];
+            return $result;
+        }
+    }
+
+    public function WebBibleStudy(Request $request){
+
+        try {
+
+            $bible_id = env('DEFAULT_BIBLE');
+
+            $testaments = Testament::with('books.chapters')->where('bible_id',$bible_id)->get();
+
+            $mergedData = $testaments->map(function ($testament) {
+                $books = $testament->books->map(function ($book) {
+                    $bookImg = BookImage::where('book_id', $book->book_id)->first();
+
+                    $book_image = $bookImg !== null 
+                        ? asset('/') . $bookImg['image'] 
+                        : asset('/') . 'assets/images/logo.png';
+
+                    return [
+                        'book_id' => $book->book_id,
+                        'book_name' => $book->book_name,
+                        'book_image' => $book_image,
+                        'total_chapters' => $book->chapters->count() - 1,
+                    ];
+                });
+
+                return [
+                    'category' => $testament->testament_name,
+                    'list' => $books,
+                ];
+            });
+
+            $login_user = (object) [
+                'user_id' => Null,
+                'image' => asset('assets/images/user/user-dp.png')
+            ];
+
+            return $this->outputer->code(200)->success($mergedData->values())
+                                    ->LoginUser($login_user)
+                                    ->json();
 
         } catch (\Exception $e) {
 
@@ -870,6 +1203,58 @@ class HomeController extends Controller
         }
     }
 
+    public function WebBibleStudyChapters(Request $request){
+
+        try {
+
+            $book_id = $request['book_id'];
+
+            $chapters = Chapter::where('book_id',$book_id)
+                        ->get();
+
+            $chapters->transform(function ($item, $key) {
+
+                $book = Book::where('book_id',$item->book_id)->first();
+                $item->book_name = $book->book_name;
+                
+                $statements = $item->statements()->get(['statement_id','statement_no','statement_heading',
+                    'statement_text']);
+                foreach ($statements as $statement) {
+                    $statement->statement_text = str_replace('<br>', "\n", $statement->statement_text);
+                    $statement->statement_text = strip_tags($statement->statement_text);
+                }
+                $item->statements = $statements;
+
+                if ($item->chapter_no == 0) {
+                    $item->chapter_no = 'ആമുഖം';
+                }
+
+                return $item;
+            });
+            
+            $login_user = (object) [
+                'user_id' => Null,
+                'image' => asset('assets/images/user/user-dp.png')
+            ];
+            
+            return $this->outputer->code(200)
+                            ->success($chapters)
+                            ->LoginUser($login_user)
+                            ->json();
+
+        }catch (\Exception $e) {
+
+            $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => $e->getMessage()
+                    ]
+                ];
+            return $result;
+        }
+    }
+
     public function Notifications(Request $request){
 
         try {
@@ -879,6 +1264,42 @@ class HomeController extends Controller
 
             $notifications = Notification::select('id','title','type','redirection','description',
                                 'data')->whereNotIn('id', $clearedNotifications)->get();
+
+            $notifications = $notifications->map(function ($notify) {
+                    
+                    if($notify->type==1 || $notify->type==2){
+
+                        $notify->data = $notify->data !== null 
+                            ? asset('/') . $notify['data'] 
+                            : asset('/') . 'assets/images/logo.png';
+                    }
+
+                    return $notify;
+            });
+
+            return $this->outputer->code(200)->success($notifications)->json();
+
+        }catch (\Exception $e) {
+
+            $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => $e->getMessage()
+                    ]
+                ];
+            return $result;
+        }
+    }
+
+    public function WebNotifications(Request $request){
+
+        try {
+
+
+            $notifications = Notification::select('id','title','type','redirection','description','data')
+                                ->orderBy('id', 'desc')->limit(5)
+                                ->get();
 
             $notifications = $notifications->map(function ($notify) {
                     
