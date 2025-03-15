@@ -16,7 +16,7 @@ Route::post('signup',[UserController::class, 'Signup']);
 Route::get('web/home', [HomeController::class, 'WebHome']);
 Route::get('web/course_details', [HomeController::class, 'WebCourseDetails']);
 
-//Route::post('web/search',[UserController::class, 'WebSearchResults']);
+Route::get('web/search',[UserController::class, 'WebSearchResults']);
 
 Route::get('web/bible_study' , [HomeController::class, 'WebBibleStudy']);
 Route::get('web/bible_study_chapters' , [HomeController::class, 'WebBibleStudyChapters']);
