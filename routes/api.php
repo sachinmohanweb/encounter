@@ -13,7 +13,8 @@ Route::post('verify_otp',[UserController::class, 'VerifyOtp']);
 
 Route::post('signup',[UserController::class, 'Signup']);
 
-Route::get('web/home', [HomeController::class, 'WebHome']);
+//Route::get('web/home', [HomeController::class, 'Home']);
+Route::get('home', [HomeController::class, 'Home']);
 Route::get('web/course_details', [HomeController::class, 'WebCourseDetails']);
 
 Route::get('web/search',[UserController::class, 'WebSearchResults']);
@@ -56,7 +57,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::post('add_bible_marking',[SidebarController::class, 'AddBibleMarking']);
     Route::delete('delete_bible_marking',[SidebarController::class, 'DeleteBibleMarking']);
 
-    Route::get('home', [HomeController::class, 'Home']);
+    //Route::get('home', [HomeController::class, 'Home']);
     Route::get('course_details', [HomeController::class, 'CourseDetails']);
     Route::post('enroll_batch',[HomeController::class, 'EnrollBatch']);
     Route::get('course_day_content',[HomeController::class, 'CourseDayContent']);
