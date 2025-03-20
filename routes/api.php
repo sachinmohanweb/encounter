@@ -17,7 +17,8 @@ Route::post('signup',[UserController::class, 'Signup']);
 Route::get('home', [HomeController::class, 'Home']);
 Route::get('web/course_details', [HomeController::class, 'WebCourseDetails']);
 
-Route::get('web/search',[UserController::class, 'WebSearchResults']);
+//Route::get('web/search',[UserController::class, 'WebSearchResults']);
+Route::get('search',[UserController::class, 'SearchResults']);
 
 Route::get('web/bible_study' , [HomeController::class, 'WebBibleStudy']);
 Route::get('web/bible_study_chapters' , [HomeController::class, 'WebBibleStudyChapters']);
@@ -37,7 +38,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('logout',[UserController::class, 'logoutuser']);
     Route::get('delete_account',[UserController::class, 'DeleteAccount']);
     
-    Route::get('search',[UserController::class, 'SearchResults']);
+    //Route::get('search',[UserController::class, 'SearchResults']);
     //Route::post('v2/search',[UserController::class, 'SearchResultsTwo']);
 
     Route::get('completed_courses', [HomeController::class, 'CompletedCourses']);
