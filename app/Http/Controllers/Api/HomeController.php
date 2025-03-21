@@ -1278,6 +1278,34 @@ class HomeController extends Controller
     
         try {
 
+             if(auth('sanctum')->check()) {
+               
+            /*--------Authenticated User---------*/
+
+                $user_id = auth('sanctum')->id();
+
+                $login_user = User::select('id','image','timezone')->where('id',$user_id)->first();
+
+                $userTimezone = $login_user->timezone ?? 'UTC';
+                if($login_user->image !== null) {
+                    $login_user->image = asset('/') . $login_user->image;
+                }else{
+                    $login_user->image = asset('/').'assets/images/user/user-dp.png';
+                }
+
+            }else{
+
+                $userTimezone = 'UTC';
+
+                $login_user = (object) [
+                    'id' => Null,
+                    'image' => asset('assets/images/user/user-dp.png'),
+                    'timezone' =>$userTimezone,
+                    'user_name' => 'Guest User'
+                ];
+
+            }
+
             $bible_id = env('DEFAULT_BIBLE');
 
             $testaments = Testament::with('books.chapters')->where('bible_id',$bible_id)->get();
@@ -1303,60 +1331,9 @@ class HomeController extends Controller
                     'list' => $books,
                 ];
             });
-
-            return $this->outputer->code(200)->success($mergedData->values())->json();
-
-        } catch (\Exception $e) {
-
-            $result = [
-                    "status" => "error",
-                    "metadata" => [],
-                    "data" => [
-                        "message" => $e->getMessage()
-                    ]
-                ];
-            return $result;
-        }
-    }
-
-    public function WebBibleStudy(Request $request){
-
-        try {
-
-            $bible_id = env('DEFAULT_BIBLE');
-
-            $testaments = Testament::with('books.chapters')->where('bible_id',$bible_id)->get();
-
-            $mergedData = $testaments->map(function ($testament) {
-                $books = $testament->books->map(function ($book) {
-                    $bookImg = BookImage::where('book_id', $book->book_id)->first();
-
-                    $book_image = $bookImg !== null 
-                        ? asset('/') . $bookImg['image'] 
-                        : asset('/') . 'assets/images/logo.png';
-
-                    return [
-                        'book_id' => $book->book_id,
-                        'book_name' => $book->book_name,
-                        'book_image' => $book_image,
-                        'total_chapters' => $book->chapters->count() - 1,
-                    ];
-                });
-
-                return [
-                    'category' => $testament->testament_name,
-                    'list' => $books,
-                ];
-            });
-
-            $login_user = (object) [
-                'user_id' => Null,
-                'image' => asset('assets/images/user/user-dp.png')
-            ];
 
             return $this->outputer->code(200)->success($mergedData->values())
-                                    ->LoginUser($login_user)
-                                    ->json();
+                                    ->LoginUser($login_user)->json();
 
         } catch (\Exception $e) {
 
@@ -1370,10 +1347,90 @@ class HomeController extends Controller
             return $result;
         }
     }
+
+    // public function WebBibleStudy(Request $request){
+
+    //     try {
+
+    //         $bible_id = env('DEFAULT_BIBLE');
+
+    //         $testaments = Testament::with('books.chapters')->where('bible_id',$bible_id)->get();
+
+    //         $mergedData = $testaments->map(function ($testament) {
+    //             $books = $testament->books->map(function ($book) {
+    //                 $bookImg = BookImage::where('book_id', $book->book_id)->first();
+
+    //                 $book_image = $bookImg !== null 
+    //                     ? asset('/') . $bookImg['image'] 
+    //                     : asset('/') . 'assets/images/logo.png';
+
+    //                 return [
+    //                     'book_id' => $book->book_id,
+    //                     'book_name' => $book->book_name,
+    //                     'book_image' => $book_image,
+    //                     'total_chapters' => $book->chapters->count() - 1,
+    //                 ];
+    //             });
+
+    //             return [
+    //                 'category' => $testament->testament_name,
+    //                 'list' => $books,
+    //             ];
+    //         });
+
+    //         $login_user = (object) [
+    //             'user_id' => Null,
+    //             'image' => asset('assets/images/user/user-dp.png')
+    //         ];
+
+    //         return $this->outputer->code(200)->success($mergedData->values())
+    //                                 ->LoginUser($login_user)
+    //                                 ->json();
+
+    //     } catch (\Exception $e) {
+
+    //         $result = [
+    //                 "status" => "error",
+    //                 "metadata" => [],
+    //                 "data" => [
+    //                     "message" => $e->getMessage()
+    //                 ]
+    //             ];
+    //         return $result;
+    //     }
+    // }
 
     public function BibleStudyChapters(Request $request){
 
         try {
+
+            if(auth('sanctum')->check()) {
+               
+            /*--------Authenticated User---------*/
+
+                $user_id = auth('sanctum')->id();
+
+                $login_user = User::select('id','image','timezone')->where('id',$user_id)->first();
+
+                $userTimezone = $login_user->timezone ?? 'UTC';
+                if($login_user->image !== null) {
+                    $login_user->image = asset('/') . $login_user->image;
+                }else{
+                    $login_user->image = asset('/').'assets/images/user/user-dp.png';
+                }
+
+            }else{
+
+                $userTimezone = 'UTC';
+
+                $login_user = (object) [
+                    'id' => Null,
+                    'image' => asset('assets/images/user/user-dp.png'),
+                    'timezone' =>$userTimezone,
+                    'user_name' => 'Guest User'
+                ];
+
+            }
 
             $book_id = $request['book_id'];
 
@@ -1402,7 +1459,8 @@ class HomeController extends Controller
             });
 
             
-            return $this->outputer->code(200)->success($chapters)->json();
+            return $this->outputer->code(200)->success($chapters)
+                                ->LoginUser($login_user)->json();
 
         }catch (\Exception $e) {
 
@@ -1417,57 +1475,57 @@ class HomeController extends Controller
         }
     }
 
-    public function WebBibleStudyChapters(Request $request){
+    // public function WebBibleStudyChapters(Request $request){
 
-        try {
+    //     try {
 
-            $book_id = $request['book_id'];
+    //         $book_id = $request['book_id'];
 
-            $chapters = Chapter::where('book_id',$book_id)
-                        ->get();
+    //         $chapters = Chapter::where('book_id',$book_id)
+    //                     ->get();
 
-            $chapters->transform(function ($item, $key) {
+    //         $chapters->transform(function ($item, $key) {
 
-                $book = Book::where('book_id',$item->book_id)->first();
-                $item->book_name = $book->book_name;
+    //             $book = Book::where('book_id',$item->book_id)->first();
+    //             $item->book_name = $book->book_name;
                 
-                $statements = $item->statements()->get(['statement_id','statement_no','statement_heading',
-                    'statement_text']);
-                foreach ($statements as $statement) {
-                    $statement->statement_text = str_replace('<br>', "\n", $statement->statement_text);
-                    $statement->statement_text = strip_tags($statement->statement_text);
-                }
-                $item->statements = $statements;
+    //             $statements = $item->statements()->get(['statement_id','statement_no','statement_heading',
+    //                 'statement_text']);
+    //             foreach ($statements as $statement) {
+    //                 $statement->statement_text = str_replace('<br>', "\n", $statement->statement_text);
+    //                 $statement->statement_text = strip_tags($statement->statement_text);
+    //             }
+    //             $item->statements = $statements;
 
-                if ($item->chapter_no == 0) {
-                    $item->chapter_no = 'ആമുഖം';
-                }
+    //             if ($item->chapter_no == 0) {
+    //                 $item->chapter_no = 'ആമുഖം';
+    //             }
 
-                return $item;
-            });
+    //             return $item;
+    //         });
             
-            $login_user = (object) [
-                'user_id' => Null,
-                'image' => asset('assets/images/user/user-dp.png')
-            ];
+    //         $login_user = (object) [
+    //             'user_id' => Null,
+    //             'image' => asset('assets/images/user/user-dp.png')
+    //         ];
             
-            return $this->outputer->code(200)
-                            ->success($chapters)
-                            ->LoginUser($login_user)
-                            ->json();
+    //         return $this->outputer->code(200)
+    //                         ->success($chapters)
+    //                         ->LoginUser($login_user)
+    //                         ->json();
 
-        }catch (\Exception $e) {
+    //     }catch (\Exception $e) {
 
-            $result = [
-                    "status" => "error",
-                    "metadata" => [],
-                    "data" => [
-                        "message" => $e->getMessage()
-                    ]
-                ];
-            return $result;
-        }
-    }
+    //         $result = [
+    //                 "status" => "error",
+    //                 "metadata" => [],
+    //                 "data" => [
+    //                     "message" => $e->getMessage()
+    //                 ]
+    //             ];
+    //         return $result;
+    //     }
+    // }
 
     public function Notifications(Request $request){
 

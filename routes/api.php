@@ -20,8 +20,11 @@ Route::get('web/course_details', [HomeController::class, 'WebCourseDetails']);
 //Route::get('web/search',[UserController::class, 'WebSearchResults']);
 Route::get('search',[UserController::class, 'SearchResults']);
 
-Route::get('web/bible_study' , [HomeController::class, 'WebBibleStudy']);
-Route::get('web/bible_study_chapters' , [HomeController::class, 'WebBibleStudyChapters']);
+// Route::get('web/bible_study' , [HomeController::class, 'WebBibleStudy']);
+Route::get('v2/bible_study' , [HomeController::class, 'BibleStudyV2']);
+// Route::get('web/bible_study_chapters' , [HomeController::class, 'WebBibleStudyChapters']);
+Route::get('bible_study_chapters' , [HomeController::class, 'BibleStudyChapters']);
+
 
 Route::get('web/notifications' , [HomeController::class, 'WebNotifications']);
 
@@ -65,8 +68,8 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::post('mark_as_read',[HomeController::class, 'MarkAsRead']);
 
     // Route::get('bible_study' , [HomeController::class, 'BibleStudy']);
-    Route::get('v2/bible_study' , [HomeController::class, 'BibleStudyV2']);
-    Route::get('bible_study_chapters' , [HomeController::class, 'BibleStudyChapters']);
+    // Route::get('v2/bible_study' , [HomeController::class, 'BibleStudyV2']);
+    // Route::get('bible_study_chapters' , [HomeController::class, 'BibleStudyChapters']);
 
     Route::get('notifications' , [HomeController::class, 'Notifications']);
     Route::post('clear/notification', [HomeController::class, 'clearNotification']);
