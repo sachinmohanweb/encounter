@@ -48,48 +48,63 @@ class HolyStatement extends Model
 
     public function getNoteMarkingAttribute()
     {
-        $color_data = UserBibleMarking::where('statement_id',$this->statement_id)
-                        ->where('user_id',Auth::id())
-                        ->where('type',1)
-                        ->first();
-        if($color_data){
+        if(auth('sanctum')->check()) {
 
-            return $color_data['data'];
+            $user_id = auth('sanctum')->id();
+
+            $color_data = UserBibleMarking::where('statement_id',$this->statement_id)
+                            ->where('user_id',$user_id)
+                            ->where('type',1)
+                                ->first();
+            return $color_data ? $color_data->data : null;
+
         }else{
-            return Null;
+
+            return null;
         }
     }
 
     public function getBookmarkMarkingAttribute()
     {
-        $color_data = UserBibleMarking::where('statement_id',$this->statement_id)
-                        ->where('user_id',Auth::id())
-                        ->where('type',2)
-                        ->first();
-        if($color_data){
+        if(auth('sanctum')->check()) {
 
-            $tagIds = explode(',', $color_data['data']);
+            $user_id = auth('sanctum')->id();
 
-            $tags = Tag::whereIn('id', $tagIds)
-                    ->select('id', 'tag_name')
-                    ->get();
-            return $tags;
+            $color_data = UserBibleMarking::where('statement_id',$this->statement_id)
+                            ->where('user_id',$user_id)
+                            ->where('type',2)
+                            ->first();
+            if($color_data){
+
+                $tagIds = explode(',', $color_data['data']);
+
+                $tags = Tag::whereIn('id', $tagIds)
+                        ->select('id', 'tag_name')
+                        ->get();
+                return $tags;
+            }else{
+                return Null;
+            }
         }else{
-            return Null;
+
+            return null;
         }
     }
 
     public function getColorMarkingAttribute()
     {
-        $color_data = UserBibleMarking::where('statement_id',$this->statement_id)
-                        ->where('user_id',Auth::id())
+        if(auth('sanctum')->check()) {
+            
+            $user_id = auth('sanctum')->id();
+            
+            $color_data = UserBibleMarking::where('statement_id',$this->statement_id)
+                        ->where('user_id',$user_id)
                         ->where('type',3)
                         ->first();
-        if($color_data){
-
-            return $color_data['data'];
+            return $color_data ? $color_data->data : null;
         }else{
-            return Null;
+
+            return null;
         }
     }
 }

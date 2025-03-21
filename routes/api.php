@@ -13,11 +13,13 @@ Route::post('verify_otp',[UserController::class, 'VerifyOtp']);
 
 Route::post('signup',[UserController::class, 'Signup']);
 
-//Route::get('web/home', [HomeController::class, 'Home']);
+// Route::get('web/home', [HomeController::class, 'Home']);
 Route::get('home', [HomeController::class, 'Home']);
-Route::get('web/course_details', [HomeController::class, 'WebCourseDetails']);
+// Route::get('web/course_details', [HomeController::class, 'WebCourseDetails']);
+Route::get('course_details', [HomeController::class, 'CourseDetails']);
 
-//Route::get('web/search',[UserController::class, 'WebSearchResults']);
+
+// Route::get('web/search',[UserController::class, 'WebSearchResults']);
 Route::get('search',[UserController::class, 'SearchResults']);
 
 // Route::get('web/bible_study' , [HomeController::class, 'WebBibleStudy']);
@@ -25,9 +27,7 @@ Route::get('v2/bible_study' , [HomeController::class, 'BibleStudyV2']);
 // Route::get('web/bible_study_chapters' , [HomeController::class, 'WebBibleStudyChapters']);
 Route::get('bible_study_chapters' , [HomeController::class, 'BibleStudyChapters']);
 
-
 Route::get('web/notifications' , [HomeController::class, 'WebNotifications']);
-
 
 Route::get('got_questions',[SidebarController::class, 'GotQuestions']);
 Route::get('got_question_categories',[SidebarController::class, 'GotQuestionCategories']);
@@ -41,8 +41,8 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('logout',[UserController::class, 'logoutuser']);
     Route::get('delete_account',[UserController::class, 'DeleteAccount']);
     
-    //Route::get('search',[UserController::class, 'SearchResults']);
-    //Route::post('v2/search',[UserController::class, 'SearchResultsTwo']);
+    // Route::get('search',[UserController::class, 'SearchResults']);
+    // Route::post('v2/search',[UserController::class, 'SearchResultsTwo']);
 
     Route::get('completed_courses', [HomeController::class, 'CompletedCourses']);
 
@@ -56,13 +56,13 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::post('add_tag',[SidebarController::class, 'AddTag']);
     Route::delete('delete_tag',[SidebarController::class, 'DeleteTag']);
 
-    //Route::get('my_bible_markings',[SidebarController::class, 'MyBibleMarkings']);
+    // Route::get('my_bible_markings',[SidebarController::class, 'MyBibleMarkings']);
     Route::get('v2/my_bible_markings',[SidebarController::class, 'MyBibleMarkingsV2']);
     Route::post('add_bible_marking',[SidebarController::class, 'AddBibleMarking']);
     Route::delete('delete_bible_marking',[SidebarController::class, 'DeleteBibleMarking']);
 
-    //Route::get('home', [HomeController::class, 'Home']);
-    Route::get('course_details', [HomeController::class, 'CourseDetails']);
+    // Route::get('home', [HomeController::class, 'Home']);
+    // Route::get('course_details', [HomeController::class, 'CourseDetails']);
     Route::post('enroll_batch',[HomeController::class, 'EnrollBatch']);
     Route::get('course_day_content',[HomeController::class, 'CourseDayContent']);
     Route::post('mark_as_read',[HomeController::class, 'MarkAsRead']);

@@ -735,284 +735,474 @@ class HomeController extends Controller
         }
     }
 
+    // public function CourseDetails(Request $request){
+    //     try {
+
+    //         $userId = Auth::user()->id;
+
+    //         $type = $request->input('type');
+    //         $courses = Course::from(with(new Course)->getTable(). ' as a')
+    //                     ->join(with(new Batch)->getTable(). ' as b' , 'a.id','b.course_id')
+    //                     ->select('a.id','a.course_name','a.no_of_days','a.description','a.thumbnail',
+    //                         'a.course_creator','a.creator_image','a.creator_designation',
+    //                         'a.intro_video','a.intro_audio','a.intro_video_thumb','b.id as batch_id','b.batch_name','b.start_date','b.end_date','b.last_date',
+    //                         DB::raw('DATE_FORMAT(b.start_date, "%b %d,%Y") as start_date'),
+    //                         DB::raw('DATE_FORMAT(b.end_date, "%b %d,%Y") as end_date'),
+    //                         DB::raw('DATE_FORMAT(b.last_date, "%b %d,%Y") as last_date')
+    //                     )
+    //                     ->where('b.id',$request['batch_id'])
+    //                     ->get();
+
+    //         $courses->transform(function ($item) use ($userId,$type) {
+
+    //             if ($item->thumbnail !== null) {
+    //                 $item->thumbnail = asset('/') . $item->thumbnail;
+    //             } else {
+    //                 $item->thumbnail = null;
+    //             }
+
+    //             if ($item->creator_image !== null) {
+    //                 $item->creator_image = asset('/') . $item->creator_image;
+    //             } else {
+    //                 $item->creator_image = null;
+    //             }
+
+    //             if ($item->intro_video_thumb !== null) {
+    //                 $item->intro_video_thumb = asset('/') . $item->intro_video_thumb;
+    //             } else {
+    //                 $item->intro_video_thumb = null;
+    //             }
+                
+    //             $today = now()->startOfDay();
+    //             $courseStartDate = Carbon::parse($item->start_date)->startOfDay();
+
+                
+    //             if($today->gte($courseStartDate)) {
+    //                 $item->course_start_status = 'started'; 
+    //             }else {
+    //                 $item->course_start_status = 'not_started';
+    //             }
+
+    //             $last_course_content = CourseContent::select('day', 'created_at')->where('course_id', $item->id)
+    //                                 ->whereHas('CourseDayVerse')
+    //                                 ->orderBy('updated_at', 'desc')
+    //                                 ->first();
+    //             if($last_course_content) {
+
+    //                 $formattedCreatedAt = Carbon::parse($last_course_content['created_at'])->format('M d, Y');
+    //                 $item->last_updated_data = $last_course_content['day'].' day content at '.$formattedCreatedAt;
+    //             }
+                
+    //             $item->last_updated_data = '';
+
+    //             $item->completion_percentage = 0; 
+
+    //             $user_lms = UserLMS::where('user_id',$userId)
+    //                         ->where('course_id',$item->id)
+    //                         ->where('batch_id',$item->batch_id)
+    //                         ->where('status',1)->first();
+    //             if($user_lms){
+
+    //                 $item->user_enrolled = true;
+    //                 $item->user_lms_id = $user_lms['id'];
+    //                 if(Carbon::parse($item->start_date)->format('Y-m-d') > now()->format('Y-m-d')){
+    //                     $item->allow_day_verse_read = false;
+    //                     $item->course_content = [];
+
+    //                 }else{
+    //                     $item->allow_day_verse_read = true;
+    //                     //$total_course_completed_days= UserDailyReading::where('user_lms_id',$user_lms['id'])->count();
+    //                     //$item->completion_percentage = ($total_course_completed_days/$item->no_of_days)*100; 
+    //                     $item->completion_percentage = $user_lms['progress']; 
+
+    //                     //$current_day_number = Carbon::today()->diffInDays(Carbon::parse($item->start_date)) + 1; 
+    //                     $userTimezone = auth()->user()->timezone ?? 'Pacific/Auckland';
+    //                     $current_day_number = Carbon::today($userTimezone)
+    //                                             ->diffInDays(Carbon::parse($item->start_date,$userTimezone)) + 1; 
+
+    //                     $course_content = CourseContent::select('day','id as course_content_id','course_id')
+    //                                         ->where('course_id',$item->id)
+    //                                         ->whereHas('CourseDayVerse') 
+    //                                         ->where('day', '<=', $current_day_number)
+    //                                         ->orderBy('day');
+    //                     if ($type ==1) {
+                            
+    //                         $largest_day_completed =UserDailyReading::where('user_lms_id',$user_lms['id'])
+    //                                                 ->max('day');
+    //                         if($largest_day_completed) {
+    //                             if($user_lms['completed_status']!=3){
+    //                                 $course_content->where('day', '>', $largest_day_completed)->limit(5);
+    //                             }    
+    //                         }else{
+    //                             $course_content->where('day', '>', 0)->limit(5);
+
+    //                         }
+    //                         $read_days = UserDailyReading::where('user_lms_id', $user_lms['id'])
+    //                                     ->pluck('day')->toArray();
+
+    //                         if ($user_lms['completed_status'] != 3) {
+    //                             $course_content->whereNotIn('day', $read_days);
+    //                         }
+    //                     }
+
+    //                     $course_content = $course_content->get();
+
+    //                     $course_content->makeHidden(['course_name', 'bible_name']);
+
+    //                     $item->course_content = $course_content;
+
+    //                     $item->course_content->transform(function ($content) use ($userId, $user_lms) {
+
+    //                         $day_verses =CourseDayVerse::select('book','chapter','verse_from','verse_to')
+    //                                     ->where('course_content_id',$content['course_content_id'])->get();
+
+    //                         $content->details = null;
+    //                         if($day_verses->isNotEmpty()) {
+
+    //                             $day_verses->makeHidden(['testament_name']);
+                                
+    //                             $batchId = $user_lms['batch_id'];
+    //                             $day = $content['day'];
+
+    //                             $detailsArray = $day_verses->map(function ($day_verse) {
+    //                                 return $day_verse->getFormattedCourseDaySections();
+    //                             })->toArray();
+
+
+    //                             $content->details = $detailsArray;
+                                
+    //                             $content->read_status = $day_verses->first()->isMarkedAsRead($userId, $batchId, $day);
+
+    //                         }
+    //                         return $content;
+    //                     });
+    //                 }
+
+    //             }else{
+    //                 $item->user_enrolled = false;
+    //                 $item->user_lms_id = '';
+    //                 $item->course_content = [];
+    //                 $item->allow_day_verse_read = false;
+
+    //             }
+
+    //             return $item;
+    //         });
+
+    //         $courses->makeHidden([ 'bible_name']);
+
+    //         if(empty($courses)) {
+                
+    //             $result = [
+    //                 "status" => "error",
+    //                 "metadata" => [],
+    //                 "data" => [
+    //                     "message" => "Empty course list "
+    //                 ]
+    //             ];
+    //             return $result;
+    //         }
+
+    //         return $this->outputer->code(200)
+    //                     ->success($courses )
+    //                     ->json();
+
+    //     }catch (\Exception $e) {
+
+    //         $result = [
+    //                 "status" => "error",
+    //                 "metadata" => [],
+    //                 "data" => [
+    //                     "message" => $e->getMessage()
+    //                 ]
+    //             ];
+    //         return $result;
+    //     }
+    // }
+
     public function CourseDetails(Request $request){
+        
         try {
 
-            $userId = Auth::user()->id;
+            if(auth('sanctum')->check()) {
+               
+            /*--------Authenticated User---------*/
 
-            $type = $request->input('type');
-            $courses = Course::from(with(new Course)->getTable(). ' as a')
-                        ->join(with(new Batch)->getTable(). ' as b' , 'a.id','b.course_id')
-                        ->select('a.id','a.course_name','a.no_of_days','a.description','a.thumbnail',
-                            'a.course_creator','a.creator_image','a.creator_designation',
-                            'a.intro_video','a.intro_audio','a.intro_video_thumb','b.id as batch_id','b.batch_name','b.start_date','b.end_date','b.last_date',
-                            DB::raw('DATE_FORMAT(b.start_date, "%b %d,%Y") as start_date'),
-                            DB::raw('DATE_FORMAT(b.end_date, "%b %d,%Y") as end_date'),
-                            DB::raw('DATE_FORMAT(b.last_date, "%b %d,%Y") as last_date')
-                        )
-                        ->where('b.id',$request['batch_id'])
-                        ->get();
+                $user_id = auth('sanctum')->id();
 
-            $courses->transform(function ($item) use ($userId,$type) {
+                $login_user = User::select('id','image','timezone')->where('id',$user_id)->first();
 
-                if ($item->thumbnail !== null) {
-                    $item->thumbnail = asset('/') . $item->thumbnail;
-                } else {
-                    $item->thumbnail = null;
+                $userTimezone = $login_user->timezone ?? 'UTC';
+                if($login_user->image !== null) {
+                    $login_user->image = asset('/') . $login_user->image;
+                }else{
+                    $login_user->image = asset('/').'assets/images/user/user-dp.png';
                 }
 
-                if ($item->creator_image !== null) {
-                    $item->creator_image = asset('/') . $item->creator_image;
-                } else {
-                    $item->creator_image = null;
-                }
+                $type = $request->input('type');
 
-                if ($item->intro_video_thumb !== null) {
-                    $item->intro_video_thumb = asset('/') . $item->intro_video_thumb;
-                } else {
-                    $item->intro_video_thumb = null;
-                }
-                
-                $today = now()->startOfDay();
-                $courseStartDate = Carbon::parse($item->start_date)->startOfDay();
+                $courses = Course::from(with(new Course)->getTable(). ' as a')
+                            ->join(with(new Batch)->getTable(). ' as b' , 'a.id','b.course_id')
+                            ->select('a.id','a.course_name','a.no_of_days','a.description','a.thumbnail',
+                                'a.course_creator','a.creator_image','a.creator_designation',
+                                'a.intro_video','a.intro_audio','a.intro_video_thumb','b.id as batch_id','b.batch_name','b.start_date','b.end_date','b.last_date',
+                                DB::raw('DATE_FORMAT(b.start_date, "%b %d,%Y") as start_date'),
+                                DB::raw('DATE_FORMAT(b.end_date, "%b %d,%Y") as end_date'),
+                                DB::raw('DATE_FORMAT(b.last_date, "%b %d,%Y") as last_date')
+                            )
+                            ->where('b.id',$request['batch_id'])
+                            ->get();
 
-                
-                if($today->gte($courseStartDate)) {
-                    $item->course_start_status = 'started'; 
-                }else {
-                    $item->course_start_status = 'not_started';
-                }
+                $courses->transform(function ($item) use ($user_id,$type) {
 
-                $last_course_content = CourseContent::select('day', 'created_at')->where('course_id', $item->id)
-                                    ->whereHas('CourseDayVerse')
-                                    ->orderBy('updated_at', 'desc')
-                                    ->first();
-                if($last_course_content) {
-
-                    $formattedCreatedAt = Carbon::parse($last_course_content['created_at'])->format('M d, Y');
-                    $item->last_updated_data = $last_course_content['day'].' day content at '.$formattedCreatedAt;
-                }
-                
-                $item->last_updated_data = '';
-
-                $item->completion_percentage = 0; 
-
-                $user_lms = UserLMS::where('user_id',$userId)
-                            ->where('course_id',$item->id)
-                            ->where('batch_id',$item->batch_id)
-                            ->where('status',1)->first();
-                if($user_lms){
-
-                    $item->user_enrolled = true;
-                    $item->user_lms_id = $user_lms['id'];
-                    if(Carbon::parse($item->start_date)->format('Y-m-d') > now()->format('Y-m-d')){
-                        $item->allow_day_verse_read = false;
-                        $item->course_content = [];
-
-                    }else{
-                        $item->allow_day_verse_read = true;
-                        //$total_course_completed_days= UserDailyReading::where('user_lms_id',$user_lms['id'])->count();
-                        //$item->completion_percentage = ($total_course_completed_days/$item->no_of_days)*100; 
-                        $item->completion_percentage = $user_lms['progress']; 
-
-                        //$current_day_number = Carbon::today()->diffInDays(Carbon::parse($item->start_date)) + 1; 
-                        $userTimezone = auth()->user()->timezone ?? 'Pacific/Auckland';
-                        $current_day_number = Carbon::today($userTimezone)
-                                                ->diffInDays(Carbon::parse($item->start_date,$userTimezone)) + 1; 
-
-                        $course_content = CourseContent::select('day','id as course_content_id','course_id')
-                                            ->where('course_id',$item->id)
-                                            ->whereHas('CourseDayVerse') 
-                                            ->where('day', '<=', $current_day_number)
-                                            ->orderBy('day');
-                        if ($type ==1) {
-                            
-                            $largest_day_completed =UserDailyReading::where('user_lms_id',$user_lms['id'])
-                                                    ->max('day');
-                            if($largest_day_completed) {
-                                if($user_lms['completed_status']!=3){
-                                    $course_content->where('day', '>', $largest_day_completed)->limit(5);
-                                }    
-                            }else{
-                                $course_content->where('day', '>', 0)->limit(5);
-
-                            }
-                            $read_days = UserDailyReading::where('user_lms_id', $user_lms['id'])
-                                        ->pluck('day')->toArray();
-
-                            if ($user_lms['completed_status'] != 3) {
-                                $course_content->whereNotIn('day', $read_days);
-                            }
-                        }
-
-                        $course_content = $course_content->get();
-
-                        $course_content->makeHidden(['course_name', 'bible_name']);
-
-                        $item->course_content = $course_content;
-
-                        $item->course_content->transform(function ($content) use ($userId, $user_lms) {
-
-                            $day_verses =CourseDayVerse::select('book','chapter','verse_from','verse_to')
-                                        ->where('course_content_id',$content['course_content_id'])->get();
-
-                            $content->details = null;
-                            if($day_verses->isNotEmpty()) {
-
-                                $day_verses->makeHidden(['testament_name']);
-                                
-                                $batchId = $user_lms['batch_id'];
-                                $day = $content['day'];
-
-                                $detailsArray = $day_verses->map(function ($day_verse) {
-                                    return $day_verse->getFormattedCourseDaySections();
-                                })->toArray();
-
-
-                                $content->details = $detailsArray;
-                                
-                                $content->read_status = $day_verses->first()->isMarkedAsRead($userId, $batchId, $day);
-
-                            }
-                            return $content;
-                        });
+                    if ($item->thumbnail !== null) {
+                        $item->thumbnail = asset('/') . $item->thumbnail;
+                    } else {
+                        $item->thumbnail = null;
                     }
 
-                }else{
+                    if ($item->creator_image !== null) {
+                        $item->creator_image = asset('/') . $item->creator_image;
+                    } else {
+                        $item->creator_image = null;
+                    }
+
+                    if ($item->intro_video_thumb !== null) {
+                        $item->intro_video_thumb = asset('/') . $item->intro_video_thumb;
+                    } else {
+                        $item->intro_video_thumb = null;
+                    }
+                    
+                    $today = now()->startOfDay();
+                    $courseStartDate = Carbon::parse($item->start_date)->startOfDay();
+
+                    
+                    if($today->gte($courseStartDate)) {
+                        $item->course_start_status = 'started'; 
+                    }else {
+                        $item->course_start_status = 'not_started';
+                    }
+
+                    $last_course_content = CourseContent::select('day', 'created_at')->where('course_id', $item->id)
+                                        ->whereHas('CourseDayVerse')
+                                        ->orderBy('updated_at', 'desc')
+                                        ->first();
+                    if($last_course_content) {
+
+                        $formattedCreatedAt = Carbon::parse($last_course_content['created_at'])->format('M d, Y');
+                        $item->last_updated_data = $last_course_content['day'].' day content at '.$formattedCreatedAt;
+                    }
+                    
+                    $item->last_updated_data = '';
+
+                    $item->completion_percentage = 0; 
+
+                    $user_lms = UserLMS::where('user_id',$user_id)
+                                ->where('course_id',$item->id)
+                                ->where('batch_id',$item->batch_id)
+                                ->where('status',1)->first();
+                    if($user_lms){
+
+                        $item->user_enrolled = true;
+                        $item->user_lms_id = $user_lms['id'];
+                        if(Carbon::parse($item->start_date)->format('Y-m-d') > now()->format('Y-m-d')){
+                            $item->allow_day_verse_read = false;
+                            $item->course_content = [];
+
+                        }else{
+                            $item->allow_day_verse_read = true;
+                            //$total_course_completed_days= UserDailyReading::where('user_lms_id',$user_lms['id'])->count();
+                            //$item->completion_percentage = ($total_course_completed_days/$item->no_of_days)*100; 
+                            $item->completion_percentage = $user_lms['progress']; 
+
+                            //$current_day_number = Carbon::today()->diffInDays(Carbon::parse($item->start_date)) + 1; 
+                            $userTimezone = auth()->user()->timezone ?? 'Pacific/Auckland';
+                            $current_day_number = Carbon::today($userTimezone)
+                                                    ->diffInDays(Carbon::parse($item->start_date,$userTimezone)) + 1; 
+
+                            $course_content = CourseContent::select('day','id as course_content_id','course_id')
+                                                ->where('course_id',$item->id)
+                                                ->whereHas('CourseDayVerse') 
+                                                ->where('day', '<=', $current_day_number)
+                                                ->orderBy('day');
+                            if ($type ==1) {
+                                
+                                $largest_day_completed =UserDailyReading::where('user_lms_id',$user_lms['id'])
+                                                        ->max('day');
+                                if($largest_day_completed) {
+                                    if($user_lms['completed_status']!=3){
+                                        $course_content->where('day', '>', $largest_day_completed)->limit(5);
+                                    }    
+                                }else{
+                                    $course_content->where('day', '>', 0)->limit(5);
+
+                                }
+                                $read_days = UserDailyReading::where('user_lms_id', $user_lms['id'])
+                                            ->pluck('day')->toArray();
+
+                                if ($user_lms['completed_status'] != 3) {
+                                    $course_content->whereNotIn('day', $read_days);
+                                }
+                            }
+
+                            $course_content = $course_content->get();
+
+                            $course_content->makeHidden(['course_name', 'bible_name']);
+
+                            $item->course_content = $course_content;
+
+                            $item->course_content->transform(function ($content) use ($user_id, $user_lms) {
+
+                                $day_verses =CourseDayVerse::select('book','chapter','verse_from','verse_to')
+                                            ->where('course_content_id',$content['course_content_id'])->get();
+
+                                $content->details = null;
+                                if($day_verses->isNotEmpty()) {
+
+                                    $day_verses->makeHidden(['testament_name']);
+                                    
+                                    $batchId = $user_lms['batch_id'];
+                                    $day = $content['day'];
+
+                                    $detailsArray = $day_verses->map(function ($day_verse) {
+                                        return $day_verse->getFormattedCourseDaySections();
+                                    })->toArray();
+
+
+                                    $content->details = $detailsArray;
+                                    
+                                    $content->read_status = $day_verses->first()->isMarkedAsRead($user_id, $batchId, $day);
+
+                                }
+                                return $content;
+                            });
+                        }
+
+                    }else{
+                        $item->user_enrolled = false;
+                        $item->user_lms_id = '';
+                        $item->course_content = [];
+                        $item->allow_day_verse_read = false;
+
+                    }
+
+                    return $item;
+                });
+
+                $courses->makeHidden([ 'bible_name']);
+
+                if(empty($courses)) {
+                    
+                    $result = [
+                        "status" => "error",
+                        "metadata" => [],
+                        "data" => [
+                            "message" => "Empty course list "
+                        ]
+                    ];
+                    return $result;
+                }
+
+
+            }else{
+
+                $userTimezone = 'UTC';
+
+                $login_user = (object) [
+                    'id' => Null,
+                    'image' => asset('assets/images/user/user-dp.png'),
+                    'timezone' =>$userTimezone,
+                    'user_name' => 'Guest User'
+                ];
+
+
+                $type = $request->input('type');
+
+                $courses = Course::from(with(new Course)->getTable(). ' as a')
+                            ->join(with(new Batch)->getTable(). ' as b' , 'a.id','b.course_id')
+                            ->select('a.id','a.course_name','a.no_of_days','a.description','a.thumbnail',
+                                'a.course_creator','a.creator_image','a.creator_designation',
+                                'a.intro_video','a.intro_audio','a.intro_video_thumb','b.id as batch_id','b.batch_name','b.start_date','b.end_date','b.last_date',
+                                DB::raw('DATE_FORMAT(b.start_date, "%b %d,%Y") as start_date'),
+                                DB::raw('DATE_FORMAT(b.end_date, "%b %d,%Y") as end_date'),
+                                DB::raw('DATE_FORMAT(b.last_date, "%b %d,%Y") as last_date')
+                            )
+                            ->where('b.id',$request['batch_id'])
+                            ->get();
+
+                $courses->transform(function ($item) use ($type) {
+
+                    if ($item->thumbnail !== null) {
+                        $item->thumbnail = asset('/') . $item->thumbnail;
+                    } else {
+                        $item->thumbnail = null;
+                    }
+
+                    if ($item->creator_image !== null) {
+                        $item->creator_image = asset('/') . $item->creator_image;
+                    } else {
+                        $item->creator_image = null;
+                    }
+
+                    if ($item->intro_video_thumb !== null) {
+                        $item->intro_video_thumb = asset('/') . $item->intro_video_thumb;
+                    } else {
+                        $item->intro_video_thumb = null;
+                    }
+                    
+                    $today = now()->startOfDay();
+                    $courseStartDate = Carbon::parse($item->start_date)->startOfDay();
+
+                    
+                    if($today->gte($courseStartDate)) {
+                        $item->course_start_status = 'started'; 
+                    }else {
+                        $item->course_start_status = 'not_started';
+                    }
+
+                    $last_course_content = CourseContent::select('day', 'created_at')->where('course_id', $item->id)
+                                        ->whereHas('CourseDayVerse')
+                                        ->orderBy('updated_at', 'desc')
+                                        ->first();
+                    if($last_course_content) {
+
+                        $formattedCreatedAt = Carbon::parse($last_course_content['created_at'])->format('M d, Y');
+                        $item->last_updated_data = $last_course_content['day'].' day content at '.$formattedCreatedAt;
+                    }
+                    
+                    $item->last_updated_data = '';
+                    $item->completion_percentage = 0; 
                     $item->user_enrolled = false;
                     $item->user_lms_id = '';
                     $item->course_content = [];
                     $item->allow_day_verse_read = false;
 
+                    return $item;
+                });
+
+                $courses->makeHidden([ 'bible_name']);
+
+                if(empty($courses)) {
+                    
+                    $result = [
+                        "status" => "error",
+                        "metadata" => [],
+                        "data" => [
+                            "message" => "Empty course list "
+                        ]
+                    ];
+                    return $result;
                 }
-
-                return $item;
-            });
-
-            $courses->makeHidden([ 'bible_name']);
-
-            if(empty($courses)) {
-                
-                $result = [
-                    "status" => "error",
-                    "metadata" => [],
-                    "data" => [
-                        "message" => "Empty course list "
-                    ]
-                ];
-                return $result;
             }
 
-            return $this->outputer->code(200)
-                        ->success($courses )
-                        ->json();
 
-        }catch (\Exception $e) {
-
-            $result = [
-                    "status" => "error",
-                    "metadata" => [],
-                    "data" => [
-                        "message" => $e->getMessage()
-                    ]
-                ];
-            return $result;
-        }
-    }
-    
-    public function WebCourseDetails(Request $request){
-        try {
-
-            $userTimezone = 'UTC';
-
-            $login_user = (object) [
-                'user_id' => Null,
-                'image' => asset('assets/images/user/user-dp.png')
-            ];
-
-            $type = $request->input('type');
-
-            $courses = Course::from(with(new Course)->getTable(). ' as a')
-                        ->join(with(new Batch)->getTable(). ' as b' , 'a.id','b.course_id')
-                        ->select('a.id','a.course_name','a.no_of_days','a.description','a.thumbnail',
-                            'a.course_creator','a.creator_image','a.creator_designation',
-                            'a.intro_video','a.intro_audio','a.intro_video_thumb','b.id as batch_id','b.batch_name','b.start_date','b.end_date','b.last_date',
-                            DB::raw('DATE_FORMAT(b.start_date, "%b %d,%Y") as start_date'),
-                            DB::raw('DATE_FORMAT(b.end_date, "%b %d,%Y") as end_date'),
-                            DB::raw('DATE_FORMAT(b.last_date, "%b %d,%Y") as last_date')
-                        )
-                        ->where('b.id',$request['batch_id'])
-                        ->get();
-
-            $courses->transform(function ($item) use ($type) {
-
-                if ($item->thumbnail !== null) {
-                    $item->thumbnail = asset('/') . $item->thumbnail;
-                } else {
-                    $item->thumbnail = null;
-                }
-
-                if ($item->creator_image !== null) {
-                    $item->creator_image = asset('/') . $item->creator_image;
-                } else {
-                    $item->creator_image = null;
-                }
-
-                if ($item->intro_video_thumb !== null) {
-                    $item->intro_video_thumb = asset('/') . $item->intro_video_thumb;
-                } else {
-                    $item->intro_video_thumb = null;
-                }
-                
-                $today = now()->startOfDay();
-                $courseStartDate = Carbon::parse($item->start_date)->startOfDay();
-
-                
-                if($today->gte($courseStartDate)) {
-                    $item->course_start_status = 'started'; 
-                }else {
-                    $item->course_start_status = 'not_started';
-                }
-
-                $last_course_content = CourseContent::select('day', 'created_at')->where('course_id', $item->id)
-                                    ->whereHas('CourseDayVerse')
-                                    ->orderBy('updated_at', 'desc')
-                                    ->first();
-                if($last_course_content) {
-
-                    $formattedCreatedAt = Carbon::parse($last_course_content['created_at'])->format('M d, Y');
-                    $item->last_updated_data = $last_course_content['day'].' day content at '.$formattedCreatedAt;
-                }
-                
-                $item->last_updated_data = '';
-                $item->completion_percentage = 0; 
-                $item->user_enrolled = false;
-                $item->user_lms_id = '';
-                $item->course_content = [];
-                $item->allow_day_verse_read = false;
-
-                return $item;
-            });
-
-            $courses->makeHidden([ 'bible_name']);
-
-            if(empty($courses)) {
-                
-                $result = [
-                    "status" => "error",
-                    "metadata" => [],
-                    "data" => [
-                        "message" => "Empty course list "
-                    ]
-                ];
-                return $result;
-            }
 
             return $this->outputer->code(200)
                         ->success($courses )
                         ->LoginUser($login_user)
                         ->json();
 
+
         }catch (\Exception $e) {
 
             $result = [
@@ -1025,6 +1215,113 @@ class HomeController extends Controller
             return $result;
         }
     }
+
+    
+    // public function WebCourseDetails(Request $request){
+    //     try {
+
+    //         $userTimezone = 'UTC';
+
+    //         $login_user = (object) [
+    //             'user_id' => Null,
+    //             'image' => asset('assets/images/user/user-dp.png')
+    //         ];
+
+    //         $type = $request->input('type');
+
+    //         $courses = Course::from(with(new Course)->getTable(). ' as a')
+    //                     ->join(with(new Batch)->getTable(). ' as b' , 'a.id','b.course_id')
+    //                     ->select('a.id','a.course_name','a.no_of_days','a.description','a.thumbnail',
+    //                         'a.course_creator','a.creator_image','a.creator_designation',
+    //                         'a.intro_video','a.intro_audio','a.intro_video_thumb','b.id as batch_id','b.batch_name','b.start_date','b.end_date','b.last_date',
+    //                         DB::raw('DATE_FORMAT(b.start_date, "%b %d,%Y") as start_date'),
+    //                         DB::raw('DATE_FORMAT(b.end_date, "%b %d,%Y") as end_date'),
+    //                         DB::raw('DATE_FORMAT(b.last_date, "%b %d,%Y") as last_date')
+    //                     )
+    //                     ->where('b.id',$request['batch_id'])
+    //                     ->get();
+
+    //         $courses->transform(function ($item) use ($type) {
+
+    //             if ($item->thumbnail !== null) {
+    //                 $item->thumbnail = asset('/') . $item->thumbnail;
+    //             } else {
+    //                 $item->thumbnail = null;
+    //             }
+
+    //             if ($item->creator_image !== null) {
+    //                 $item->creator_image = asset('/') . $item->creator_image;
+    //             } else {
+    //                 $item->creator_image = null;
+    //             }
+
+    //             if ($item->intro_video_thumb !== null) {
+    //                 $item->intro_video_thumb = asset('/') . $item->intro_video_thumb;
+    //             } else {
+    //                 $item->intro_video_thumb = null;
+    //             }
+                
+    //             $today = now()->startOfDay();
+    //             $courseStartDate = Carbon::parse($item->start_date)->startOfDay();
+
+                
+    //             if($today->gte($courseStartDate)) {
+    //                 $item->course_start_status = 'started'; 
+    //             }else {
+    //                 $item->course_start_status = 'not_started';
+    //             }
+
+    //             $last_course_content = CourseContent::select('day', 'created_at')->where('course_id', $item->id)
+    //                                 ->whereHas('CourseDayVerse')
+    //                                 ->orderBy('updated_at', 'desc')
+    //                                 ->first();
+    //             if($last_course_content) {
+
+    //                 $formattedCreatedAt = Carbon::parse($last_course_content['created_at'])->format('M d, Y');
+    //                 $item->last_updated_data = $last_course_content['day'].' day content at '.$formattedCreatedAt;
+    //             }
+                
+    //             $item->last_updated_data = '';
+    //             $item->completion_percentage = 0; 
+    //             $item->user_enrolled = false;
+    //             $item->user_lms_id = '';
+    //             $item->course_content = [];
+    //             $item->allow_day_verse_read = false;
+
+    //             return $item;
+    //         });
+
+    //         $courses->makeHidden([ 'bible_name']);
+
+    //         if(empty($courses)) {
+                
+    //             $result = [
+    //                 "status" => "error",
+    //                 "metadata" => [],
+    //                 "data" => [
+    //                     "message" => "Empty course list "
+    //                 ]
+    //             ];
+    //             return $result;
+    //         }
+
+    //         return $this->outputer->code(200)
+    //                     ->success($courses )
+    //                     ->LoginUser($login_user)
+    //                     ->json();
+
+    //     }catch (\Exception $e) {
+
+    //         $result = [
+    //                 "status" => "error",
+    //                 "metadata" => [],
+    //                 "data" => [
+    //                     "message" => $e->getMessage()
+    //                 ]
+    //             ];
+    //         return $result;
+    //     }
+    // }
 
     public function EnrollBatch(Request $request){
         
@@ -1388,6 +1685,52 @@ class HomeController extends Controller
     //                                 ->json();
 
     //     } catch (\Exception $e) {
+
+    //         $result = [
+    //                 "status" => "error",
+    //                 "metadata" => [],
+    //                 "data" => [
+    //                     "message" => $e->getMessage()
+    //                 ]
+    //             ];
+    //         return $result;
+    //     }
+    // }
+
+    // public function BibleStudyChapters(Request $request){
+
+    //     try {
+
+    //         $book_id = $request['book_id'];
+
+    //         $chapters = Chapter::where('book_id',$book_id)
+    //                     //->where('chapter_name', 'NOT LIKE', 'ആമുഖം')
+    //                     ->get();
+
+    //         $chapters->transform(function ($item, $key) {
+
+    //             $book = Book::where('book_id',$item->book_id)->first();
+    //             $item->book_name = $book->book_name;
+                
+    //             $statements = $item->statements()->get(['statement_id','statement_no','statement_heading',
+    //                 'statement_text']);
+    //             foreach ($statements as $statement) {
+    //                 $statement->statement_text = str_replace('<br>', "\n", $statement->statement_text);
+    //                 $statement->statement_text = strip_tags($statement->statement_text);
+    //             }
+    //             $item->statements = $statements;
+
+    //             if ($item->chapter_no == 0) {
+    //                 $item->chapter_no = 'ആമുഖം';
+    //             }
+
+    //             return $item;
+    //         });
+
+            
+    //         return $this->outputer->code(200)->success($chapters)->json();
+
+    //     }catch (\Exception $e) {
 
     //         $result = [
     //                 "status" => "error",
