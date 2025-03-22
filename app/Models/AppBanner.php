@@ -13,6 +13,7 @@ class AppBanner extends Model
 
     protected $fillable = [
         'title',
+        'link',
         'path',       
         'status'        
     ];

@@ -526,3 +526,8 @@ ADD INDEX idx_status (status);
 ALTER TABLE tags 
 ADD INDEX idx_user_id (user_id), 
 ADD INDEX idx_status (status);
+
+
+-- 22/03/25 Indexing----
+
+ALTER TABLE `app_banners` ADD `link` VARCHAR(256) NULL DEFAULT NULL AFTER `title`;

@@ -55,6 +55,9 @@
                         </label>
 
                      </div>
+                     @if($value->link)
+                        <a href="{{$value->link}}" target="_blank">click here</a>
+                     @endif
                      <div class="media-body text-end mt-3">
                          <button class="btn btn-danger" onClick="remove({{ $value->id }})">Delete</button>
                      </div>
@@ -83,6 +86,12 @@
                            <div class="form-group">
                               <label for="">Title<span style="color:red">*</span></label>
                               <input type="text" placeholder="Title" name="title" class="form-control" required>
+                           </div>
+                        </div>
+                        <div class="row g-3 mb-3">
+                           <div class="form-group">
+                              <label for="">Link<span style="color:red"></span></label>
+                              <input type="text" placeholder="Link" name="link" class="form-control">
                            </div>
                         </div>
                         <div class="row g-3 mb-3">

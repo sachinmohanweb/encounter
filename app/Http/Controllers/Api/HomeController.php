@@ -337,7 +337,7 @@ class HomeController extends Controller
 
             /*---------Home Banner----------*/
 
-            $banners = AppBanner::select('title','path','status')
+            $banners = AppBanner::select('title','link','path','status')
                             ->where('status', 2)
                             ->get();
             $banners->transform(function ($item){
