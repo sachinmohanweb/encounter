@@ -27,7 +27,8 @@ Route::get('v2/bible_study' , [HomeController::class, 'BibleStudyV2']);
 // Route::get('web/bible_study_chapters' , [HomeController::class, 'WebBibleStudyChapters']);
 Route::get('bible_study_chapters' , [HomeController::class, 'BibleStudyChapters']);
 
-Route::get('web/notifications' , [HomeController::class, 'WebNotifications']);
+// Route::get('web/notifications' , [HomeController::class, 'WebNotifications']);
+Route::get('notifications' , [HomeController::class, 'Notifications']);
 
 Route::get('got_questions',[SidebarController::class, 'GotQuestions']);
 Route::get('got_question_categories',[SidebarController::class, 'GotQuestionCategories']);
@@ -71,7 +72,7 @@ Route::middleware('auth:sanctum')->group(function(){
     // Route::get('v2/bible_study' , [HomeController::class, 'BibleStudyV2']);
     // Route::get('bible_study_chapters' , [HomeController::class, 'BibleStudyChapters']);
 
-    Route::get('notifications' , [HomeController::class, 'Notifications']);
+    // Route::get('notifications' , [HomeController::class, 'Notifications']);
     Route::post('clear/notification', [HomeController::class, 'clearNotification']);
     Route::post('clear_all/notifications', [HomeController::class, 'clearAllNotifications']);
     Route::post('notification_cache_clean', [HomeController::class, 'NotificationCacheClean']);

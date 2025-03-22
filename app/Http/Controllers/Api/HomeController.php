@@ -1870,65 +1870,113 @@ class HomeController extends Controller
     //     }
     // }
 
+    // public function Notifications(Request $request){
+
+    //     try {
+    //         $userId = auth()->id();
+
+    //         $clearedNotifications = Cache::get("user_{$userId}_cleared_notifications", []);
+
+    //         $notifications = Notification::select('id','title','type','redirection','description',
+    //                             'data')->whereNotIn('id', $clearedNotifications)->get();
+
+    //         $notifications = $notifications->map(function ($notify) {
+                    
+    //                 if($notify->type==1 || $notify->type==2){
+
+    //                     $notify->data = $notify->data !== null 
+    //                         ? asset('/') . $notify['data'] 
+    //                         : asset('/') . 'assets/images/logo.png';
+    //                 }
+
+    //                 return $notify;
+    //         });
+
+    //         return $this->outputer->code(200)->success($notifications)->json();
+
+    //     }catch (\Exception $e) {
+
+    //         $result = [
+    //                 "status" => "error",
+    //                 "metadata" => [],
+    //                 "data" => [
+    //                     "message" => $e->getMessage()
+    //                 ]
+    //             ];
+    //         return $result;
+    //     }
+    // }
+
     public function Notifications(Request $request){
 
         try {
-            $userId = auth()->id();
 
-            $clearedNotifications = Cache::get("user_{$userId}_cleared_notifications", []);
+            if(auth('sanctum')->check()) {
+               
+            /*--------Authenticated User---------*/
 
-            $notifications = Notification::select('id','title','type','redirection','description',
-                                'data')->whereNotIn('id', $clearedNotifications)->get();
+                $user_id = auth('sanctum')->id();
 
-            $notifications = $notifications->map(function ($notify) {
-                    
-                    if($notify->type==1 || $notify->type==2){
+                $login_user = User::select('id','image','timezone')->where('id',$user_id)->first();
 
-                        $notify->data = $notify->data !== null 
-                            ? asset('/') . $notify['data'] 
-                            : asset('/') . 'assets/images/logo.png';
-                    }
+                $userTimezone = $login_user->timezone ?? 'UTC';
+                if($login_user->image !== null) {
+                    $login_user->image = asset('/') . $login_user->image;
+                }else{
+                    $login_user->image = asset('/').'assets/images/user/user-dp.png';
+                }
 
-                    return $notify;
-            });
+                $clearedNotifications = Cache::get("user_{$user_id}_cleared_notifications", []);
 
-            return $this->outputer->code(200)->success($notifications)->json();
+                $notifications = Notification::select('id','title','type','redirection','description',
+                                    'data')->whereNotIn('id', $clearedNotifications)->get();
 
-        }catch (\Exception $e) {
+                $notifications = $notifications->map(function ($notify) {
+                        
+                        if($notify->type==1 || $notify->type==2){
 
-            $result = [
-                    "status" => "error",
-                    "metadata" => [],
-                    "data" => [
-                        "message" => $e->getMessage()
-                    ]
+                            $notify->data = $notify->data !== null 
+                                ? asset('/') . $notify['data'] 
+                                : asset('/') . 'assets/images/logo.png';
+                        }
+
+                        return $notify;
+                });
+
+            }else{
+
+                $userTimezone = 'UTC';
+
+                $login_user = (object) [
+                    'id' => Null,
+                    'image' => asset('assets/images/user/user-dp.png'),
+                    'timezone' =>$userTimezone,
+                    'user_name' => 'Guest User'
                 ];
-            return $result;
-        }
-    }
 
-    public function WebNotifications(Request $request){
-
-        try {
-
-
-            $notifications = Notification::select('id','title','type','redirection','description','data')
+                $notifications = Notification::select('id','title','type','redirection','description','data')
                                 ->orderBy('id', 'desc')->limit(5)
                                 ->get();
 
-            $notifications = $notifications->map(function ($notify) {
-                    
-                    if($notify->type==1 || $notify->type==2){
+                $notifications = $notifications->map(function ($notify) {
+                        
+                        if($notify->type==1 || $notify->type==2){
 
-                        $notify->data = $notify->data !== null 
-                            ? asset('/') . $notify['data'] 
-                            : asset('/') . 'assets/images/logo.png';
-                    }
+                            $notify->data = $notify->data !== null 
+                                ? asset('/') . $notify['data'] 
+                                : asset('/') . 'assets/images/logo.png';
+                        }
 
-                    return $notify;
-            });
+                        return $notify;
+                });
 
-            return $this->outputer->code(200)->success($notifications)->json();
+
+            }
+
+
+            return $this->outputer->code(200)->success($notifications)
+                                ->LoginUser($login_user)
+                                ->json();
 
         }catch (\Exception $e) {
 
@@ -1942,6 +1990,42 @@ class HomeController extends Controller
             return $result;
         }
     }
+
+    // public function WebNotifications(Request $request){
+
+    //     try {
+
+
+    //         $notifications = Notification::select('id','title','type','redirection','description','data')
+    //                             ->orderBy('id', 'desc')->limit(5)
+    //                             ->get();
+
+    //         $notifications = $notifications->map(function ($notify) {
+                    
+    //                 if($notify->type==1 || $notify->type==2){
+
+    //                     $notify->data = $notify->data !== null 
+    //                         ? asset('/') . $notify['data'] 
+    //                         : asset('/') . 'assets/images/logo.png';
+    //                 }
+
+    //                 return $notify;
+    //         });
+
+    //         return $this->outputer->code(200)->success($notifications)->json();
+
+    //     }catch (\Exception $e) {
+
+    //         $result = [
+    //                 "status" => "error",
+    //                 "metadata" => [],
+    //                 "data" => [
+    //                     "message" => $e->getMessage()
+    //                 ]
+    //             ];
+    //         return $result;
+    //     }
+    // }
 
     public function clearNotification(Request $request)
     {
