@@ -894,6 +894,60 @@ class SidebarController extends Controller
         }
     }
 
+    // public function AddBibleMarking(Request $request){
+        
+    //     DB::beginTransaction();
+
+    //     try {
+
+    //         $user_id = Auth::user()->id;
+
+    //         $a =  $request->validate([
+    //                 'type'          => 'required',
+    //                 'statement_ids' => 'required',
+    //                 'data'          => 'required',
+    //             ]);
+            
+    //         $statementIdsArray = explode(',', $request['statement_ids']);
+
+    //         foreach($statementIdsArray as $key=>$value){
+
+    //             $user_prev_marking = UserBibleMarking::where('user_id',$user_id)
+    //                             ->where('type',$request['type'])->where('statement_id',$value)->first();
+    //             if($user_prev_marking){
+    //                 $return['messsage']  =  'FAILED.Some of the stament is already marked';
+    //                 return $this->outputer->code(200)->success($return)->json();
+    //             }else{
+    //                 $inputData['user_id'] = $user_id;
+    //                 $inputData['type'] = $request['type'];
+    //                 $inputData['statement_id'] = $value;
+    //                 $inputData['data'] = $request['data'];
+
+    //                 $marking = UserBibleMarking::create($inputData);
+                    
+    //             }
+
+    //             DB::commit();
+    //         }
+
+    //         $return['messsage']  =  'Success.Your Marking Saved';
+    //         return $this->outputer->code(200)->success($return)->json();
+
+
+    //     }catch (\Exception $e) {
+
+    //         DB::rollBack();
+    //         $result = [
+    //                 "status" => "error",
+    //                 "metadata" => [],
+    //                 "data" => [
+    //                     "message" => $e->getMessage()
+    //                 ]
+    //             ];
+    //         return $result;
+    //     }
+    // }
+
     public function AddBibleMarking(Request $request){
         
         DB::beginTransaction();
@@ -902,7 +956,7 @@ class SidebarController extends Controller
 
             $user_id = Auth::user()->id;
 
-            $a =  $request->validate([
+            $validated =  $request->validate([
                     'type'          => 'required',
                     'statement_ids' => 'required',
                     'data'          => 'required',
@@ -910,13 +964,71 @@ class SidebarController extends Controller
             
             $statementIdsArray = explode(',', $request['statement_ids']);
 
+            $responses = [];
+
             foreach($statementIdsArray as $key=>$value){
 
                 $user_prev_marking = UserBibleMarking::where('user_id',$user_id)
-                                ->where('type',$request['type'])->where('statement_id',$value)->first();
+                                        ->where('statement_id',$value)
+                                        ->where('type',$request['type'])
+                                        ->first();
+
                 if($user_prev_marking){
-                    $return['messsage']  =  'FAILED.Some of the stament is already marked';
-                    return $this->outputer->code(200)->success($return)->json();
+
+                    if(($request['type']==1)){
+                        if($user_prev_marking['data']==$request['data']){
+                            
+                            $responses[] = "Failed. Same note is already marked for statement_id: $value";
+                            continue;
+                        }else{
+
+                            $inputData['user_id'] = $user_id;
+                            $inputData['type'] = $request['type'];
+                            $inputData['statement_id'] = $value;
+                            $inputData['data'] = $request['data'];
+
+                            $marking = UserBibleMarking::create($inputData);
+
+                            $responses[] = "Success.Your Marking Saved for statement_id: $value";
+                            continue;
+                        }
+                    }
+
+                    if($validated['type'] == 2) {
+
+                        $existingDataArray = explode(',', $user_prev_marking->data);
+                        $requestDataArray = explode(',', $validated['data']);
+
+                        $newValues = array_diff($requestDataArray, $existingDataArray);
+
+                        if (empty($newValues)) {
+
+                            $responses[] = "Failed. Same tag IDs already added for statement_id: $value";
+                            continue;
+
+                        }
+
+                        $updatedData = implode(',', array_unique(array_merge($existingDataArray, $newValues)));
+                        $user_prev_marking->update(['data' => $updatedData]);
+
+                        $responses[] = "Success. New tag IDs added for statement_id: $value";
+                        continue;
+                    }
+
+                    if ($validated['type'] == 3) {
+                        if ($user_prev_marking->data == $validated['data']) {
+
+                            $responses[] = "Failed.Same color is already marked for statement_id: $value";
+                            continue;
+                        }else{
+
+                            $user_prev_marking->update(['data' => $request['data']]);
+
+                            $responses[] = "Success.Highlight color is updated for statement_id: $value";
+                            continue;
+                        }
+                    }
+
                 }else{
                     $inputData['user_id'] = $user_id;
                     $inputData['type'] = $request['type'];
@@ -924,14 +1036,17 @@ class SidebarController extends Controller
                     $inputData['data'] = $request['data'];
 
                     $marking = UserBibleMarking::create($inputData);
-                    
+
+                    $responses[] = "Success.Your Marking Saved for statement_id: $value";
+                    continue;
                 }
 
-                DB::commit();
             }
 
-            $return['messsage']  =  'Success.Your Marking Saved';
-            return $this->outputer->code(200)->success($return)->json();
+            DB::commit();
+
+            return $this->outputer->code(200)->success(['messages' => $responses])->json();     
+
 
 
         }catch (\Exception $e) {
@@ -955,7 +1070,7 @@ class SidebarController extends Controller
         try {
 
             $user_id = Auth::user()->id;
-
+dd($user_id);
             if($request->category=='Custom Notes'){
                 $note =UserCustomNote::where('id',$request->id)->where('user_id',$user_id)->first();
                 if($note){
