@@ -22,6 +22,8 @@ Route::get('course_details', [HomeController::class, 'CourseDetails']);
 // Route::get('web/search',[UserController::class, 'WebSearchResults']);
 Route::get('search',[UserController::class, 'SearchResults']);
 
+Route::get('complete_bible' , [HomeController::class, 'CompleteBible']);
+
 // Route::get('web/bible_study' , [HomeController::class, 'WebBibleStudy']);
 Route::get('v2/bible_study' , [HomeController::class, 'BibleStudyV2']);
 // Route::get('web/bible_study_chapters' , [HomeController::class, 'WebBibleStudyChapters']);
