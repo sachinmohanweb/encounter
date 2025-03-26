@@ -1070,7 +1070,7 @@ class SidebarController extends Controller
         try {
 
             $user_id = Auth::user()->id;
-dd($user_id);
+
             if($request->category=='Custom Notes'){
                 $note =UserCustomNote::where('id',$request->id)->where('user_id',$user_id)->first();
                 if($note){
