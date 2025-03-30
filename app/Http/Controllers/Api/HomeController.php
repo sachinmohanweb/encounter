@@ -1602,7 +1602,6 @@ class HomeController extends Controller
                     'list' => $books,
                 ];
             });
-dd($mergedData->values(),$login_user);
 
             return $this->outputer->code(200)->success($mergedData->values())
                                  ->LoginUser($login_user)->json();
