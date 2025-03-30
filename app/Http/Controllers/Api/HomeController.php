@@ -1530,7 +1530,7 @@ class HomeController extends Controller
         }
     }
 
-    public function CompleteBible(Request $request) {
+    public function CompleteBibleV2(Request $request) {
         try {
             if (auth('sanctum')->check()) {
                 /*--------Authenticated User---------*/
@@ -1607,8 +1607,6 @@ class HomeController extends Controller
                                  ->LoginUser($login_user)->json();
 
         } catch (\Exception $e) {
-
-            dd($e->getMessage());
 
             return [
                 "status" => "error",
