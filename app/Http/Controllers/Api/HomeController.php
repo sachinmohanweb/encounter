@@ -1607,6 +1607,9 @@ class HomeController extends Controller
                                  ->LoginUser($login_user)->json();
 
         } catch (\Exception $e) {
+
+            dd($e->getMessage());
+
             return [
                 "status" => "error",
                 "metadata" => [],
@@ -1893,7 +1896,6 @@ class HomeController extends Controller
 
         }catch (\Exception $e) {
 
-            dd($e->getMessage());
             $result = [
                     "status" => "error",
                     "metadata" => [],
