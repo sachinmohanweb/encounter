@@ -1551,7 +1551,7 @@ class HomeController extends Controller
                     'user_name' => 'Guest User'
                 ];
             }
-dd("yes");
+
             $bible_id = env('DEFAULT_BIBLE');
 
             // Fetch testaments, books, and chapters with statements in a single query
@@ -1602,6 +1602,7 @@ dd("yes");
                     'list' => $books,
                 ];
             });
+dd($mergedData);
 
             return $this->outputer->code(200)->success($mergedData->values())
                                  ->LoginUser($login_user)->json();
