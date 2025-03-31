@@ -19,6 +19,7 @@ use App\Models\Bible;
 use App\Models\Chapter;
 use App\Models\Testament;
 use App\Models\BookImage;
+use App\Models\BibleChange;
 use App\Models\HolyStatement;
 
 class BibleDbController extends Controller
@@ -223,6 +224,16 @@ class BibleDbController extends Controller
 
             $statement = HolyStatement::findOrFail($request->id);
             $statement->update($inputData);
+            
+            $change_data =  [
+
+                'bible_id' => $statement['bible_id'],
+                'statement_id' => $statement['statement_id'],
+                'sync_time' => $timestampMs = now()->timestamp * 1000,
+            ];
+
+            BibleChange::create($change_data);
+
             DB::commit();
 
             //$statement->searchable();

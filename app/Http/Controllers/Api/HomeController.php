@@ -20,6 +20,7 @@ use App\Models\UserLMS;
 use App\Models\Testament;
 use App\Models\AppBanner;
 use App\Models\BookImage;
+use App\Models\BibleChange;
 use App\Models\Notification;
 use App\Models\CourseContent;
 use App\Models\HolyStatement;
@@ -1530,7 +1531,8 @@ class HomeController extends Controller
         }
     }
 
-    public function CompleteBibleV2(Request $request) {
+    public function CompleteBible(Request $request) {
+        
         try {
             if (auth('sanctum')->check()) {
                 /*--------Authenticated User---------*/
@@ -1552,59 +1554,71 @@ class HomeController extends Controller
                 ];
             }
 
-            $bible_id = env('DEFAULT_BIBLE');
+            $sync_time = $request->sync_time ;
 
-            // Fetch testaments, books, and chapters with statements in a single query
-            $testaments = Testament::with([
-                'books.chapters.statements' => function ($query) {
-                    $query->select('statement_id', 'chapter_id', 'statement_no', 'statement_heading', 'statement_text');
-                }
-            ])->where('bible_id', $bible_id)->get();
+            $mergedData = collect([]);
 
-            // Transform data
-            $mergedData = $testaments->map(function ($testament) {
-                $books = $testament->books->map(function ($book) {
-                    $bookImg = BookImage::where('book_id', $book->book_id)->first();
-                    $book_image = $bookImg !== null
-                        ? asset('/') . $bookImg->image
-                        : asset('/assets/images/logo.png');
+            if($sync_time!==null){
 
-                    $chapters = $book->chapters->map(function ($chapter) {
-                        $statements = $chapter->statements->map(function ($statement) {
+                $bible_id = env('DEFAULT_BIBLE');
+
+                $last_change = BibleChange::where('bible_id',$bible_id)->orderBy('id', 'desc')->first();
+
+                if($last_change['sync_time'] > $sync_time){
+                
+                    // Fetch testaments, books, and chapters with statements in a single query
+                    $testaments = Testament::with([
+                        'books.chapters.statements' => function ($query) {
+                            $query->select('statement_id', 'chapter_id', 'statement_no', 'statement_heading', 'statement_text');
+                        }
+                    ])->where('bible_id', $bible_id)->get();
+
+                    // Transform data
+                    $mergedData = $testaments->map(function ($testament) {
+                        $books = $testament->books->map(function ($book) {
+                            $bookImg = BookImage::where('book_id', $book->book_id)->first();
+                            $book_image = $bookImg !== null
+                                ? asset('/') . $bookImg->image
+                                : asset('/assets/images/logo.png');
+
+                            $chapters = $book->chapters->map(function ($chapter) {
+                                $statements = $chapter->statements->map(function ($statement) {
+                                    return [
+                                        'statement_id' => $statement->statement_id,
+                                        'statement_no' => $statement->statement_no,
+                                        'statement_heading' => $statement->statement_heading,
+                                        'statement_text' => strip_tags(str_replace('<br>', "\n", $statement->statement_text))
+                                    ];
+                                });
+
+                                return [
+                                    'chapter_id' => $chapter->chapter_id,
+                                    'chapter_no' => $chapter->chapter_no == 0 ? 'ആമുഖം' : $chapter->chapter_no,
+                                    'chapter_name' => $chapter->chapter_name,
+                                    'chapter_desc' => $chapter->chapter_desc,
+                                    'statements' => $statements
+                                ];
+                            });
+
                             return [
-                                'statement_id' => $statement->statement_id,
-                                'statement_no' => $statement->statement_no,
-                                'statement_heading' => $statement->statement_heading,
-                                'statement_text' => strip_tags(str_replace('<br>', "\n", $statement->statement_text))
+                                'book_id' => $book->book_id,
+                                'book_name' => $book->book_name,
+                                'book_image' => $book_image,
+                                'total_chapters' => $book->chapters->count() - 1,
+                                'chapters' => $chapters
                             ];
                         });
 
                         return [
-                            'chapter_id' => $chapter->chapter_id,
-                            'chapter_no' => $chapter->chapter_no == 0 ? 'ആമുഖം' : $chapter->chapter_no,
-                            'chapter_name' => $chapter->chapter_name,
-                            'chapter_desc' => $chapter->chapter_desc,
-                            'statements' => $statements
+                            'category' => $testament->testament_name,
+                            'list' => $books,
                         ];
                     });
-
-                    return [
-                        'book_id' => $book->book_id,
-                        'book_name' => $book->book_name,
-                        'book_image' => $book_image,
-                        'total_chapters' => $book->chapters->count() - 1,
-                        'chapters' => $chapters
-                    ];
-                });
-
-                return [
-                    'category' => $testament->testament_name,
-                    'list' => $books,
-                ];
-            });
+                }
+            }
 
             return $this->outputer->code(200)->success($mergedData->values())
-                                 ->LoginUser($login_user)->json();
+                                ->LoginUser($login_user)->json();
 
         } catch (\Exception $e) {
 

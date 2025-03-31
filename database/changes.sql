@@ -531,3 +531,12 @@ ADD INDEX idx_status (status);
 -- 22/03/25 Indexing----
 
 ALTER TABLE `app_banners` ADD `link` VARCHAR(256) NULL DEFAULT NULL AFTER `title`;
+
+-- 30/03/25 ----
+
+CREATE TABLE `bible_changes` (
+	`id` INT NOT NULL AUTO_INCREMENT , 
+	`bible_id` INT NOT NULL , 
+	`statement_id` INT NOT NULL , `sync_time` BIGINT NOT NULL , 
+	`created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , 
+	`updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`id`));
