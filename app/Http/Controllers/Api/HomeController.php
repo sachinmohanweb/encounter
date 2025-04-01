@@ -1636,7 +1636,7 @@ class HomeController extends Controller
                                 ? asset('/') . $bookImg->image
                                 : asset('/assets/images/logo.png');
 
-                            $chapters = $book->chapters->map(function ($chapter) {
+                            $chapters = $book->chapters->map(function ($chapter) use($book) {
                                 $statements = $chapter->statements->map(function ($statement) {
                                     return [
                                         'statement_id' => $statement->statement_id,
@@ -1651,6 +1651,8 @@ class HomeController extends Controller
                                     'chapter_no' => $chapter->chapter_no == 0 ? 'ആമുഖം' : $chapter->chapter_no,
                                     'chapter_name' => $chapter->chapter_name,
                                     'chapter_desc' => $chapter->chapter_desc,
+                                    'book_id'    => $book->book_id,
+                                    'book_name'    => $book->book_name,
                                     'statements' => $statements
                                 ];
                             });
