@@ -894,6 +894,59 @@ class SidebarController extends Controller
         }
     }
 
+    public function OfflineBibleMarkings(Request $request){
+
+        try {
+
+            $user_id = Auth::user()->id;
+
+            /* ----------User Colors---------*/
+
+            $user_colors = UserBibleMarking::select('id','statement_id','data')
+                        ->where('user_id',$user_id)
+                        ->where('type',3)
+                        ->where('status',1)
+                        ->orderBy('statement_id')
+                        ->get()
+                        ->makeHidden(['type_name','user_name','chapter_name','testament_name',
+                            'bible_name','verse_no']);
+            if(empty($user_colors)) {
+                $return['result']=  "Empty color markings ";
+            }
+            $user_colors->transform(function ($item, $key) {
+
+                $verse = HolyStatement::where('statement_id',$item->statement_id)->first();
+                $item->verse_statement = $verse['statement_text'];
+                $item->marked_data = [$item->data];
+                $item->chapter_no = $verse->chapter_no;
+                $item->statement_no = $verse->statement_no;
+                $item->verse_list = [];
+
+                return $item;
+            });
+
+            $mergedData = [
+
+                [ 'category' => 'Highlights', 'list' => $user_colors ] 
+            ];
+
+            return $this->outputer->code(200)
+                        ->success($mergedData )
+                        ->json();
+
+        }catch (\Exception $e) {
+
+            $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => $e->getMessage()
+                    ]
+                ];
+            return $result;
+        }
+    }
+
     // public function AddBibleMarking(Request $request){
         
     //     DB::beginTransaction();
