@@ -203,7 +203,6 @@ class UserController extends Controller
                 'user' => $user,
                 'otp' => $otp,
             ];
-
             Mail::to($request->input('email'))->send(new UserVerificationMail($mailData));
 
             $message = ($user->status == 1 && $user->wasChanged('status')) 
@@ -215,8 +214,6 @@ class UserController extends Controller
             return $this->outputer->code(200)->success(['user_status' => $user_status,'message' => $message])->json();
 
         } catch (\Exception $e) {
-
-            dd($e->getMessage());
             DB::rollBack();
             return [
                 "status" => "error",
