@@ -203,9 +203,9 @@ class UserController extends Controller
                 'user' => $user,
                 'otp' => $otp,
             ];
+            dd($mailData);
             $a = Mail::to($request->input('email'))->send(new UserVerificationMail($mailData));
 
-            dd($a);
             $message = ($user->status == 1 && $user->wasChanged('status')) 
                 ? 'Your account has been Reactivated. Please check your mail for the OTP.' 
                 : 'Please check your mail for the OTP.';
