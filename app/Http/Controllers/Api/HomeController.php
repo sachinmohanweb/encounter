@@ -378,9 +378,11 @@ class HomeController extends Controller
                 'a.no_of_days'
             )
             ->where(function ($query) {
-                $query->where('b.last_date', '>=', now()->format('Y-m-d'));
                 if (auth('sanctum')->check()) {
+                    $query->where('b.last_date', '>=', now()->format('Y-m-d'));
                     $query->orWhereNotNull('ul.id');
+                }else{
+                    $query->where('b.end_date', '>=', now()->format('Y-m-d'));
                 }
             })
             ->where('a.status', 1)
