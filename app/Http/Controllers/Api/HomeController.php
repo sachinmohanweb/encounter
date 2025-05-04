@@ -382,7 +382,7 @@ class HomeController extends Controller
                     $query->where('b.last_date', '>=', now()->format('Y-m-d'));
                     $query->orWhereNotNull('ul.id');
                 }else{
-                    $query->where('b.end_date', '>=', now()->format('Y-m-d'));
+                   // $query->where('b.end_date', '>=', now()->format('Y-m-d'));
                 }
             })
             ->where('a.status', 1)
