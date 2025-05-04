@@ -375,6 +375,8 @@ class HomeController extends Controller
                 'b.id as batch_id',
                 'b.batch_name as data3',
                 'b.start_date',
+                'b.end_date',
+                'b.last_date',
                 'a.no_of_days'
             )
             ->where(function ($query) {
@@ -408,10 +410,12 @@ class HomeController extends Controller
                 $item->data4 = 'Enrol Now';
                 $item->data5 = '0 %';
                 $orderWeight = 2;
+                $can_enroll = true;
 
                 if ($item->start_date > now()->format('Y-m-d')) {
                     $item->data4 = 'Upcoming';
                     $orderWeight = 3;
+
                 } elseif (auth('sanctum')->check()) {
                     $userLms = UserLMS::where('user_id', $login_user->id)
                         ->where('course_id', $item->id)
@@ -426,20 +430,31 @@ class HomeController extends Controller
                             if ($readingsCount < $item->no_of_days) {
                                 $item->data4 = 'Ongoing';
                                 $orderWeight = 1;
+                                $can_enroll = false;
                             } else {
                                 $item->data4 = 'Completed';
                                 $orderWeight = 4;
+                                $can_enroll = false;
+
                             }
                             $item->data5 = $percentage . ' %';
                         } else {
                             $item->data4 = 'Non-progressing';
                             $orderWeight = 2;
+                            $can_enroll = false;
                         }
                     }
+                } elseif ($item->end_date > now()->format('Y-m-d')) {
+                        $item->data4 = 'Ongoing';
+                        $orderWeight = 1;
+                        if($item->last_date < now()->format('Y-m-d') ){
+                            $can_enroll = false;
+                        }
                 }
 
                 $item->image = $item->image ? asset('/') . $item->image : null;
                 $item->order_weight = $orderWeight;
+                $item->can_enroll = $can_enroll;
                 return $item;
             });
 
