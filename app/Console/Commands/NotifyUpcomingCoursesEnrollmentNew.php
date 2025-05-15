@@ -25,7 +25,7 @@ class NotifyUpcomingCoursesEnrollmentNew extends Command
         foreach ($timezones as $timezone) {
             $timezoneTime = Carbon::now($timezone)->format('H:i');
 
-            if ($timezoneTime === '20:15') {
+            if ($timezoneTime === '07:15') {
                 if(env('QUEUE_CONNECTION') === 'sync') {
                     $pusher = new NotificationPusher();
                     $pusher->pushBatch($notifications);

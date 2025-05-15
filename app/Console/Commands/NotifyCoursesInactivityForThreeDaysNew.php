@@ -33,7 +33,7 @@ class NotifyCoursesInactivityForThreeDaysNew extends Command
         foreach ($timezones as $timezone) {
             $timezoneTime = Carbon::now($timezone)->format('H:i');
 
-            if ($timezoneTime === '20:00') {
+            if ($timezoneTime === '07:00') {
                 if(env('QUEUE_CONNECTION') === 'sync') {
                     $pusher = new NotificationPusher();
                     $pusher->pushBatch($notifications);
