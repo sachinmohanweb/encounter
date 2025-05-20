@@ -404,7 +404,7 @@ class HomeController extends Controller
                 $courses->take($request['length']);
             }
 
-            $courses = $courses->get();
+            $courses = $courses->orderby('id')->get();
 
             $courses->transform(function ($item) use ($login_user) {
                 $item->data4 = 'Enrol Now';
