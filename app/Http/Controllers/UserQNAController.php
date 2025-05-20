@@ -22,7 +22,8 @@ class UserQNAController extends Controller
     
     public function UserQNAList() : View
     {
-        $User_QNA = UserQNA::orderBy('created_at','desc')->get();
+        $User_QNA = UserQNA::orderBy('status','asc')
+                            ->orderBy('created_at','desc')->paginate(15);
         return view('user_qna.user_qna_list',compact('User_QNA'));
     }
 

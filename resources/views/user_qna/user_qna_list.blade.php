@@ -62,10 +62,11 @@
             </div>
          </div>
       @endforeach
-
-      
    </div>
    </div>
+      <div class="new-question d-flex justify-content-center mb-4">
+            {{ $User_QNA->links('pagination::bootstrap-4') }}
+      </div>
       <div class="modal fade" id="UpdateAnswer" tabindex="-1" role="dialog" aria-labelledby="UpdateAnswer" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 650px !important;"> 
             <div class="modal-content">
