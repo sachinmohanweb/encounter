@@ -63,10 +63,10 @@ class UserQNAController extends Controller
             $inputData['answer'] = $request->user_qna_answer;
             $inputData['status'] = 2;
 
-            dd($inputData);
             $User_QNA->update($inputData);
 
             DB::commit();
+            dd($User_QNA);
             
             $push_data = [];
 
