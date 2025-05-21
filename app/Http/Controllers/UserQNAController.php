@@ -56,14 +56,12 @@ class UserQNAController extends Controller
 
             $User_QNA = UserQNA::find($request->user_qna_id);
 
-            dd($request->user_qna_id,$User_QNA);
             $a =  $request->validate([
                 'user_qna_answer' => 'required',
             ]);
 
             $inputData['answer'] = $request->user_qna_answer;
             $inputData['status'] = 2;
-
             $User_QNA->update($inputData);
 
             DB::commit();
