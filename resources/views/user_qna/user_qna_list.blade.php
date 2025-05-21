@@ -52,7 +52,7 @@
                   <div class="view-course d-flex align-items-center justify-content-between mt-3">
                      @if($value->status=='Pending')
 
-                     <button class="btn btn-pill btn-info-gradien pt-2 pb-2" type="button" data-bs-toggle="modal" 
+                     <button class="btn btn-pill btn-info-gradien pt-2 pb-2 updateActionButtonClass" type="button" data-bs-toggle="modal" 
                      data-bs-target="#UpdateAnswer"  question_id="{{$value->id}}" id="updateActionButton">Update Answer </button>
                      @else
                      <a href="{{ route('admin.user_qna.details',[$value->id]) }}"><button class="btn btn-pill btn-info-gradien pt-2 pb-2" type="button" data-bs-original-title="" title="">View Answer </button></a>
@@ -104,7 +104,7 @@
 
 <script type="text/javascript">
    $(document).ready(function() {
-      $('#updateActionButton').on('click', function(event) {
+      $('.updateActionButtonClass').on('click', function(event) {
       var questionId = $(this).attr('question_id');
       var url = '/get_user_qna/' + questionId;
       $.ajax({
