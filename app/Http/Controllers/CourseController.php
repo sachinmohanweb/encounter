@@ -481,6 +481,36 @@ class CourseController extends Controller
         }
     }
 
+    public function DeleteContentVerses(Request $request) : JsonResponse
+    {
+        DB::beginTransaction();
+        try{
+            $id = $request->id;
+            $section =CourseDayVerse::where('id',$id)->first();
+            $content = CourseContent::where('id',$section->course_content_id)->first();
+            $course = Course::where('id',$content->course_id)->first();
+            $hasPastBatch = $course->BatchDetails->contains(function ($batch) {
+                return $batch->start_date <= now()->toDateString();
+            });
+            
+            if($hasPastBatch==false){
+                            
+                $section->delete();
+                DB::commit();
+                $return['status'] = "success";  
+
+            }else{
+                $return['status'] = 'Forbidden';
+            }
+
+         }catch (Exception $e) {
+
+            DB::rollBack();
+            $return['status'] = $e->getMessage();
+        }
+        return response()->json($return);
+    }
+
     public function BatchDetail($id) : View
     {   
         $batch_id = $id;
@@ -671,5 +701,7 @@ class CourseController extends Controller
         }
         return view('courses.BatchDetail');
     }
+
+
  
 }

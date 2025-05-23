@@ -52,13 +52,19 @@
                         <td>:</td>
                         <td>{{$value->verse_to_name}}</td>
                      </tr>
-                     <tr>
+                     <tr style="text-align: center;">
                         <td  colspan="2" style="text-align: center;">
                           
                            <div class="view-course d-flex align-items-center justify-content-between mt-3">
                               <a href="{{  route('admin.edit.content.verses',['verse_id'=>$value->id]) }}">
-                                 <button class="btn btn-pill btn-info-gradien pt-2 pb-2" type="button" data-bs-original-title="" title="">Edit Section</button>
+                                 <button class="btn btn-pill btn-info-gradien pt-2 pb-2" type="button" data-bs-original-title="" title="">Edit</button>
                               </a>   
+                           </div>
+
+                           <div class="view-course d-flex align-items-center justify-content-between mt-3"> 
+                              <a href="#">
+                                 <button class="btn btn-pill btn-danger-gradien pt-2 pb-2" type="button" data-bs-original-title="" title=""  onClick="remove({{ $value->id }})">delete</button>
+                              </a>
                            </div>
                         </td>
                      </tr>
@@ -143,6 +149,81 @@
 
          }
       }
+
+
+   function remove(id){
+
+      msg = 'Are you sure? Delete this section?';
+
+      if (confirm(msg) == true) {
+          var id = id;
+          $.ajax({
+              type:"POST",
+              url: "{{ route('admin.delete.content.verses') }}",
+              data: { _token : "<?= csrf_token() ?>",
+                  id     : id
+              },
+              dataType: 'json',
+              success: function(res){
+                  if (res.status=='success'){
+                        $.notify({
+                           title:'Notification',
+                           message:'Section Successfully deleted'
+                           },
+                           {
+                              type:'primary',
+                              offset:{
+                                x:35,
+                                y:230
+                              },
+                              animate:{
+                                enter:'animated fadeIn',
+                                exit:'animated fadeOut'
+                            }
+                        });
+                  }else if (res.status=='Forbidden'){
+                        $.notify({
+                           title:'Notification',
+                           message:'Unable to delete this section — a related batch has already commenced.'
+                           },
+                           {
+                              type:'primary',
+                              offset:{
+                                x:35,
+                                y:230
+                              },
+                              animate:{
+                                enter:'animated fadeIn',
+                                exit:'animated fadeOut'
+                            }
+                        });
+
+                  }else{
+                        $.notify({
+                           title:'Notification',
+                           message:'Section Not deleted'
+                           },
+                           {
+                              type:'danger',
+                              offset:{
+                                x:35,
+                                y:230
+                              },
+                              animate:{
+                                enter:'animated fadeIn',
+                                exit:'animated fadeOut'
+                            }
+                        
+                        });
+                  }
+              },
+              error: function(xhr, status, error) {
+                  console.error('AJAX request failed:', status, error);
+                  alert('Failed to delete notification. Please try again later.');
+              }
+          });
+      }
+   }
  
 </script>
 @endsection

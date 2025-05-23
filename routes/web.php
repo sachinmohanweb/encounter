@@ -192,6 +192,8 @@ Route::middleware('auth:admin')->group(function(){
             ->name('admin.edit.content.verses');
     Route::post('updatecontentverses', [CourseController::class, 'UpdateContentVerses'])
             ->name('admin.update.content.verses');
+    Route::post('deletecontentverses', [CourseController::class, 'DeleteContentVerses'])
+            ->name('admin.delete.content.verses');
 
     Route::get('batchdetail/{id}', [CourseController::class, 'BatchDetail'])->name('admin.batch.detail');
     Route::post('batchusersDatatable',[CourseController::class,'BatchUsersDatatable'])->name('admin.batch.users.datatable');
