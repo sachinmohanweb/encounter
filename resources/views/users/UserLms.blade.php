@@ -21,21 +21,37 @@
          <div class="card">
             <div class="card-body">
                <div class="table-responsive">
-                  <table class="display" id="user_lms_data" style="width:100%">
-                     <thead>
+                  <div class="row mb-3">
+                    <!-- Left side: Show entries and Completed Status dropdown -->
+                    <div class="col-sm-12 col-md-6">
+                        <div class="dataTables_length" id="user_lms_data_length">
+                            <label style="margin-left: 15px;">
+                                Course Status 
+                                <select id="search-completed-status" class="form-control form-control-sm">
+                                    <option value="">All</option>
+                                    <option value="1">Not Started</option>
+                                    <option value="2">Ongoing</option>
+                                    <option value="3">Completed</option>
+                                </select>
+                            </label>
+                        </div>
+                    </div>
+                  </div>
+
+                  <table class="display table table-bordered" id="user_lms_data" style="width:100%">
+                    <thead>
                         <tr>
-                           <th>User</th>
-                           <th>Course</th>
-                           <th>Batch</th>
-                           <th>Start Date</th>
-                           <th>End Date</th>
-                           <th>Progress</th>
-                           <th>Completed Status</th>
-                           <th>Action</th>
+                            <th>User</th>
+                            <th>Course</th>
+                            <th>Batch</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Progress</th>
+                            <th>Completed Status</th>
+                            <th>Action</th>
                         </tr>
-                     </thead>
-                     <tbody>
-                     </tbody>
+                    </thead>
+                    <tbody></tbody>
                   </table>
                </div>
             </div>
@@ -63,7 +79,7 @@
 <script>
    $(document).ready( function () {
    
-      $('#user_lms_data').DataTable({
+      var table = $('#user_lms_data').DataTable({
          processing: true,
          serverSide: true,
          ajax: {
@@ -71,7 +87,10 @@
             type: 'POST',
             headers: {
                   'X-CSRF-TOKEN': "{{ csrf_token() }}"
-            } 
+            },
+            data: function (d) {
+                d.search_completed_status = $('#search-completed-status').val();
+            }
          },
           columns: [
               { data: 'user', name: 'user'},     
@@ -84,6 +103,11 @@
               { data: 'action', name: 'action', orderable: false},
           ],
       });
+
+      $('#search-completed-status').on('change', function () {
+           table.draw();
+      });
+
    });
          
    function suspend(id,status){

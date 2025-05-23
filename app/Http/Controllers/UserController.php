@@ -224,32 +224,80 @@ class UserController extends Controller
         return view('users.UserLms',[]);
     }
 
+    // public function UsersLMS_Datatable()
+    // {
+
+    //     if(request()->ajax()) {
+    //         return datatables()
+    //         ->of(UserLMS::select('*'))
+    //         ->addColumn('user', function ($user_lms) {
+    //             return $user_lms->user_name;
+
+    //         })
+    //         ->addColumn('course', function ($user_lms) {
+    //             return $user_lms->course_name;
+    //         })
+    //         ->addColumn('batch', function ($user_lms) {
+    //             return $user_lms->batch_name;
+    //         })
+    //         ->addColumn('completed_status', function ($user_lms) {
+    //             return $user_lms->completed_status_name;
+    //         })
+           
+    //         ->addColumn('action', 'users.user_lms_status_datatable-action')
+    //         ->rawColumns(['user','course','batch','completed_status','action'])
+    //         ->addIndexColumn()
+    //         ->make(true);
+    //     }
+    //     return view('bible_verse.DailyBibleVerse');
+    // }
+
     public function UsersLMS_Datatable()
     {
+        if (request()->ajax()) {
+            $query = UserLMS::select('user_l_m_s.*')
+                ->with(['user', 'course', 'batch'])
+                ->join('users', 'users.id', '=', 'user_l_m_s.user_id')
+                ->join('courses', 'courses.id', '=', 'user_l_m_s.course_id')
+                ->join('batches', 'batches.id', '=', 'user_l_m_s.batch_id');
 
-        if(request()->ajax()) {
+            if ($searchCompletedStatus = request()->input('search_completed_status')) {
+                    $query->where('user_l_m_s.completed_status', $searchCompletedStatus);
+            }
+
             return datatables()
-            ->of(UserLMS::select('*'))
-            ->addColumn('user', function ($user_lms) {
-                return $user_lms->user_name;
-
-            })
-            ->addColumn('course', function ($user_lms) {
-                return $user_lms->course_name;
-            })
-            ->addColumn('batch', function ($user_lms) {
-                return $user_lms->batch_name;
-            })
-            ->addColumn('completed_status', function ($user_lms) {
-                return $user_lms->completed_status_name;
-            })
-           
-            ->addColumn('action', 'users.user_lms_status_datatable-action')
-            ->rawColumns(['user','course','batch','completed_status','action'])
-            ->addIndexColumn()
-            ->make(true);
+                ->of($query)
+                ->addColumn('user', function ($user_lms) {
+                    return $user_lms->user->user_name;
+                })
+                ->addColumn('course', function ($user_lms) {
+                    return $user_lms->course->course_name;
+                })
+                ->addColumn('batch', function ($user_lms) {
+                    return $user_lms->batch->batch_name;
+                })
+                ->addColumn('progress', function ($user_lms) {
+                    return $user_lms->progress.'%' ?? '0%';
+                })
+                ->addColumn('completed_status', function ($user_lms) {
+                    return $user_lms->completed_status_name;
+                })
+                ->filterColumn('user', function ($query, $keyword) {
+                    $query->where('users.first_name', 'like', "%{$keyword}%")
+                        ->orWhere('users.last_name', 'like', "%{$keyword}%");
+                })
+                ->filterColumn('course', function ($query, $keyword) {
+                    $query->where('courses.course_name', 'like', "%{$keyword}%");
+                })
+                ->filterColumn('batch', function ($query, $keyword) {
+                    $query->where('batches.batch_name', 'like', "%{$keyword}%");
+                })
+                ->addColumn('action', 'users.user_lms_status_datatable-action')
+                ->rawColumns(['user', 'course', 'batch', 'completed_status', 'action'])
+                ->addIndexColumn()
+                ->make(true);
         }
-        return view('bible_verse.DailyBibleVerse');
+        return view('users.UserLms');
     }
 
     public function UsersLMS_status_change(Request $request): JsonResponse
