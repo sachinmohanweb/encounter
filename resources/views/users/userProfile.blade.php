@@ -28,6 +28,8 @@
                            <th>Gender</th>
                            <th>Age</th>
                            <th>Location</th>
+                           <th>Tiemzone</th>
+                           <th>Country Code</th>
                            <!-- <th>Device Type</th>
                            <th>IP</th>
                            <th>App Usage</th>
@@ -83,6 +85,8 @@
               { data: 'gender', name: 'gender' },
               { data: 'age', name: 'age' },
               { data: 'location', name: 'location' },
+              { data: 'timezone',  name: 'timezone' },
+              { data: 'country_code', name: 'country_code' },
               // { data: 'device_type', name: 'device_type' },
               // { data: 'ip', name: 'ip' },
               // { data: 'app_usage', name: 'app_usage' },
