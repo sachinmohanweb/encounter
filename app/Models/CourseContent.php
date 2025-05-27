@@ -45,7 +45,8 @@ class CourseContent extends Model
     }
     public function CourseDayVerse(){
 
-        return $this->hasMany(CourseDayVerse::class,'course_content_id', 'id');
+        return $this->hasMany(CourseDayVerse::class,'course_content_id', 'id')
+                    ->where('status',1);
     }
     public function CourseContentVideoLink(){
 
