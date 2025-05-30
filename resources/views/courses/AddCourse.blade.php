@@ -108,13 +108,13 @@
                         <div class="col-lg-4 col-md-6 col-12">
                            <div class="form-group">
                               <label for=""> Introduction Video Link<span style="color:red">*</span></label>
-                              <input type="text" placeholder="Introduction Video LInk" name="intro_video" class="form-control" required>
+                              <input type="text" placeholder="Introduction Video LInk" name="intro_video" class="form-control" >
                            </div>
                         </div>
                         <div class="col-lg-4 col-md-6 col-12">
                            <div class="form-group">
                               <label for=""> Introduction Audio Link<span style="color:red">*</span></label>
-                              <input type="text" placeholder="Introduction Audio LInk" name="intro_audio" class="form-control" required>
+                              <input type="text" placeholder="Introduction Audio LInk" name="intro_audio" class="form-control" >
                            </div>
                         </div>
                          <div class="col-lg-12 col-12">
