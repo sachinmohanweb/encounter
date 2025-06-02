@@ -1439,7 +1439,10 @@ class HomeController extends Controller
                 }
 
                 $course_day_content->CourseDayVerse->map(function($verse) {
-                    $statements = HolyStatement::where('statement_id', '>=', $verse->verse_from)
+
+                    $statements = HolyStatement::where('book_id',$verse->book)
+                        ->where('chapter_id',$verse->chapter)
+                        ->where('statement_id', '>=', $verse->verse_from)
                         ->where('statement_id', '<=', $verse->verse_to)
                         ->select('statement_id','statement_no','statement_text')
                         ->get()
