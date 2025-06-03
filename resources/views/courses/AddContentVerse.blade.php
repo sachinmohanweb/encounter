@@ -122,6 +122,25 @@
 
 <script type="text/javascript">
 
+    $('#testament').on('change', function () {
+        $('#book').val(null).trigger('change'); 
+        $('#chapter').val(null).trigger('change');
+        $('#verse_no_s').val(null).trigger('change');
+        $('#verse_no_l').val(null).trigger('change');
+    });
+
+    $('#book').on('change', function () {
+        $('#chapter').val(null).trigger('change');
+        $('#verse_no_s').val(null).trigger('change');
+        $('#verse_no_l').val(null).trigger('change');
+    });
+
+    $('#chapter').on('change', function () {
+        $('#verse_no_s').val(null).trigger('change');
+        $('#verse_no_l').val(null).trigger('change');
+    });
+
+
    $('#testament').select2({
          placeholder: "Select Testament",
 
