@@ -122,14 +122,22 @@
                         </div>
                          <div class="col-lg-4 col-md-6 col-12">
                            <div class="form-group">
-                              <label for=""> Introduction Video Link<span style="color:red">*</span></label>
+                              <label for=""> Introduction Video Link</label>
                               <input type="text" placeholder="Introduction Video LInk" name="intro_video" class="form-control"  value="{{$course->intro_video}}">
                            </div>
                         </div>
                         <div class="col-lg-4 col-md-6 col-12">
                            <div class="form-group">
-                              <label for=""> Introduction Audio Link<span style="color:red">*</span></label>
+                              <label for=""> Introduction Audio Link</label>
                               <input type="text" placeholder="Introduction Audio LInk" name="intro_audio" class="form-control"  value="{{$course->intro_audio}}">
+                           </div>
+                        </div>
+
+                         <div class="col-lg-4 col-md-6 col-12">
+                           <div class="form-group">
+                              <label for="">Course Visibility Order</label>
+                              <input type="number" min="1" step="1" placeholder="Course Order" 
+                            name="course_order" class="form-control" value="{{$course->course_order}}">
                            </div>
                         </div>
                          <div class="col-lg-12 col-12">

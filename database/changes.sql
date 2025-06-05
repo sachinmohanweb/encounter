@@ -540,3 +540,7 @@ CREATE TABLE `bible_changes` (
 	`statement_id` INT NOT NULL , `sync_time` BIGINT NOT NULL , 
 	`created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , 
 	`updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`id`));
+
+-- 05/06/25 ----
+
+ALTER TABLE `courses` ADD `course_order` INT NULL DEFAULT NULL AFTER `no_of_days`;

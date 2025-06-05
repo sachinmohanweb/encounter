@@ -24,6 +24,17 @@
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
       padding:12px
    }
+
+   .custom-order-badge {
+       position: absolute;
+       top: 8px;
+       left: 8px;
+       background-color: #007bff;
+       color: white;
+       padding: 4px 8px;
+       border-radius: 4px;
+       z-index: 1;
+   }
 </style>
 @endsection
 @section('breadcrumb-title')
@@ -40,6 +51,9 @@
          <div class="col-sm-12 col-lg-4">
             <div class="card course-bible">
                <div class="image d-flex justify-content-center" style="height:140px;overflow: hidden;">
+                  @if($value->course_order !== null)
+                     <span class="custom-order-badge">Visibility Order: {{ $value->course_order }}</span>
+                  @endif
                   @if($value->thumbnail && file_exists(public_path($value->thumbnail)))
                         <img class="img-fluid for-light"src="{{ asset($value->thumbnail) }}" alt="" 
                         style="width: 100%; height: auto; object-fit: cover;">

@@ -33,7 +33,10 @@ class CourseController extends Controller
     
     public function CourseList() : View
     {
-        $courses = Course::with('BatchDetails')->get();
+        $courses = Course::with('BatchDetails')
+                    ->orderByRaw('COALESCE(course_order, 9999) ASC')
+                    ->orderBy('created_at','desc')
+                    ->get();
         return view('courses.Courselist',compact('courses'));
     }
 

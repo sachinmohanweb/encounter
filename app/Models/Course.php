@@ -17,6 +17,7 @@ class Course extends Model
         'creator_designation',
         'creator_image',
         'no_of_days',
+        'course_order',
         'description',
         'thumbnail',
         'intro_commentary',

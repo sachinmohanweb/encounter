@@ -147,7 +147,8 @@ class HomeController extends Controller
                 'b.start_date',
                 'b.end_date',
                 'b.last_date',
-                'a.no_of_days'
+                'a.no_of_days',
+                'a.course_order'
             )
             ->where(function ($query) {
                 if (auth('sanctum')->check()) {
@@ -161,7 +162,7 @@ class HomeController extends Controller
             ->where('b.status', 1)
             ->where('cc.status', 1)
             ->where('cdv.status', 1)
-            ->groupBy('a.id', 'a.course_name', 'a.course_creator', 'a.thumbnail', 'b.id', 'b.batch_name', 'b.start_date', 'a.no_of_days');
+            ->groupBy('a.id', 'a.course_name', 'a.course_creator', 'a.thumbnail', 'b.id', 'b.batch_name', 'b.start_date', 'a.no_of_days','a.course_order');
 
             if ($request['search_word']) {
                 $courses->where(function ($query) use ($request) {
@@ -225,10 +226,18 @@ class HomeController extends Controller
                 $item->image = $item->image ? asset('/') . $item->image : null;
                 $item->order_weight = $orderWeight;
                 $item->can_enroll = $can_enroll;
+                $item->course_order = $item->course_order ?? 9999;
+
                 return $item;
             });
 
-            $courses = $courses->sortBy('order_weight')->values();
+            //$courses = $courses->sortBy('order_weight')->values();
+
+            $courses = $courses->sortBy([
+                    ['course_order', 'asc'],
+                    ['order_weight', 'asc'],
+            ])->values();
+
             $courses->makeHidden(['bible_name']);
 
             if(empty($courses)) {
