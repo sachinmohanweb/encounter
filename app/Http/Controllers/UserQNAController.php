@@ -89,7 +89,7 @@ class UserQNAController extends Controller
             if (!empty($push_data['tokens'])) {
                 if(env('QUEUE_CONNECTION') === 'sync') {
                     $pusher = new NotificationPusher();
-                    $pusher->push($push_data);
+                    //$pusher->push($push_data);
                 }else{
                     SendPushNotification::dispatch($push_data)->onQueue('push-notifications');
                 }

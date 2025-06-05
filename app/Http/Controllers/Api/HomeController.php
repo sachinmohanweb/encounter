@@ -1491,7 +1491,7 @@ class HomeController extends Controller
 
         if (!empty($push_data['tokens'])) {
             $pusher = new NotificationPusher();
-            $pusher->push($pushData);
+            //$pusher->push($pushData);
 
             Log::channel('notification_log')->info("======>>>>>Notifications sent for user - " . now() . "  ======>>>>>\n" . json_encode($pushData['tokens']));    
         }
