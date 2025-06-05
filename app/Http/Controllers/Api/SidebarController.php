@@ -947,60 +947,6 @@ class SidebarController extends Controller
         }
     }
 
-    // public function AddBibleMarking(Request $request){
-        
-    //     DB::beginTransaction();
-
-    //     try {
-
-    //         $user_id = Auth::user()->id;
-
-    //         $a =  $request->validate([
-    //                 'type'          => 'required',
-    //                 'statement_ids' => 'required',
-    //                 'data'          => 'required',
-    //             ]);
-            
-    //         $statementIdsArray = explode(',', $request['statement_ids']);
-
-    //         foreach($statementIdsArray as $key=>$value){
-
-    //             $user_prev_marking = UserBibleMarking::where('user_id',$user_id)
-    //                             ->where('type',$request['type'])->where('statement_id',$value)->first();
-    //             if($user_prev_marking){
-    //                 $return['messsage']  =  'FAILED.Some of the stament is already marked';
-    //                 return $this->outputer->code(200)->success($return)->json();
-    //             }else{
-    //                 $inputData['user_id'] = $user_id;
-    //                 $inputData['type'] = $request['type'];
-    //                 $inputData['statement_id'] = $value;
-    //                 $inputData['data'] = $request['data'];
-
-    //                 $marking = UserBibleMarking::create($inputData);
-                    
-    //             }
-
-    //             DB::commit();
-    //         }
-
-    //         $return['messsage']  =  'Success.Your Marking Saved';
-    //         return $this->outputer->code(200)->success($return)->json();
-
-
-    //     }catch (\Exception $e) {
-
-    //         DB::rollBack();
-    //         $result = [
-    //                 "status" => "error",
-    //                 "metadata" => [],
-    //                 "data" => [
-    //                     "message" => $e->getMessage()
-    //                 ]
-    //             ];
-    //         return $result;
-    //     }
-    // }
-
     public function AddBibleMarking(Request $request){
         
         DB::beginTransaction();
