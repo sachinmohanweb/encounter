@@ -13,6 +13,7 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('app:notify-upcoming-courses-enrollment-left-days-new')->everyMinute();
         $schedule->command('app:notify-course-inactivity-for-three-days-new')->everyMinute();
+        $schedule->command('telescope:prune --hours=48')->daily();
     }
 
     protected function commands()

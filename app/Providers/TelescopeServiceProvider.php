@@ -2,24 +2,25 @@
 
 namespace App\Providers;
 
+use App\Models\Admin;
 use Illuminate\Support\Facades\Gate;
-use Laravel\Telescope\IncomingEntry;
+use Illuminate\Support\ServiceProvider;
 use Laravel\Telescope\Telescope;
-use Laravel\Telescope\TelescopeApplicationServiceProvider;
+use Laravel\Telescope\IncomingEntry;
+use Laravel\Telescope\TelescopeServiceProvider as BaseTelescopeServiceProvider;
 
-class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
+class TelescopeServiceProvider extends BaseTelescopeServiceProvider
 {
     /**
      * Register any application services.
      */
     public function register(): void
     {
-        // Telescope::night();
-
         $this->hideSensitiveRequestDetails();
 
         $isLocal = $this->app->environment('local');
 
+        // Filter what gets logged
         Telescope::filter(function (IncomingEntry $entry) use ($isLocal) {
             return $isLocal ||
                    $entry->isReportableException() ||
@@ -28,11 +29,20 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
                    $entry->isScheduledTask() ||
                    $entry->hasMonitoredTag();
         });
+
+        // Telescope access control
+        Telescope::auth(function ($request) {
+            $user = auth('admin')->user(); // Use custom 'admin' guard
+
+            return $user instanceof Admin &&
+                   in_array($user->email, ['admin@encounter.com']);
+        });
     }
 
     /**
-     * Prevent sensitive request details from being logged by Telescope.
+     * Hide sensitive request data from Telescope.
      */
+    
     protected function hideSensitiveRequestDetails(): void
     {
         if ($this->app->environment('local')) {
@@ -49,16 +59,13 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
     }
 
     /**
-     * Register the Telescope gate.
-     *
-     * This gate determines who can access Telescope in non-local environments.
+     * Define who can view Telescope (used with Gate::allows).
      */
     protected function gate(): void
     {
         Gate::define('viewTelescope', function ($user) {
-            return in_array($user->email, [
-                //
-            ]);
+            return $user instanceof Admin &&
+                   in_array($user->email, ['admin@encounter.com']);
         });
     }
 }
