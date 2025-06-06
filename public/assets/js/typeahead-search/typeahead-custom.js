@@ -12,7 +12,7 @@ $(document).ready(function () {
     queryTokenizer: Bloodhound.tokenizers.whitespace,
     datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name', 'screen_name'),
     dupDetector: function (a, b) { return a.id_str === b.id_str; },
-    prefetch: remoteHost + '/demo/prefetch',
+    //prefetch: remoteHost + '/demo/prefetch',
     remote: {
       url: remoteHost + '/demo/search?q=%QUERY',
       wildcard: '%QUERY'
