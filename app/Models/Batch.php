@@ -16,6 +16,7 @@ class Batch extends Model
         'start_date',
         'end_date',
         'last_date',
+        'date_visibility',
         'status'
     ];
 

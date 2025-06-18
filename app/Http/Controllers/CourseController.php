@@ -538,6 +538,7 @@ class CourseController extends Controller
                 'start_date' => 'required',
                 'end_date' => 'required',
                 'last_date' => 'required',
+                'date_visibility' => 'required',
                 'status' => 'required',
                 
             ]);
@@ -547,35 +548,38 @@ class CourseController extends Controller
             $batch = Batch::create($inputData);
             DB::commit();
 
-            $push_data = [];
+            if($batch['status']=='Active'){
 
-            $push_data['tokens']    =  User::whereNotNull('refresh_token')
-                                            ->pluck('refresh_token')
-                                            ->toArray();
+                $push_data = [];
 
-            $push_data['title']         =   'New Batch Date Alert: Don’t Miss Out on This Blessing!';
-            $push_data['body']          =   'Enrol now in our next batch of '.$batch->course->course_name                             .' starting '.$batch->start_date.'.'.PHP_EOL.'Last date for enrolment: '.$batch->last_date.'.';
+                $push_data['tokens']    =  User::whereNotNull('refresh_token')
+                                                ->pluck('refresh_token')
+                                                ->toArray();
 
-            $push_data['route']         =   'NewBatch';
-            $push_data['id']            =   $batch['id'];
-            $push_data['category']      =   'NewBatch';
+                $push_data['title']         =   'New Batch Date Alert: Don’t Miss Out on This Blessing!';
+                $push_data['body']          =   'Enrol now in our next batch of '.$batch->course->course_name                             .' starting '.$batch->start_date.'.'.PHP_EOL.'Last date for enrolment: '.$batch->last_date.'.';
 
-            $push_data['data1']         =   $batch->course->course_name;
-            $push_data['data2']         =   $batch->start_date;
-            $push_data['data3']         =   $batch->last_date;
-            $push_data['data4']         =   null;
-            $push_data['data5']         =   null;
-            $push_data['image1']        =   null;
+                $push_data['route']         =   'NewBatch';
+                $push_data['id']            =   $batch['id'];
+                $push_data['category']      =   'NewBatch';
 
-            if (!empty($push_data['tokens'])) {
-                if(env('QUEUE_CONNECTION') === 'sync') {
-                    $pusher = new NotificationPusher();
-                    //$pusher->push($push_data);
-                }else{
-                    SendPushNotification::dispatch($push_data)->onQueue('push-notifications');
+                $push_data['data1']         =   $batch->course->course_name;
+                $push_data['data2']         =   $batch->start_date;
+                $push_data['data3']         =   $batch->last_date;
+                $push_data['data4']         =   null;
+                $push_data['data5']         =   null;
+                $push_data['image1']        =   null;
+
+                if (!empty($push_data['tokens'])) {
+                    if(env('QUEUE_CONNECTION') === 'sync') {
+                        $pusher = new NotificationPusher();
+                        //$pusher->push($push_data);
+                    }else{
+                        SendPushNotification::dispatch($push_data)->onQueue('push-notifications');
+                    }
                 }
+
             }
-             
             return redirect()->route('admin.course.details',['id' => $request['course_id']])
                             ->with('success',"Success! New Batch has been successfully added.");
         }catch (Exception $e) {
@@ -601,12 +605,15 @@ class CourseController extends Controller
 
             $batch = Batch::find($request->id);
 
+            $old_status = $batch['status'];
+
             $a =  $request->validate([
                 'course_id' => 'required',
                 'batch_name' => 'required',
                 'start_date' => 'required',
                 'end_date' => 'required',
                 'last_date' => 'required',
+                'date_visibility' => 'required',
                 'status' => 'required',
                 
             ]);
@@ -615,7 +622,39 @@ class CourseController extends Controller
 
             $batch->update($inputData);
             DB::commit();
-             
+
+            if($old_status=='Suspended' && $batch['status']=='Active'){
+
+                $push_data = [];
+
+                $push_data['tokens']    =  User::whereNotNull('refresh_token')
+                                                ->pluck('refresh_token')
+                                                ->toArray();
+
+                $push_data['title']         =   'New Batch Date Alert: Don’t Miss Out on This Blessing!';
+                $push_data['body']          =   'Enrol now in our next batch of '.$batch->course->course_name                             .' starting '.$batch->start_date.'.'.PHP_EOL.'Last date for enrolment: '.$batch->last_date.'.';
+
+                $push_data['route']         =   'NewBatch';
+                $push_data['id']            =   $batch['id'];
+                $push_data['category']      =   'NewBatch';
+
+                $push_data['data1']         =   $batch->course->course_name;
+                $push_data['data2']         =   $batch->start_date;
+                $push_data['data3']         =   $batch->last_date;
+                $push_data['data4']         =   null;
+                $push_data['data5']         =   null;
+                $push_data['image1']        =   null;
+
+                if (!empty($push_data['tokens'])) {
+                    if(env('QUEUE_CONNECTION') === 'sync') {
+                        $pusher = new NotificationPusher();
+                        //$pusher->push($push_data);
+                    }else{
+                        SendPushNotification::dispatch($push_data)->onQueue('push-notifications');
+                    }
+                }
+
+            }
             return redirect()->route('admin.course.details',['id' => $request['course_id']])
                             ->with('success',"Success! New Batch has been successfully updated.");
         }catch (Exception $e) {

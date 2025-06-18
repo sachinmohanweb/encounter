@@ -38,14 +38,14 @@
                      <input type="hidden" name="id" value="{{$batch->id}}">
                      <input type="hidden" name="course_id" value="{{$batch->course_id}}">
                      <div class="verse d-flex align-items-center flex-wrap">
-                        <div class="col-md-6 col-12">
+                        <div class="col-md-4 col-12">
                            <div class="form-group">
                               <label for=""> Batch Name*</label>
                               <input type="text" placeholder="Batch Name" class="form-control"
                               name="batch_name" value="{{$batch->batch_name}}" required>
                            </div>
                         </div>
-                        <div class="col-md-6 col-12">
+                        <div class="col-md-4 col-12">
                            <div class="form-group">
                               <label for=""> Start Date*</label>
                               <div class="input-group">
@@ -55,7 +55,7 @@
                            </div>
                            </div>
                         </div>
-                        <div class="col-md-5 col-12">
+                        <div class="col-md-4 col-12">
                            <div class="form-group">
                               <label for=""> End Date*</label>
                               <div class="input-group">
@@ -64,7 +64,7 @@
                            </div>
                            </div>
                         </div>
-                        <div class="col-md-5 col-12">
+                        <div class="col-md-4 col-12">
                            <div class="form-group">
                               <label for=""> Last Date for Enrollment*</label>
                               <div class="input-group">
@@ -73,7 +73,26 @@
                            </div>
                            </div>
                         </div>
-                        <div class="col-lg-2 col-12">
+                        <div class="col-lg-4 col-12">
+                           <div class="form-group ps-5">
+                              <label for=""> Date Visibility*</label>
+                              <div class="form-check">
+                                 <input class="form-check-input" type="radio" name="date_visibility" 
+                                 id="flexRadioDefault1" value="1"  <?php if ($batch->date_visibility == 1) echo ' checked'; ?>>
+                                 <label class="form-check-label" for="flexRadioDefault1">
+                                 Show
+                                 </label>
+                              </div>
+                              <div class="form-check">
+                                 <input class="form-check-input" type="radio" name="date_visibility" 
+                                 id="flexRadioDefault2" value="2" <?php if ($batch->date_visibility == 2) echo ' checked'; ?>>
+                                 <label class="form-check-label" for="flexRadioDefault2">
+                                 Hide
+                                 </label>
+                              </div>
+                           </div>
+                        </div>
+                        <div class="col-lg-4 col-12">
                            <div class="form-group ps-5">
                               <div class="form-check">
                                  <input class="form-check-input" type="radio" name="status" 

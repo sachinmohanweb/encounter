@@ -544,3 +544,7 @@ CREATE TABLE `bible_changes` (
 -- 05/06/25 ----
 
 ALTER TABLE `courses` ADD `course_order` INT NULL DEFAULT NULL AFTER `no_of_days`;
+
+-- 05/06/25 ----
+
+ALTER TABLE `batches` ADD `date_visibility` INT NULL DEFAULT '1' AFTER `last_date`;
