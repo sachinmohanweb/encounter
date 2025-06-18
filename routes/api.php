@@ -14,6 +14,7 @@ Route::post('verify_otp',[UserController::class, 'VerifyOtp']);
 
 
 Route::get('home', [HomeController::class, 'Home']);
+Route::get('course_groups', [HomeController::class, 'CourseGroups']);
 Route::get('course_details', [HomeController::class, 'CourseDetails']);
 
 

@@ -279,6 +279,192 @@ class HomeController extends Controller
         }
     }
 
+    public function CourseGroups(Request $request){
+        
+        try {
+
+            if(auth('sanctum')->check()) {
+               
+            /*--------Authenticated User---------*/
+
+                $user_id = auth('sanctum')->id();
+
+                $login_user = User::select('id','image','timezone')->where('id',$user_id)->first();
+
+                $userTimezone = $login_user->timezone ?? 'UTC';
+                if($login_user->image !== null) {
+                    $login_user->image = asset('/') . $login_user->image;
+                }else{
+                    $login_user->image = asset('/').'assets/images/user/user-dp.png';
+                }
+
+                $today_string = Carbon::now($userTimezone)->format('Y-m-d');
+
+            }else{
+
+                $userTimezone = 'UTC';
+
+                $login_user = (object) [
+                    'id' => Null,
+                    'image' => asset('assets/images/user/user-dp.png'),
+                    'timezone' =>$userTimezone,
+                    'user_name' => 'Guest User'
+                ];
+
+                $today_string = Carbon::now($userTimezone)->format('Y-m-d');
+            }
+
+
+            /*---------Courses----------*/
+
+            $courses = Course::from(with(new Course)->getTable() . ' as a')
+                ->join(with(new Batch)->getTable() . ' as b', 'a.id', 'b.course_id')
+                ->join(with(new CourseContent)->getTable() . ' as cc', 'a.id', '=', 'cc.course_id')
+                ->join(with(new CourseDayVerse)->getTable() . ' as cdv', 'cc.id', '=', 'cdv.course_content_id');
+
+            if (auth('sanctum')->check()) {
+                
+                $courses->leftJoin('user_l_m_s as ul', function ($join) use ($login_user) {
+                    $join->on('b.id', '=', 'ul.batch_id')
+                        ->where('ul.user_id', '=', $login_user->id)
+                        ->where('ul.status', 1);
+                });
+            }
+            $courses->select(
+                'a.id',
+                'a.course_name as data1',
+                'a.course_creator as data2',
+                'a.thumbnail as image',
+                'b.id as batch_id',
+                'b.batch_name as data3',
+                'b.start_date',
+                'b.end_date',
+                'b.last_date',
+                'b.date_visibility',
+                'a.no_of_days',
+            )
+            ->where(function ($query) use ($today_string) {
+                if (auth('sanctum')->check()) {
+                    $query->where('b.last_date', '>=', $today_string);
+                    $query->orWhereNotNull('ul.id');
+                }else{
+                    $query->where('b.last_date', '>=', $today_string);
+                }
+            })
+            ->where('a.status', 1)
+            ->where('b.status', 1)
+            ->where('cc.status', 1)
+            ->where('cdv.status', 1)
+            ->groupBy('a.id', 'a.course_name', 'a.course_creator', 'a.thumbnail', 'b.id', 'b.batch_name', 'b.start_date', 'b.date_visibility','a.no_of_days');
+
+            if ($request['search_word']) {
+                $courses->where(function ($query) use ($request) {
+                    $query->where('a.course_name', 'like', $request['search_word'] . '%')
+                        ->orWhere('a.course_creator', 'like', $request['search_word'] . '%');
+                });
+            }
+
+            if ($request['length']) {
+                $courses->take($request['length']);
+            }
+
+            $courses = $courses->orderby('id')->get();
+
+
+            $courses->transform(function ($item) use ($login_user,$today_string) {
+                $item->data4 = 'Enrol Now';
+                $item->data5 = '0 %';
+                $orderWeight = 2;
+                $can_enroll = true;
+
+                if ($item->start_date > $today_string) {
+                    $item->data4 = 'Upcoming';
+                    $orderWeight = 3;
+
+                } elseif (auth('sanctum')->check()) {
+                    $userLms = UserLMS::where('user_id', $login_user->id)
+                        ->where('course_id', $item->id)
+                        ->where('batch_id', $item->batch_id)
+                        ->first();
+
+                    if ($userLms) {
+                        $readingsCount = UserDailyReading::where('user_lms_id', $userLms->id)->count();
+                        $percentage = round(($readingsCount / $item->no_of_days) * 100, 2);
+
+                        if ($readingsCount > 0) {
+                            if ($readingsCount < $item->no_of_days) {
+                                $item->data4 = 'Ongoing';
+                                $orderWeight = 1;
+                                $can_enroll = false;
+                            } else {
+                                $item->data4 = 'Completed';
+                                $orderWeight = 4;
+                                $can_enroll = false;
+
+                            }
+                            $item->data5 = $percentage . ' %';
+                        } else {
+                            $item->data4 = 'Non-progressing';
+                            $orderWeight = 2;
+                            $can_enroll = false;
+                        }
+                    }
+                } elseif ($item->end_date > $today_string) {
+                        $item->data4 = 'Ongoing';
+                        $orderWeight = 1;
+                        if($item->last_date <  $today_string ){
+                            $can_enroll = false;
+                        }
+                }
+
+                $item->image = $item->image ? asset('/') . $item->image : null;
+                $item->order_weight = $orderWeight;
+                $item->can_enroll = $can_enroll;
+
+                return $item;
+            });
+
+            $courses = $courses->sortBy('order_weight')->values();
+
+            $courses->makeHidden(['bible_name']);
+
+            if(empty($courses)) {
+
+                $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => "Empty course list "
+                    ]
+                ];
+                return $result;
+            }
+
+            $groupedCourses = $courses->groupBy('data4')->map(function ($items, $status) {
+                return [
+                    'category' => $status,
+                    'list' => $items->values()
+                ];
+            })->values();
+
+            return $this->outputer->code(200)
+                        ->success($groupedCourses)
+                        ->LoginUser($login_user)
+                        ->json();
+
+        }catch (\Exception $e) {
+
+            $result = [
+                    "status" => "error",
+                    "metadata" => [],
+                    "data" => [
+                        "message" => $e->getMessage()
+                    ]
+                ];
+            return $result;
+        }
+    }
+
     public function CompletedCourses(Request $request){
         try {
 
