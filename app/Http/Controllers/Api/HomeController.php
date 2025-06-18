@@ -147,6 +147,7 @@ class HomeController extends Controller
                 'b.start_date',
                 'b.end_date',
                 'b.last_date',
+                'b.date_visibility',
                 'a.no_of_days',
                 'a.course_order'
             )
@@ -162,7 +163,7 @@ class HomeController extends Controller
             ->where('b.status', 1)
             ->where('cc.status', 1)
             ->where('cdv.status', 1)
-            ->groupBy('a.id', 'a.course_name', 'a.course_creator', 'a.thumbnail', 'b.id', 'b.batch_name', 'b.start_date', 'a.no_of_days','a.course_order');
+            ->groupBy('a.id', 'a.course_name', 'a.course_creator', 'a.thumbnail', 'b.id', 'b.batch_name', 'b.start_date', 'b.date_visibility','a.no_of_days','a.course_order');
 
             if ($request['search_word']) {
                 $courses->where(function ($query) use ($request) {
@@ -382,7 +383,7 @@ class HomeController extends Controller
                             ->join(with(new Batch)->getTable(). ' as b' , 'a.id','b.course_id')
                             ->select('a.id','a.course_name','a.no_of_days','a.description','a.thumbnail',
                                 'a.course_creator','a.creator_image','a.creator_designation',
-                                'a.intro_video','a.intro_audio','a.intro_video_thumb','b.id as batch_id','b.batch_name','b.start_date','b.end_date','b.last_date',
+                                'a.intro_video','a.intro_audio','a.intro_video_thumb','b.id as batch_id','b.batch_name','b.start_date','b.end_date','b.last_date','b.date_visibility',
                                 DB::raw('DATE_FORMAT(b.start_date, "%b %d,%Y") as start_date'),
                                 DB::raw('DATE_FORMAT(b.end_date, "%b %d,%Y") as end_date'),
                                 DB::raw('DATE_FORMAT(b.last_date, "%b %d,%Y") as last_date')
@@ -575,7 +576,7 @@ class HomeController extends Controller
                             ->join(with(new Batch)->getTable(). ' as b' , 'a.id','b.course_id')
                             ->select('a.id','a.course_name','a.no_of_days','a.description','a.thumbnail',
                                 'a.course_creator','a.creator_image','a.creator_designation',
-                                'a.intro_video','a.intro_audio','a.intro_video_thumb','b.id as batch_id','b.batch_name','b.start_date','b.end_date','b.last_date',
+                                'a.intro_video','a.intro_audio','a.intro_video_thumb','b.id as batch_id','b.batch_name','b.start_date','b.end_date','b.last_date','b.date_visibility',
                                 DB::raw('DATE_FORMAT(b.start_date, "%b %d,%Y") as start_date'),
                                 DB::raw('DATE_FORMAT(b.end_date, "%b %d,%Y") as end_date'),
                                 DB::raw('DATE_FORMAT(b.last_date, "%b %d,%Y") as last_date')
