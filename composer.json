@@ -16,6 +16,7 @@
         "laravel/tinker": "^2.8",
         "lcobucci/jwt": "^4.3",
         "maatwebsite/excel": "^3.1",
+        "opcodesio/log-viewer": "^3.17",
         "teamtnt/laravel-scout-tntsearch-driver": "^14.0",
         "teamtnt/tntsearch": "^4.3",
         "yajra/laravel-datatables-oracle": "^10.11"
