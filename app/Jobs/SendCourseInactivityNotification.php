@@ -46,12 +46,15 @@ class SendCourseInactivityNotification implements ShouldQueue
                     //->where('id',1)
                     ->whereNotNull('refresh_token');
             })
-            ->whereHas('batch', function ($query) {
+            ->whereHas('batch', function ($query) use ($today_string) {
                 $query->where('status', 1)
-                    ->whereDate('start_date', '<', now());
+                    ->whereDate('start_date', '<', $today_string);
             })
+            ->orderBy('id')
             ->with(['user', 'batch:id,start_date,batch_name,last_date'])
-            ->get();
+            ->get()
+            ->unique('batch_id')
+            ->values();
 
         foreach ($userLmsRecords as $userLms) {
             $batch = Batch::find($userLms->batch_id);
@@ -89,7 +92,8 @@ class SendCourseInactivityNotification implements ShouldQueue
 
     private function prepareNotification($userLms, $batch, $course, $type, $timezone)
     {
-        $tokens = User::whereNotNull('refresh_token')->where('id', $userLms->user_id)->pluck('refresh_token')->toArray();
+        $tokens = User::whereNotNull('refresh_token')->where('id', $userLms->user_id)->pluck('refresh_token')
+                        ->toArray();
 
         if (empty($tokens)) return null;
 
