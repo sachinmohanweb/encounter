@@ -28,6 +28,7 @@ use App\Models\CourseDayVerse;
 use App\Models\BibleVerseImage;
 use App\Models\DailyBibleVerse;
 use App\Models\UserDailyReading;
+use App\Models\SentNotification;
 
 use App\Http\Controllers\Controller;
 class HomeController extends Controller
@@ -1639,24 +1640,59 @@ class HomeController extends Controller
                 $readingDate = Carbon::parse($userReading->date_of_reading, 'UTC')->setTimezone($timezone);
                 if ($today->diffInDays($readingDate) >= 3) {
                     $notification = $this->prepareNotification($userLms, $batch, $course, 'inactivity', $timezone);
+                    $type =1;
+                    $type_name ='inactivity';
                 }
             } else {
                 $startDate = Carbon::parse($batch->start_date, 'UTC')->setTimezone($timezone);
                 if ($today->diffInDays($startDate) >= 3) {
                     $notification = $this->prepareNotification($userLms, $batch, $course, 'not_started', $timezone);
+                    $type =2;
+                    $type_name ='not_started';
                 }
             }
             if(!empty($notification)) {
 
-                Log::channel('notification_log')
-                    ->info("Notification Pusher  called for - " . json_encode($notification, JSON_PRETTY_PRINT)  . "  ======>>>>>\n");
-                $pusher = new NotificationPusher();
-                $pusher->push($notification);
+                //Log::channel('notification_log')->info("Notification Pusher  called for - " . json_encode($notification, JSON_PRETTY_PRINT)  . "  ======>>>>>\n");
+                // $pusher = new NotificationPusher();
+                // $pusher->push($notification);
 
+                $alreadySent = SentNotification::where([
+                    'user_id' => $userLms->user_id,
+                    'batch_id' => $userLms->batch_id,
+                    'course_id' => $userLms->course_id,
+                    'type_id' => $type,
+                ])->whereDate('date_sent', $today->toDateString())->exists();
+                                
+                if (!$alreadySent) {
+
+                    DB::beginTransaction();
+                    try {
+                        SentNotification::create([
+                            'user_id' => $userLms->user_id,
+                            'batch_id' => $userLms->batch_id,
+                            'course_id' => $userLms->course_id,
+                            'type_id' => $type,
+                            'type' => $type_name,
+                            'date_sent' => $today->toDateString(),
+                        ]);
+
+                        Log::channel('notification_log')
+                            ->info("Notification Pusher called for - " . json_encode($notification, JSON_PRETTY_PRINT)  . "  ======>>>>>\n");
+
+                        // $pusher = new NotificationPusher();
+                        // $pusher->push($notification);
+
+                        DB::commit();
+                        
+                    } catch (QueryException $e) {
+                        DB::rollBack();
+                        Log::channel('notification_log')->error("Duplicate notification insert failed: " . $e->getMessage());
+                    }
+                }   
             }
         }
     }
-
 
     private function prepareNotification($userLms, $batch, $course, $type, $timezone)
     {
