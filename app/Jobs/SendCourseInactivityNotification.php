@@ -17,8 +17,8 @@ use App\Models\UserDailyReading;
 use App\Models\SentNotification;
 
 use Log;
-use DB;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 use App\Notifications\NotificationPusher; 
 
