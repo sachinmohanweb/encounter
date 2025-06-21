@@ -36,6 +36,8 @@ class SendCourseInactivityNotification implements ShouldQueue
     {
 
         $timezone = $this->timezone;
+        $today_string = Carbon::now($timezone)->format('Y-m-d');
+
 
         Log::channel('notification_log')->info("Course Inactivity Notification job Dispatched for: {$timezone}");
 
