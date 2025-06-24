@@ -105,6 +105,7 @@ class NotificationPusher
 
 
         $response = Firebase::messaging()->sendMulticast($message,$deviceToken);
+        $successCount = $response->successes()->count();
 
         Log::info('FCM Multicast Response', [
             'type' => $route,
@@ -118,7 +119,7 @@ class NotificationPusher
             }),
         ]);
 
-        return true;
+        return $successCount > 0;
         
     }
 }

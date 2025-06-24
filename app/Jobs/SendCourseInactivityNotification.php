@@ -89,41 +89,51 @@ class SendCourseInactivityNotification implements ShouldQueue
             }
             if(!empty($notification)) {
 
-                //Log::channel('notification_log')->info("Notification Pusher  called for - " . json_encode($notification, JSON_PRETTY_PRINT)  . "  ======>>>>>\n");
-                // $pusher = new NotificationPusher();
-                // $pusher->push($notification);
-
                 $alreadySent = SentNotification::where([
                     'user_id' => $userLms->user_id,
                     'batch_id' => $userLms->batch_id,
                     'course_id' => $userLms->course_id,
                     'type_id' => $type,
+                    'status' => 'sent',
                 ])->whereDate('date_sent', $today->toDateString())->exists();
                                 
                 if (!$alreadySent) {
 
                     DB::beginTransaction();
                     try {
-                        SentNotification::create([
+                        $sentNotification = SentNotification::create([
                             'user_id' => $userLms->user_id,
                             'batch_id' => $userLms->batch_id,
                             'course_id' => $userLms->course_id,
                             'type_id' => $type,
                             'type' => $type_name,
                             'date_sent' => $today->toDateString(),
+                            'status' =>'pending'
                         ]);
 
                         Log::channel('notification_log')
                             ->info("Notification Pusher called for - " . json_encode($notification, JSON_PRETTY_PRINT)  . "  ======>>>>>\n");
 
                         $pusher = new NotificationPusher();
-                        $pusher->push($notification);
+                        $success = $pusher->push($notification);
+
+                        if ($success) {
+                            $sentNotification->update(['status' => 'sent']);
+                        } else {
+                            $sentNotification->update(['status' => 'failed']);
+                        }
 
                         DB::commit();
                         
                     } catch (QueryException $e) {
                         DB::rollBack();
-                        Log::channel('notification_log')->error("Duplicate notification insert failed: " . $e->getMessage());
+                        if (isset($sentNotification)) {
+                            $sentNotification->update([
+                                'status' => 'failed'
+                            ]);
+                        }
+                        Log::channel('notification_log')
+                                ->error("Duplicate notification insert failed: " . $e->getMessage());
                     }
                 }
 
