@@ -469,8 +469,8 @@ class HomeController extends Controller
     public function CompletedCourses(Request $request){
         try {
 
-            $today= now();
-            $today_string = now()->toDateString();
+            //$today= now();
+            //$today_string = now()->toDateString();
 
             $loggeed_user = Auth::user();
 
@@ -558,6 +558,7 @@ class HomeController extends Controller
                 $login_user = User::select('id','image','timezone')->where('id',$user_id)->first();
 
                 $userTimezone = $login_user->timezone ?? 'UTC';
+                $today_string = Carbon::now($userTimezone)->format('Y-m-d');
                 if($login_user->image !== null) {
                     $login_user->image = asset('/') . $login_user->image;
                 }else{
@@ -578,7 +579,7 @@ class HomeController extends Controller
                             ->where('b.id',$request['batch_id'])
                             ->get();
 
-                $courses->transform(function ($item) use ($user_id,$type) {
+                $courses->transform(function ($item) use ($user_id,$type,$today_string) {
 
                     if ($item->thumbnail !== null) {
                         $item->thumbnail = asset('/') . $item->thumbnail;
@@ -598,7 +599,9 @@ class HomeController extends Controller
                         $item->intro_video_thumb = null;
                     }
                     
-                    $today = now()->startOfDay();
+                    //$today = now()->startOfDay();
+                    $today = Carbon::parse($today_string)->startOfDay();
+
                     $courseStartDate = Carbon::parse($item->start_date)->startOfDay();
 
                     
@@ -630,7 +633,8 @@ class HomeController extends Controller
 
                         $item->user_enrolled = true;
                         $item->user_lms_id = $user_lms['id'];
-                        if(Carbon::parse($item->start_date)->format('Y-m-d') > now()->format('Y-m-d')){
+
+                        if(Carbon::parse($item->start_date)->format('Y-m-d') > $today_string){
                             $item->allow_day_verse_read = false;
                             $item->course_content = [];
 
@@ -748,6 +752,8 @@ class HomeController extends Controller
             }else{
 
                 $userTimezone = 'UTC';
+                $today_string = Carbon::now($userTimezone)->format('Y-m-d');
+
 
                 $login_user = (object) [
                     'id' => Null,
@@ -771,7 +777,7 @@ class HomeController extends Controller
                             ->where('b.id',$request['batch_id'])
                             ->get();
 
-                $courses->transform(function ($item) use ($type) {
+                $courses->transform(function ($item) use ($type,$today_string) {
 
                     if ($item->thumbnail !== null) {
                         $item->thumbnail = asset('/') . $item->thumbnail;
@@ -791,7 +797,7 @@ class HomeController extends Controller
                         $item->intro_video_thumb = null;
                     }
                     
-                    $today = now()->startOfDay();
+                    $today = Carbon::parse($today_string)->startOfDay();
                     $courseStartDate = Carbon::parse($item->start_date)->startOfDay();
 
                     
