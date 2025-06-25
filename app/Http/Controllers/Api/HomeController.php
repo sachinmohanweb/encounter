@@ -152,12 +152,12 @@ class HomeController extends Controller
                 'a.no_of_days',
                 'a.course_order'
             )
-            ->where(function ($query) {
+            ->where(function ($query) use ($today_string){
                 if (auth('sanctum')->check()) {
-                    $query->where('b.last_date', '>=', now()->format('Y-m-d'));
+                    $query->where('b.last_date', '>=', $today_string);
                     $query->orWhereNotNull('ul.id');
                 }else{
-                    $query->where('b.end_date', '>=', now()->format('Y-m-d'));
+                    $query->where('b.end_date', '>=', $today_string);
                 }
             })
             ->where('a.status', 1)
@@ -179,13 +179,13 @@ class HomeController extends Controller
 
             $courses = $courses->orderby('id')->get();
 
-            $courses->transform(function ($item) use ($login_user) {
+            $courses->transform(function ($item) use ($login_user,$today_string) {
                 $item->data4 = 'Enrol Now';
                 $item->data5 = '0 %';
                 $orderWeight = 2;
                 $can_enroll = true;
 
-                if ($item->start_date > now()->format('Y-m-d')) {
+                if ($item->start_date > $today_string) {
                     $item->data4 = 'Upcoming';
                     $orderWeight = 3;
 
@@ -217,10 +217,10 @@ class HomeController extends Controller
                             $can_enroll = false;
                         }
                     }
-                } elseif ($item->end_date > now()->format('Y-m-d')) {
+                } elseif ($item->end_date > $today_string) {
                         $item->data4 = 'Ongoing';
                         $orderWeight = 1;
-                        if($item->last_date < now()->format('Y-m-d') ){
+                        if($item->last_date < $today_string ){
                             $can_enroll = false;
                         }
                 }
