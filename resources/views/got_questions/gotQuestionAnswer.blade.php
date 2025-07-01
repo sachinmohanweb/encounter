@@ -66,7 +66,7 @@
 
 @endsection
 @section('script')
-<script src="{{ asset('assets/js/clock.js') }}"></script>
+<!-- <script src="{{ asset('assets/js/clock.js') }}"></script> -->
 <script src="{{ asset('assets/js/chart/apex-chart/moment.min.js') }}"></script>
 <script src="{{ asset('assets/js/notify/bootstrap-notify.min.js') }}"></script>
 <script src="{{ asset('assets/js/dashboard/default.js') }}"></script>
