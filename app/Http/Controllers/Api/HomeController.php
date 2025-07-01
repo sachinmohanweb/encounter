@@ -28,6 +28,7 @@ use App\Models\CourseDayVerse;
 use App\Models\BibleVerseImage;
 use App\Models\DailyBibleVerse;
 use App\Models\UserDailyReading;
+use App\Models\SentNotification;
 
 use App\Http\Controllers\Controller;
 class HomeController extends Controller
@@ -151,12 +152,12 @@ class HomeController extends Controller
                 'a.no_of_days',
                 'a.course_order'
             )
-            ->where(function ($query) {
+            ->where(function ($query) use ($today_string){
                 if (auth('sanctum')->check()) {
-                    $query->where('b.last_date', '>=', now()->format('Y-m-d'));
+                    $query->where('b.last_date', '>=', $today_string);
                     $query->orWhereNotNull('ul.id');
                 }else{
-                    $query->where('b.end_date', '>=', now()->format('Y-m-d'));
+                    $query->where('b.end_date', '>=', $today_string);
                 }
             })
             ->where('a.status', 1)
@@ -178,13 +179,13 @@ class HomeController extends Controller
 
             $courses = $courses->orderby('id')->get();
 
-            $courses->transform(function ($item) use ($login_user) {
+            $courses->transform(function ($item) use ($login_user,$today_string) {
                 $item->data4 = 'Enrol Now';
                 $item->data5 = '0 %';
                 $orderWeight = 2;
                 $can_enroll = true;
 
-                if ($item->start_date > now()->format('Y-m-d')) {
+                if ($item->start_date > $today_string) {
                     $item->data4 = 'Upcoming';
                     $orderWeight = 3;
 
@@ -216,10 +217,10 @@ class HomeController extends Controller
                             $can_enroll = false;
                         }
                     }
-                } elseif ($item->end_date > now()->format('Y-m-d')) {
+                } elseif ($item->end_date > $today_string) {
                         $item->data4 = 'Ongoing';
                         $orderWeight = 1;
-                        if($item->last_date < now()->format('Y-m-d') ){
+                        if($item->last_date < $today_string ){
                             $can_enroll = false;
                         }
                 }
@@ -468,8 +469,8 @@ class HomeController extends Controller
     public function CompletedCourses(Request $request){
         try {
 
-            $today= now();
-            $today_string = now()->toDateString();
+            //$today= now();
+            //$today_string = now()->toDateString();
 
             $loggeed_user = Auth::user();
 
@@ -557,6 +558,7 @@ class HomeController extends Controller
                 $login_user = User::select('id','image','timezone')->where('id',$user_id)->first();
 
                 $userTimezone = $login_user->timezone ?? 'UTC';
+                $today_string = Carbon::now($userTimezone)->format('Y-m-d');
                 if($login_user->image !== null) {
                     $login_user->image = asset('/') . $login_user->image;
                 }else{
@@ -577,7 +579,7 @@ class HomeController extends Controller
                             ->where('b.id',$request['batch_id'])
                             ->get();
 
-                $courses->transform(function ($item) use ($user_id,$type) {
+                $courses->transform(function ($item) use ($user_id,$type,$today_string) {
 
                     if ($item->thumbnail !== null) {
                         $item->thumbnail = asset('/') . $item->thumbnail;
@@ -597,7 +599,9 @@ class HomeController extends Controller
                         $item->intro_video_thumb = null;
                     }
                     
-                    $today = now()->startOfDay();
+                    //$today = now()->startOfDay();
+                    $today = Carbon::parse($today_string)->startOfDay();
+
                     $courseStartDate = Carbon::parse($item->start_date)->startOfDay();
 
                     
@@ -629,7 +633,8 @@ class HomeController extends Controller
 
                         $item->user_enrolled = true;
                         $item->user_lms_id = $user_lms['id'];
-                        if(Carbon::parse($item->start_date)->format('Y-m-d') > now()->format('Y-m-d')){
+
+                        if(Carbon::parse($item->start_date)->format('Y-m-d') > $today_string){
                             $item->allow_day_verse_read = false;
                             $item->course_content = [];
 
@@ -747,6 +752,8 @@ class HomeController extends Controller
             }else{
 
                 $userTimezone = 'UTC';
+                $today_string = Carbon::now($userTimezone)->format('Y-m-d');
+
 
                 $login_user = (object) [
                     'id' => Null,
@@ -770,7 +777,7 @@ class HomeController extends Controller
                             ->where('b.id',$request['batch_id'])
                             ->get();
 
-                $courses->transform(function ($item) use ($type) {
+                $courses->transform(function ($item) use ($type,$today_string) {
 
                     if ($item->thumbnail !== null) {
                         $item->thumbnail = asset('/') . $item->thumbnail;
@@ -790,7 +797,7 @@ class HomeController extends Controller
                         $item->intro_video_thumb = null;
                     }
                     
-                    $today = now()->startOfDay();
+                    $today = Carbon::parse($today_string)->startOfDay();
                     $courseStartDate = Carbon::parse($item->start_date)->startOfDay();
 
                     
@@ -1639,24 +1646,59 @@ class HomeController extends Controller
                 $readingDate = Carbon::parse($userReading->date_of_reading, 'UTC')->setTimezone($timezone);
                 if ($today->diffInDays($readingDate) >= 3) {
                     $notification = $this->prepareNotification($userLms, $batch, $course, 'inactivity', $timezone);
+                    $type =1;
+                    $type_name ='inactivity';
                 }
             } else {
                 $startDate = Carbon::parse($batch->start_date, 'UTC')->setTimezone($timezone);
                 if ($today->diffInDays($startDate) >= 3) {
                     $notification = $this->prepareNotification($userLms, $batch, $course, 'not_started', $timezone);
+                    $type =2;
+                    $type_name ='not_started';
                 }
             }
             if(!empty($notification)) {
 
-                Log::channel('notification_log')
-                    ->info("Notification Pusher  called for - " . json_encode($notification, JSON_PRETTY_PRINT)  . "  ======>>>>>\n");
-                $pusher = new NotificationPusher();
-                $pusher->push($notification);
+                //Log::channel('notification_log')->info("Notification Pusher  called for - " . json_encode($notification, JSON_PRETTY_PRINT)  . "  ======>>>>>\n");
+                // $pusher = new NotificationPusher();
+                // $pusher->push($notification);
 
+                $alreadySent = SentNotification::where([
+                    'user_id' => $userLms->user_id,
+                    'batch_id' => $userLms->batch_id,
+                    'course_id' => $userLms->course_id,
+                    'type_id' => $type,
+                ])->whereDate('date_sent', $today->toDateString())->exists();
+                                
+                if (!$alreadySent) {
+
+                    DB::beginTransaction();
+                    try {
+                        SentNotification::create([
+                            'user_id' => $userLms->user_id,
+                            'batch_id' => $userLms->batch_id,
+                            'course_id' => $userLms->course_id,
+                            'type_id' => $type,
+                            'type' => $type_name,
+                            'date_sent' => $today->toDateString(),
+                        ]);
+
+                        Log::channel('notification_log')
+                            ->info("Notification Pusher called for - " . json_encode($notification, JSON_PRETTY_PRINT)  . "  ======>>>>>\n");
+
+                        // $pusher = new NotificationPusher();
+                        // $pusher->push($notification);
+
+                        DB::commit();
+                        
+                    } catch (QueryException $e) {
+                        DB::rollBack();
+                        Log::channel('notification_log')->error("Duplicate notification insert failed: " . $e->getMessage());
+                    }
+                }   
             }
         }
     }
-
 
     private function prepareNotification($userLms, $batch, $course, $type, $timezone)
     {

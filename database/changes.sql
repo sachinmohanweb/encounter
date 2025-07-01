@@ -548,3 +548,19 @@ ALTER TABLE `courses` ADD `course_order` INT NULL DEFAULT NULL AFTER `no_of_days
 -- 05/06/25 ----
 
 ALTER TABLE `batches` ADD `date_visibility` INT NULL DEFAULT '1' AFTER `last_date`;
+
+-- 20/06/25 ----
+
+CREATE TABLE `sent_notifications` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `user_id` BIGINT UNSIGNED NOT NULL,
+  `course_id` BIGINT UNSIGNED NOT NULL,
+  `batch_id` BIGINT UNSIGNED NOT NULL,
+  `type_id` BIGINT UNSIGNED NOT NULL,
+  `type` VARCHAR(255) NOT NULL,
+  `date_sent` DATE NOT NULL,
+  `created_at` TIMESTAMP NULL DEFAULT NULL,
+  `updated_at` TIMESTAMP NULL DEFAULT NULL,
+  UNIQUE KEY `unique_notification_entry` (`user_id`, `batch_id`, `course_id`, `type_id`, `date_sent`),
+  PRIMARY KEY (`id`)
+);
