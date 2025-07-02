@@ -658,18 +658,25 @@ class HomeController extends Controller
                             $upcoming_data = true;
                             if ($type ==1) {
                                 
+                                $today_read_status = false;
                                 $largest_day_completed =UserDailyReading::where('user_lms_id',$user_lms['id'])
                                                         ->max('day');
                                 if($largest_day_completed) {
                                     if($user_lms['completed_status']!=3){
-                                        $course_content->where('day', '>', $largest_day_completed)->limit(5);
+
+                                        if($largest_day_completed==$current_day_number){
+                                            $course_content->where('day', $largest_day_completed);
+                                            $today_read_status = true;
+                                        }else{
+                                            $course_content->where('day', '>', $largest_day_completed)->limit(5);
+                                        }
 
                                         $upcoming_course_content = CourseContent::select('day','id as course_content_id','course_id')
                                                 ->where('course_id',$item->id)
                                                 ->whereHas('CourseDayVerse') 
                                                 ->where('day', '>', $largest_day_completed)
                                                 ->orderBy('day')
-                                                ->get();                                        
+                                                ->get();  
                                         if($upcoming_course_content->isEmpty()) {
 
                                             $upcoming_data = false;      
@@ -689,8 +696,11 @@ class HomeController extends Controller
                                                 ->orderByDesc('day')
                                                 ->limit(5);                                                
                                 }else{
-                                    if ($user_lms['completed_status'] != 3) {
+
+                                    if ($user_lms['completed_status'] != 3 && $today_read_status==false) {
                                         $course_content->whereNotIn('day', $read_days);
+                                    }else{
+                                        $course_content->where('day', $largest_day_completed);
                                     }
                                 }
                             }
