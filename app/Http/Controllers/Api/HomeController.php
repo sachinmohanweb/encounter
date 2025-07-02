@@ -642,12 +642,13 @@ class HomeController extends Controller
                             $item->allow_day_verse_read = true;
                             //$total_course_completed_days= UserDailyReading::where('user_lms_id',$user_lms['id'])->count();
                             //$item->completion_percentage = ($total_course_completed_days/$item->no_of_days)*100; 
+                            //$current_day_number = Carbon::today()->diffInDays(Carbon::parse($item->start_date)) + 1;
+                            
                             $item->completion_percentage = $user_lms['progress']; 
 
-                            //$current_day_number = Carbon::today()->diffInDays(Carbon::parse($item->start_date)) + 1; 
-                            $userTimezone = auth()->user()->timezone ?? 'Pacific/Auckland';
-                            $current_day_number = Carbon::today($userTimezone)
-                                                    ->diffInDays(Carbon::parse($item->start_date,$userTimezone)) + 1; 
+                            $user = User::find($user_id); 
+                            $userTimezone = $user->timezone ?? 'Pacific/Auckland';
+                            $current_day_number = Carbon::today($userTimezone)->diffInDays($item->start_date)+1;
 
                             $course_content = CourseContent::select('day','id as course_content_id','course_id')
                                                 ->where('course_id',$item->id)
@@ -662,10 +663,14 @@ class HomeController extends Controller
                                 if($largest_day_completed) {
                                     if($user_lms['completed_status']!=3){
                                         $course_content->where('day', '>', $largest_day_completed)->limit(5);
-                                        
-                                        $upcoming = $course_content->get();
-                                        
-                                        if($upcoming->isEmpty()) {
+
+                                        $upcoming_course_content = CourseContent::select('day','id as course_content_id','course_id')
+                                                ->where('course_id',$item->id)
+                                                ->whereHas('CourseDayVerse') 
+                                                ->where('day', '>', $largest_day_completed)
+                                                ->orderBy('day')
+                                                ->get();                                        
+                                        if($upcoming_course_content->isEmpty()) {
 
                                             $upcoming_data = false;      
                                         }
