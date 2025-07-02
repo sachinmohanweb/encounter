@@ -196,7 +196,8 @@ class HomeController extends Controller
                         ->first();
 
                     if ($userLms) {
-                        $readingsCount = UserDailyReading::where('user_lms_id', $userLms->id)->count();
+                        $readingsCount = UserDailyReading::where('user_lms_id', $userLms->id)
+                        ->where('status',1)->count();
                         $percentage = round(($readingsCount / $item->no_of_days) * 100, 2);
 
                         if ($readingsCount > 0) {
@@ -389,7 +390,8 @@ class HomeController extends Controller
                         ->first();
 
                     if ($userLms) {
-                        $readingsCount = UserDailyReading::where('user_lms_id', $userLms->id)->count();
+                        $readingsCount = UserDailyReading::where('user_lms_id', $userLms->id)
+                        ->where('status',1)->count();
                         $percentage = round(($readingsCount / $item->no_of_days) * 100, 2);
 
                         if ($readingsCount > 0) {
@@ -496,7 +498,8 @@ class HomeController extends Controller
             
             $courses->transform(function ($item, $key) use($loggeed_user) {
 
-                $readings_count = UserDailyReading::where('user_lms_id',$item['user_lms_id'])->count();
+                $readings_count = UserDailyReading::where('user_lms_id',$item['user_lms_id'])
+                ->where('status',1)->count();
                 $percentage= ( $readings_count/$item['no_of_days'])*100;
 
                 $item->data4 = '';
@@ -660,6 +663,7 @@ class HomeController extends Controller
                                 
                                 $today_read_status = false;
                                 $largest_day_completed =UserDailyReading::where('user_lms_id',$user_lms['id'])
+                                                        ->where('status',1)
                                                         ->max('day');
                                 if($largest_day_completed) {
                                     if($user_lms['completed_status']!=3){
@@ -687,6 +691,7 @@ class HomeController extends Controller
 
                                 }
                                 $read_days = UserDailyReading::where('user_lms_id', $user_lms['id'])
+                                            ->where('status',1)
                                             ->pluck('day')->toArray();
 
                                 if($upcoming_data==false){
@@ -1018,7 +1023,7 @@ class HomeController extends Controller
             if($course['no_of_days'] >= $request['day']){
 
                 $already_marked = UserDailyReading::where('user_lms_id',$user_lms['id'])
-                                ->where('day',$request['day'])->first();
+                                ->where('day',$request['day'])->where('status',1)->first();
                 if($already_marked){
 
                     $result = [
@@ -1032,7 +1037,8 @@ class HomeController extends Controller
 
                 }else{
 
-                    $readings_count = UserDailyReading::where('user_lms_id',$user_lms['id'])->count();
+                    $readings_count = UserDailyReading::where('user_lms_id',$user_lms['id'])
+                    ->where('status',1)->count();
                     $percentage= ( $readings_count/$course['no_of_days'])*100;
                     
                     $inputData['user_lms_id'] = $request['user_lms_id'];
@@ -1044,7 +1050,8 @@ class HomeController extends Controller
 
                     $user_lms = UserLMS::find($request['user_lms_id']);
                     $course = Course::find($user_lms['course_id']);
-                    $readings_count = UserDailyReading::where('user_lms_id',$request['user_lms_id'])->count();
+                    $readings_count = UserDailyReading::where('user_lms_id',$request['user_lms_id'])
+                    ->where('status',1)->count();
                     $percentage= ( $readings_count/$course['no_of_days'])*100;
                     if($readings_count==1){
                         $compl_status=2;
@@ -1653,7 +1660,8 @@ class HomeController extends Controller
             if (!$course) continue;
 
             $latestContent = CourseContent::where('course_id', $course->id)->orderBy('day', 'desc')->first();
-            $userReading = UserDailyReading::where('user_lms_id', $userLms->id)->orderBy('day', 'desc')->first();
+            $userReading = UserDailyReading::where('user_lms_id', $userLms->id)->orderBy('day', 'desc')
+            ->where('status',1)->first();
 
             $today = Carbon::now($timezone);
 
