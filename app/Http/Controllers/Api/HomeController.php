@@ -666,6 +666,7 @@ class HomeController extends Controller
                                                         ->where('status',1)
                                                         ->max('day');
                                 if($largest_day_completed) {
+
                                     if($user_lms['completed_status']!=3){
 
                                         if($largest_day_completed==$current_day_number){
@@ -685,6 +686,8 @@ class HomeController extends Controller
 
                                             $upcoming_data = false;      
                                         }
+                                    }else{
+                                        $upcoming_data = false;      
                                     }    
                                 }else{
                                     $course_content->where('day', '>', 0)->limit(5);
@@ -693,7 +696,6 @@ class HomeController extends Controller
                                 $read_days = UserDailyReading::where('user_lms_id', $user_lms['id'])
                                             ->where('status',1)
                                             ->pluck('day')->toArray();
-
                                 if($upcoming_data==false){
                                     $course_content = CourseContent::select('day','id as course_content_id','course_id')
                                                 ->where('course_id',$item->id)
