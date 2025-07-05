@@ -27,11 +27,27 @@ class SendCourseInactivityNotification implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $timezone;
+    public $uniqueFor = 3600; // 1 hour uniqueness
+    public $tries = 3; // Retry 3 times
+    public $backoff = [60, 300, 600]; // Wait 1min, 5min, 10min between retries
 
     public function __construct(string $timezone)
     {
         $this->timezone = $timezone;
+    }
 
+    public function uniqueId()
+    {
+        return 'course_inactivity_' . $this->timezone . '_' . Carbon::now()->format('Y-m-d');
+    }
+
+    public function failed(\Throwable $exception)
+    {
+        Log::channel('notification_log')->error('Course Inactivity Notification job failed', [
+            'timezone' => $this->timezone,
+            'error' => $exception->getMessage(),
+            'trace' => $exception->getTraceAsString()
+        ]);
     }
 
     public function handle(): void
@@ -47,7 +63,7 @@ class SendCourseInactivityNotification implements ShouldQueue
             ->where('completed_status', '!=', 3)
             ->whereHas('user', function ($query) use ($timezone) {
                 $query->where('timezone', $timezone)
-                    //->where('id',1)
+                    ->where('id',1)
                     ->whereNotNull('refresh_token');
             })
             ->whereHas('batch', function ($query) use ($today_string) {
@@ -90,12 +106,54 @@ class SendCourseInactivityNotification implements ShouldQueue
             }
             if(!empty($notification)) {
 
-                Log::channel('notification_log')
-                    ->info("Notification Pusher called for - " . json_encode($notification, JSON_PRETTY_PRINT)  . "  ======>>>>>\n");
+                $alreadySent = SentNotification::where([
+                    'user_id' => $userLms->user_id,
+                    'batch_id' => $userLms->batch_id,
+                    'course_id' => $userLms->course_id,
+                    'type_id' => $type,
+                    'status' => 'sent',
+                ])->whereDate('date_sent', $today->toDateString())->exists();
+                                
+                if (!$alreadySent) {
 
-                $pusher = new NotificationPusher();
-                $success = $pusher->push($notification);
-    
+                    DB::beginTransaction();
+                    try {
+                        $sentNotification = SentNotification::create([
+                            'user_id' => $userLms->user_id,
+                            'batch_id' => $userLms->batch_id,
+                            'course_id' => $userLms->course_id,
+                            'type_id' => $type,
+                            'type' => $type_name,
+                            'date_sent' => $today->toDateString(),
+                            'status' =>'pending'
+                        ]);
+
+                        Log::channel('notification_log')
+                            ->info("Notification Pusher called for - " . json_encode($notification, JSON_PRETTY_PRINT)  . "  ======>>>>>\n");
+
+                        $pusher = new NotificationPusher();
+                        $success = $pusher->push($notification);
+
+                        if ($success) {
+                            $sentNotification->update(['status' => 'sent']);
+                        } else {
+                            $sentNotification->update(['status' => 'failed']);
+                        }
+
+                        DB::commit();
+                        
+                    } catch (\Exception $e) {
+                        DB::rollBack();
+                        if (isset($sentNotification)) {
+                            $sentNotification->update([
+                                'status' => 'failed'
+                            ]);
+                        }
+                        Log::channel('notification_log')
+                                ->error("Notification sending failed: " . $e->getMessage());
+                    }
+                }
+
             }
         }
     }
@@ -124,11 +182,11 @@ class SendCourseInactivityNotification implements ShouldQueue
 
         if ($type === 'inactivity') {
             $notification['title'] = 'We Miss You at ' . $batch->batch_name . ': ' . $course->course_name;
-            $notification['body'] = "It’s been a few days since you last visited.\nJump right back in and grow in faith!";
+            $notification['body'] = "It's been a few days since you last visited.\nJump right back in and grow in faith!";
 
         } elseif ($type === 'not_started') {
             $notification['title'] = 'The Word of God Awaits You!';
-            $notification['body'] = "You’re all set to start the course - " . $batch->batch_name . ': ' . $course->course_name . ".\nDive into your first lesson now.";
+            $notification['body'] = "You're all set to start the course - " . $batch->batch_name . ': ' . $course->course_name . ".\nDive into your first lesson now.";
         }
 
 
