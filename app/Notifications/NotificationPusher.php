@@ -104,46 +104,24 @@ class NotificationPusher
             ->withWebPushConfig($webconfig)
             ->withData(['image' => $imageUrl]);
 
-        try {
-            $response = Firebase::messaging()->sendMulticast($message,$deviceToken);
-            $successCount = $response->successes()->count();
-            $failureCount = $response->failures()->count();
 
-            Log::info('FCM Multicast Response', [
-                'type' => $route,
-                'user' => $user,
-                'successCount' => $successCount,
-                'failureCount' => $failureCount,
-                'failedTokens' => $response->failures()->map(function ($failure) {
-                    return [
-                        'token' => $failure->target()->value(),
-                        'error' => $failure->error()->getMessage(),
-                    ];
-                }),
-            ]);
+        $response = Firebase::messaging()->sendMulticast($message,$deviceToken);
+        $successCount = $response->successes()->count();
 
-            // If all notifications failed, throw an exception
-            if ($failureCount > 0 && $successCount === 0) {
-                $failedTokens = $response->failures()->map(function ($failure) {
-                    return $failure->error()->getMessage();
-                })->toArray();
-                
-                throw new \Exception('All push notifications failed: ' . implode(', ', $failedTokens));
-            }
+        Log::info('FCM Multicast Response', [
+            'type' => $route,
+            'user' => $user,
+            'successCount' => $response->successes()->count(),
+            'failureCount' => $response->failures()->count(),
+            'failedTokens' => $response->failures()->map(function ($failure) {
+                return [
+                    'token' => $failure->target()->value(),
+                    'error' => $failure->error()->getMessage(),
+                ];
+            }),
+        ]);
 
-            return $successCount > 0;
-            
-        } catch (\Exception $e) {
-            Log::error('FCM Push Notification Failed', [
-                'type' => $route,
-                'user' => $user,
-                'error' => $e->getMessage(),
-                'data' => $msg
-            ]);
-            
-            // Re-throw the exception so Laravel can track it as a failed job
-            throw $e;
-        }
+        return $successCount > 0;
         
     }
 }
