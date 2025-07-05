@@ -350,7 +350,7 @@ class HomeController extends Controller
                     $query->where('b.last_date', '>=', $today_string);
                     $query->orWhereNotNull('ul.id');
                 }else{
-                    $query->where('b.last_date', '>=', $today_string);
+                    $query->where('b.end_date', '>=', $today_string);
                 }
             })
             ->where('a.status', 1)
