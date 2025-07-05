@@ -78,6 +78,7 @@ class SendUpcomingCourseLastDateNotification implements ShouldQueue
                         'data4' => 'Nil',
                         'data5' => 'Nil',
                         'image1'=> 'Nil',
+                        'user' => $user->id,
                     ];
 
                     Log::channel('notification_log')->info("Notification Pusher  called for - " . json_encode($pushData, JSON_PRETTY_PRINT)  . "  ======>>>>>\n");

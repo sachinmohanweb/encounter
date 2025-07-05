@@ -569,6 +569,7 @@ class CourseController extends Controller
                 $push_data['data4']         =   null;
                 $push_data['data5']         =   null;
                 $push_data['image1']        =   null;
+                $push_data['user']        =   null;
 
                 if (!empty($push_data['tokens'])) {
                     if(env('QUEUE_CONNECTION') === 'sync') {
@@ -644,6 +645,7 @@ class CourseController extends Controller
                 $push_data['data4']         =   null;
                 $push_data['data5']         =   null;
                 $push_data['image1']        =   null;
+                $push_data['user']        =   null;
 
                 if (!empty($push_data['tokens'])) {
                     if(env('QUEUE_CONNECTION') === 'sync') {

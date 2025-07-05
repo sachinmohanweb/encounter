@@ -68,7 +68,8 @@ class SendCourseInactivityNotification implements ShouldQueue
             if (!$course) continue;
 
             $latestContent = CourseContent::where('course_id', $course->id)->orderBy('day', 'desc')->first();
-            $userReading = UserDailyReading::where('user_lms_id', $userLms->id)->orderBy('day', 'desc')->first();
+            $userReading = UserDailyReading::where('user_lms_id', $userLms->id)->orderBy('day', 'desc')
+                            ->where('status',1)->first();
 
             $today = Carbon::now($timezone);
 
@@ -118,6 +119,7 @@ class SendCourseInactivityNotification implements ShouldQueue
             'data4' => 'Nill',
             'data5' => 'Nill',
             'image1' => 'Nill',
+            'user' => $userLms->user_id,
         ];
 
         if ($type === 'inactivity') {

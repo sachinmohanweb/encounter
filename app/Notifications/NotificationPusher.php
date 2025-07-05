@@ -36,10 +36,11 @@ class NotificationPusher
         $data4       = $msg['data4'];
         $data5       = $msg['data5'];
         $image1      = $msg['image1'];
+        $user        = $msg['user']?? null;
 
         $imageUrl = "https://encounterbiblestudy.com/public/assets/images/logo.png";
         
-        Log::info('data: ', $msg['tokens']);
+        //Log::info('data: ', $msg['tokens']);
 
         $AndroidConfig = AndroidConfig::fromArray([
                             'ttl' => '3600s',
@@ -109,6 +110,7 @@ class NotificationPusher
 
         Log::info('FCM Multicast Response', [
             'type' => $route,
+            'user' => $user,
             'successCount' => $response->successes()->count(),
             'failureCount' => $response->failures()->count(),
             'failedTokens' => $response->failures()->map(function ($failure) {
