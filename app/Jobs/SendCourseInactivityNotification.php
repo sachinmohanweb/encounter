@@ -57,8 +57,8 @@ class SendCourseInactivityNotification implements ShouldQueue
             ->orderBy('id')
             ->with(['user', 'batch:id,start_date,batch_name,last_date'])
             ->get();
-            // ->unique('batch_id')
-            // ->values();
+            
+        Log::channel('notification_log')->info("UserLMS Records: ", $userLmsRecords->toArray());
 
         foreach ($userLmsRecords as $userLms) {
             $batch = Batch::find($userLms->batch_id);
