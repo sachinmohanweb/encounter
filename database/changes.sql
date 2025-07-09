@@ -564,3 +564,5 @@ CREATE TABLE `sent_notifications` (
   UNIQUE KEY `unique_notification_entry` (`user_id`, `batch_id`, `course_id`, `type_id`, `date_sent`),
   PRIMARY KEY (`id`)
 );
+
+ALTER TABLE `sent_notifications` DROP `status`;

@@ -76,26 +76,56 @@ class SendCourseInactivityNotification implements ShouldQueue
             if ($userReading) {
                 $readingDate = Carbon::parse($userReading->date_of_reading, 'UTC')->setTimezone($timezone);
                 if ($today->diffInDays($readingDate) >= 3) {
-                    $notification = $this->prepareNotification($userLms, $batch, $course, 'inactivity', $timezone);
                     $type =1;
                     $type_name ='inactivity';
                 }
             }else {
                 $startDate = Carbon::parse($batch->start_date, 'UTC')->setTimezone($timezone);
                 if ($today->diffInDays($startDate) >= 3) {
-                    $notification = $this->prepareNotification($userLms, $batch, $course, 'not_started', $timezone);
                     $type =2;
                     $type_name ='not_started';
                 }
             }
-            if(!empty($notification)) {
 
-                Log::channel('notification_log')
-                    ->info("Notification Pusher called for - " . json_encode($notification, JSON_PRETTY_PRINT)  . "  ======>>>>>\n");
+            if ($type) {
 
-                $pusher = new NotificationPusher();
-                $success = $pusher->push($notification);
-    
+                $alreadySent = SentNotification::where([
+                    ['user_id', $userLms->user_id],
+                    ['batch_id', $userLms->batch_id],
+                    ['course_id', $userLms->course_id],
+                    ['type', $type_name],
+                ])->where(DB::raw('DATE(date_sent)'), $today->toDateString())
+                ->exists();
+
+                if ($alreadySent) {
+                    Log::channel('notification_log')->info("SKIPPED (Already Sent): User {$userLms->user_id}, Course {$userLms->course_id}, Batch {$userLms->batch_id}, Type: {$type}");
+                    continue;
+                }
+
+                $notification = $this->prepareNotification($userLms, $batch, $course, $type_name, $timezone);
+
+                if (!empty($notification)) {
+                    Log::channel('notification_log')
+                        ->info("Notification Pusher called for - " . json_encode($notification, JSON_PRETTY_PRINT));
+
+                    DB::transaction(function () use ($userLms, $batch, $course, $type,$type_name, $today, $notification){
+
+                        $pusher = new NotificationPusher();
+                        $success = $pusher->push($notification);
+
+                        if ($success) {
+                            SentNotification::firstOrCreate([
+                                'user_id' => $userLms->user_id,
+                                'batch_id' => $userLms->batch_id,
+                                'course_id' => $userLms->course_id,
+                                'type_id' => $type,
+                                'type' => $type_name,
+                                'date_sent' => $today->toDateString(),
+                            ]);
+                        }
+                    });
+
+                }
             }
         }
     }

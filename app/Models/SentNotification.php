@@ -15,7 +15,6 @@ class SentNotification extends Model
         'type_id',
         'type',
         'date_sent',
-        'status',
     ];
 
     public function user()

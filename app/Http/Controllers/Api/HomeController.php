@@ -30,6 +30,9 @@ use App\Models\DailyBibleVerse;
 use App\Models\UserDailyReading;
 use App\Models\SentNotification;
 
+use App\Notifications\NotificationPusher; 
+
+
 use App\Http\Controllers\Controller;
 class HomeController extends Controller
 {
@@ -1632,7 +1635,7 @@ class HomeController extends Controller
     public function TestApi(){
 
 
-        $timezone = 'Asia/Kolkata';
+        $timezone = 'Asia/Calcutta';
         $today_string = Carbon::now($timezone)->format('Y-m-d');
 
 
@@ -1649,11 +1652,13 @@ class HomeController extends Controller
                 $query->where('status', 1)
                     ->whereDate('start_date', '<', $today_string);
             })
-            ->orderBy('id')
+            ->orderBy('user_id')
             ->with(['user', 'batch:id,start_date,batch_name,last_date'])
-            ->get()
-            ->unique('batch_id')
-            ->values();
+            ->limit(5)
+            ->get();
+
+        Log::channel('notification_log')->info("UserLMS Records: ", $userLmsRecords->toArray());
+
         foreach ($userLmsRecords as $userLms) {
             $batch = Batch::find($userLms->batch_id);
             if (!$batch) continue;
@@ -1663,64 +1668,63 @@ class HomeController extends Controller
 
             $latestContent = CourseContent::where('course_id', $course->id)->orderBy('day', 'desc')->first();
             $userReading = UserDailyReading::where('user_lms_id', $userLms->id)->orderBy('day', 'desc')
-            ->where('status',1)->first();
+                            ->where('status',1)->first();
 
             $today = Carbon::now($timezone);
 
             if ($userReading) {
                 $readingDate = Carbon::parse($userReading->date_of_reading, 'UTC')->setTimezone($timezone);
                 if ($today->diffInDays($readingDate) >= 3) {
-                    $notification = $this->prepareNotification($userLms, $batch, $course, 'inactivity', $timezone);
                     $type =1;
                     $type_name ='inactivity';
                 }
-            } else {
+            }else {
                 $startDate = Carbon::parse($batch->start_date, 'UTC')->setTimezone($timezone);
                 if ($today->diffInDays($startDate) >= 3) {
-                    $notification = $this->prepareNotification($userLms, $batch, $course, 'not_started', $timezone);
                     $type =2;
                     $type_name ='not_started';
                 }
             }
-            if(!empty($notification)) {
 
-                //Log::channel('notification_log')->info("Notification Pusher  called for - " . json_encode($notification, JSON_PRETTY_PRINT)  . "  ======>>>>>\n");
-                // $pusher = new NotificationPusher();
-                // $pusher->push($notification);
+            if ($type) {
 
                 $alreadySent = SentNotification::where([
-                    'user_id' => $userLms->user_id,
-                    'batch_id' => $userLms->batch_id,
-                    'course_id' => $userLms->course_id,
-                    'type_id' => $type,
-                ])->whereDate('date_sent', $today->toDateString())->exists();
-                                
-                if (!$alreadySent) {
+                    ['user_id', $userLms->user_id],
+                    ['batch_id', $userLms->batch_id],
+                    ['course_id', $userLms->course_id],
+                    ['type', $type_name],
+                ])->where(DB::raw('DATE(date_sent)'), $today->toDateString())
+                ->exists();
 
-                    DB::beginTransaction();
-                    try {
-                        SentNotification::create([
-                            'user_id' => $userLms->user_id,
-                            'batch_id' => $userLms->batch_id,
-                            'course_id' => $userLms->course_id,
-                            'type_id' => $type,
-                            'type' => $type_name,
-                            'date_sent' => $today->toDateString(),
-                        ]);
+                if ($alreadySent) {
+                    Log::channel('notification_log')->info("SKIPPED (Already Sent): User {$userLms->user_id}, Course {$userLms->course_id}, Batch {$userLms->batch_id}, Type: {$type}");
+                    continue;
+                }
 
-                        Log::channel('notification_log')
-                            ->info("Notification Pusher called for - " . json_encode($notification, JSON_PRETTY_PRINT)  . "  ======>>>>>\n");
+                $notification = $this->prepareNotification($userLms, $batch, $course, $type_name, $timezone);
 
-                        // $pusher = new NotificationPusher();
-                        // $pusher->push($notification);
+                if (!empty($notification)) {
+                    Log::channel('notification_log')
+                        ->info("Notification Pusher called for - " . json_encode($notification, JSON_PRETTY_PRINT));
 
-                        DB::commit();
-                        
-                    } catch (QueryException $e) {
-                        DB::rollBack();
-                        Log::channel('notification_log')->error("Duplicate notification insert failed: " . $e->getMessage());
-                    }
-                }   
+                    DB::transaction(function () use ($userLms, $batch, $course, $type,$type_name, $today, $notification){
+
+                        $pusher = new NotificationPusher();
+                        $success = $pusher->push($notification);
+
+                        if ($success) {
+                            SentNotification::firstOrCreate([
+                                'user_id' => $userLms->user_id,
+                                'batch_id' => $userLms->batch_id,
+                                'course_id' => $userLms->course_id,
+                                'type_id' => $type,
+                                'type' => $type_name,
+                                'date_sent' => $today->toDateString(),
+                            ]);
+                        }
+                    });
+
+                }
             }
         }
     }
