@@ -54,10 +54,10 @@ class SendCourseInactivityNotification implements ShouldQueue
                 $query->where('status', 1)
                     ->whereDate('start_date', '<', $today_string);
             })
-            ->orderBy('id')
+            ->orderBy('user_id')
             ->with(['user', 'batch:id,start_date,batch_name,last_date'])
             ->get();
-            
+
         Log::channel('notification_log')->info("UserLMS Records: ", $userLmsRecords->toArray());
 
         foreach ($userLmsRecords as $userLms) {
