@@ -15,6 +15,7 @@ class CourseContentLink extends Model
         'title',
         'description',
         'video_spotify_link',
+        'thumbnail',
         'status',
     ];
     

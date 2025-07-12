@@ -241,6 +241,7 @@ class CourseController extends Controller
             $video_links   = array_filter($request['video_link']);
             $video_titles = $request->input('video_title');
             $video_descriptions = $request->input('video_description');
+            $video_thumbnails = $request->file('video_thumbnail');
 
             $spotify_links = array_filter($request['spotify_link']);
             $spotify_titles = $request->input('spotify_title');
@@ -254,6 +255,17 @@ class CourseController extends Controller
                     $video_data['title'] = $video_titles[$key];
                     $video_data['description'] = $video_descriptions[$key];
                     $video_data['video_spotify_link'] = $value;
+                    
+                    // Handle thumbnail upload for video
+                    if(isset($video_thumbnails[$key]) && $video_thumbnails[$key]) {
+                        $time = microtime(true);
+                        $timeMilliseconds = round($time * 1000);
+                        $timeString = (string) $timeMilliseconds;
+
+                        $fileName = $timeString . '_' . $key . '.' . $video_thumbnails[$key]->extension();
+                        $video_thumbnails[$key]->storeAs('course_contents/video_thumbnails', $fileName);
+                        $video_data['thumbnail'] = 'storage/course_contents/video_thumbnails/' . $fileName;
+                    }
                     
                     $course_content_video = CourseContentLink::create($video_data);
                 }
@@ -348,6 +360,8 @@ class CourseController extends Controller
             $video_links   = array_filter($request['video_link']);
             $video_titles = $request->input('video_title');
             $video_descriptions = $request->input('video_description');
+            $video_thumbnails = $request->file('video_thumbnail');
+            $existing_video_thumbnails = $request->input('existing_video_thumbnail');
 
             $spotify_links = array_filter($request['spotify_link']);
             $spotify_titles = $request->input('spotify_title');
@@ -361,6 +375,21 @@ class CourseController extends Controller
                     $video_data['title'] = $video_titles[$key];
                     $video_data['description'] = $video_descriptions[$key];
                     $video_data['video_spotify_link'] = $value;
+                    
+                    // Handle thumbnail upload for video
+                    if(isset($video_thumbnails[$key]) && $video_thumbnails[$key]) {
+                        $time = microtime(true);
+                        $timeMilliseconds = round($time * 1000);
+                        $timeString = (string) $timeMilliseconds;
+
+                        $fileName = $timeString . '_' . $key . '.' . $video_thumbnails[$key]->extension();
+                        $video_thumbnails[$key]->storeAs('course_contents/video_thumbnails', $fileName);
+                        $video_data['thumbnail'] = 'storage/course_contents/video_thumbnails/' . $fileName;
+                    } elseif (isset($existing_video_thumbnails[$key]) && $existing_video_thumbnails[$key]) {
+                        $video_data['thumbnail'] = $existing_video_thumbnails[$key];
+                    } else {
+                        $video_data['thumbnail'] = null;
+                    }
                     
                     $course_content_video = CourseContentLink::create($video_data);
                 }

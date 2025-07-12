@@ -68,15 +68,33 @@
                            <div class="form-group">
                               <label for=""> Video Links</label>
                               <div id="video-links-container">
-                                 <div class="add-link d-flex align-items-center video-link pb-1">
-                                    <input type="text" class="form-control" name="video_title[]" placeholder="Title">
-                                    <input type="text" class="form-control" name="video_description[]" placeholder="Description">
-                                    <input type="text"  class="form-control" name="video_link[]" placeholder="Link">
-                                    <ul class="action">
-                                       <li class="add pe-2"><i class="fa fa-plus-square-o" onclick="addVideoLink(this)"></i>
-                                       </li>
-                                       <li class="delete"><i class="fa fa-trash" onclick="removeVideoLink(this)"></i></li>
-                                    </ul>
+                                 <div class="add-link video-link-box pb-1">
+                                    <div class="row">
+                                       <div class="col-lg-6 col-md-6 col-12 mb-2">
+                                          <input type="text" class="form-control" name="video_title[]" placeholder="Title">
+                                       </div>
+                                       <div class="col-lg-6 col-md-6 col-12 mb-2">
+                                          <input type="text" class="form-control" name="video_description[]" placeholder="Description">
+                                       </div>
+                                    </div>
+                                    <div class="row align-items-center">
+                                       <div class="col-lg-7 col-md-7 col-12 mb-2">
+                                          <input type="text" class="form-control" name="video_link[]" placeholder="Link">
+                                       </div>
+                                       <div class="col-lg-3 col-md-3 col-12 mb-2">
+                                          <input type="file" class="form-control" name="video_thumbnail[]" accept="image/*" placeholder="Thumbnail">
+                                       </div>
+                                       <div class="col-lg-2 col-md-2 col-12 mb-2 d-flex align-items-center">
+                                          <ul class="action d-flex mb-0" style="list-style:none;padding-left:0;">
+                                             <li class="add pe-2">
+                                                <i class="fa fa-plus-square-o" onclick="addVideoLink(this)"></i>
+                                             </li>
+                                             <li class="delete">
+                                                <i class="fa fa-trash" onclick="removeVideoLink(this)"></i>
+                                             </li>
+                                          </ul>
+                                       </div>
+                                    </div>
                                  </div>
                               </div>
                            </div>
@@ -159,21 +177,43 @@
 
 <script type="text/javascript">
    function addVideoLink(element) {
-      let videoLink = document.querySelector('.video-link').cloneNode(true);
-      //videoLink.querySelector('input').value = '';
+      let videoLink = document.querySelector('.video-link-box').cloneNode(true);
+      // Clear all input values including file inputs
       let inputs = videoLink.querySelectorAll('input');
-      inputs.forEach(input => input.value = '');
+      inputs.forEach(input => {
+         if (input.type === 'file') {
+            input.value = '';
+         } else {
+            input.value = '';
+         }
+      });
+      
+      // Remove any existing thumbnail preview images
+      let previewImages = videoLink.querySelectorAll('.video-thumbnail-preview');
+      previewImages.forEach(img => img.remove());
+      
+      // Remove any existing small text elements (current thumbnail info)
+      let smallElements = videoLink.querySelectorAll('small');
+      smallElements.forEach(small => small.remove());
+      
       document.getElementById('video-links-container').appendChild(videoLink);
+      
+      // Add event listeners to new file inputs
+      let newFileInputs = videoLink.querySelectorAll('input[type="file"]');
+      newFileInputs.forEach(input => {
+         input.addEventListener('change', handleThumbnailPreview);
+      });
    }
 
    function removeVideoLink(element) {
-      let videoLink = element.closest('.video-link');
-      if (document.querySelectorAll('.video-link').length > 1) {
+      let videoLink = element.closest('.video-link-box');
+      if (document.querySelectorAll('.video-link-box').length > 1) {
          videoLink.remove();
       } else {
          alert("At least one video link is required.");
       }
    }
+   
    function addSpotifyLink(element) {
       let SpotifyLink = document.querySelector('.spotify-link').cloneNode(true);
       //SpotifyLink.querySelector('input').value = '';
@@ -190,5 +230,43 @@
          alert("At least one Spotify link is required.");
       }
    }
+   
+   function handleThumbnailPreview(event) {
+      const file = event.target.files[0];
+      // Scope to the correct video-link-box
+      const videoBox = event.target.closest('.video-link-box');
+      const container = event.target.closest('.col-lg-3');
+      // Remove only the preview in this video-link-box
+      if (container) {
+         const existingPreview = container.querySelector('.video-thumbnail-preview');
+         if (existingPreview) {
+            existingPreview.remove();
+         }
+      }
+      // Remove any <small> in this container (current thumb text)
+      if (container) {
+         const small = container.querySelector('small');
+         if (small) small.remove();
+      }
+      if (file && file.type.startsWith('image/')) {
+         const reader = new FileReader();
+         reader.onload = function(e) {
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.className = 'video-thumbnail-preview';
+            img.alt = 'Thumbnail Preview';
+            if (container) container.appendChild(img);
+         };
+         reader.readAsDataURL(file);
+      }
+   }
+   
+   // Add event listeners to existing file inputs
+   document.addEventListener('DOMContentLoaded', function() {
+      const fileInputs = document.querySelectorAll('input[type="file"]');
+      fileInputs.forEach(input => {
+         input.addEventListener('change', handleThumbnailPreview);
+      });
+   });
 </script>
 @endsection

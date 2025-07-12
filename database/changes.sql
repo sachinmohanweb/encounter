@@ -566,3 +566,8 @@ CREATE TABLE `sent_notifications` (
 );
 
 ALTER TABLE `sent_notifications` DROP `status`;
+
+-- 12/07/25 ----
+
+ALTER TABLE `course_content_links` ADD `thumbnail` VARCHAR(256) NULL DEFAULT NULL AFTER `video_spotify_link`;
+

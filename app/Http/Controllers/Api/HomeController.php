@@ -969,6 +969,17 @@ class HomeController extends Controller
                     $course_day_content->audio_file = null;
                 }
 
+                // Update thumbnail path for each video link
+                if ($course_day_content->CourseContentVideoLink) {
+                    foreach ($course_day_content->CourseContentVideoLink as $videoLink) {
+                        if ($videoLink->thumbnail) {
+                            $videoLink->thumbnail = asset('/') . $videoLink->thumbnail;
+                        } else {
+                            $videoLink->thumbnail = null;
+                        }
+                    }
+                }
+
                 $course_day_content->CourseDayVerse->map(function($verse) {
 
                     $statements = HolyStatement::where('book_id',$verse->book)
@@ -1751,11 +1762,11 @@ class HomeController extends Controller
 
         if ($type === 'inactivity') {
             $notification['title'] = 'We Miss You at ' . $batch->batch_name . ': ' . $course->course_name;
-            $notification['body'] = "It’s been a few days since you last visited.\nJump right back in and grow in faith!";
+            $notification['body'] = "It's been a few days since you last visited.\nJump right back in and grow in faith!";
 
         } elseif ($type === 'not_started') {
             $notification['title'] = 'The Word of God Awaits You!';
-            $notification['body'] = "You’re all set to start the course - " . $batch->batch_name . ': ' . $course->course_name . ".\nDive into your first lesson now.";
+            $notification['body'] = "You're all set to start the course - " . $batch->batch_name . ': ' . $course->course_name . ".\nDive into your first lesson now.";
         }
 
 

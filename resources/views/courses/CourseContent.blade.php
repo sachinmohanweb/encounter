@@ -80,9 +80,22 @@
                               <td> 
                                  @if(count($content->CourseContentVideoLink)>0)
                                        @foreach($content->CourseContentVideoLink as $key=>$value)
-                                          <a href="{{ $value['video_spotify_link'] }}" target="_blank">
-                                             Click here<br>
-                                          </a>
+                                          <div class="d-flex align-items-center mb-2">
+                                             @if($value->thumbnail)
+                                                <img src="{{ asset($value->thumbnail) }}" alt="Video Thumbnail" style="width: 80px; height: 60px; object-fit: cover; margin-right: 10px;">
+                                             @endif
+                                             <div>
+                                                @if($value->title)
+                                                   <strong>{{ $value->title }}</strong><br>
+                                                @endif
+                                                @if($value->description)
+                                                   <small class="text-muted">{{ $value->description }}</small><br>
+                                                @endif
+                                                <a href="{{ $value['video_spotify_link'] }}" target="_blank" class="btn btn-sm btn-primary">
+                                                   Watch Video
+                                                </a>
+                                             </div>
+                                          </div>
                                        @endforeach
                                  @else
                                     Not Available
